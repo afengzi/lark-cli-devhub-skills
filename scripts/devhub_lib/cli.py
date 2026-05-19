@@ -4,7 +4,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from .commands import command_preflight, command_provision, command_search
+from .commands import command_preflight, command_provision, command_report_draft, command_search
 from .hooks import command_hook_check
 from .records import command_receipt, command_sync_outbox, record_command
 
@@ -23,6 +23,12 @@ def build_parser() -> argparse.ArgumentParser:
     search.add_argument("--project", required=True)
     search.add_argument("--query", required=True)
     search.set_defaults(func=command_search)
+
+    report = sub.add_parser("report-draft")
+    report.add_argument("--kind", choices=["daily", "weekly", "release"], required=True)
+    report.add_argument("--project", required=True)
+    report.add_argument("--records", required=True)
+    report.set_defaults(func=command_report_draft)
 
     record_tables = [
         ("record-task", "Tasks"),
