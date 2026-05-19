@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "mode": "shadow",
+  "identity": "user",
+  "timezone": "Asia/Shanghai",
+  "wiki": {
+    "space_id": "",
+    "root_node_token": "",
+    "root_url": ""
+  },
+  "base": {
+    "token": "",
+    "url": "",
+    "tables": {}
+  },
+  "defaults": {
+    "project": "example-project",
+    "repo_path": "/path/to/example-project",
+    "receipt_dir": ".devhub/receipts",
+    "outbox_dir": ".devhub/outbox"
+  }
+}

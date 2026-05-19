@@ -1,0 +1,11 @@
+.DS_Store
+.devhub/
+*.pyc
+__pycache__/
+node_modules/
+skills-lock.json
+
+# Local runtime config. Do not commit Feishu app secrets, access tokens, or real Base/Wiki ids.
+config.json
+.env
+.env.*

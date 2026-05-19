@@ -1,0 +1,85 @@
+{
+  "Projects": [
+    {
+      "Title": "example-project",
+      "Status": "Active",
+      "Repo Path": "/path/to/example-project",
+      "Default Branch": "main",
+      "Current Focus": "Bugfix discipline, release notes, task clarity, reusable debugging playbooks",
+      "AI Summary": "Example project record for Feishu Dev Hub. Replace this with the real project summary after provisioning.",
+      "Search Keywords": "example-project bugfix release tasks pitfalls playbooks"
+    }
+  ],
+  "Areas": [
+    {
+      "Title": "Core Application",
+      "Project": "example-project",
+      "Status": "Active",
+      "Code Paths": "src, app, frontend, backend",
+      "Risk Level": "Medium",
+      "AI Summary": "Primary product behavior and user-facing workflows."
+    },
+    {
+      "Title": "Release / Main Push",
+      "Project": "example-project",
+      "Status": "Active",
+      "Code Paths": ".githooks, .github/workflows, deployment scripts",
+      "Risk Level": "Medium",
+      "AI Summary": "Release evidence, protected branch workflow, and knowledge writeback gate."
+    }
+  ],
+  "Tasks": [],
+  "Bugfixes": [],
+  "Pitfalls": [
+    {
+      "Title": "Knowledge base should not store secrets",
+      "Project": "Global",
+      "Area": "Dev Hub",
+      "Status": "Active",
+      "Scope": "Global",
+      "Trigger Condition": "AI writes project context, bug evidence, logs, or configuration into Feishu.",
+      "Wrong Approach": "Paste access tokens, app secrets, private keys, credentials, or raw environment files into Base or Docs.",
+      "Correct Approach": "Store only facts, evidence summaries, safe command names, file paths, and links to internal artifacts.",
+      "Search Keywords": "secrets credentials Feishu Dev Hub knowledge writeback"
+    },
+    {
+      "Title": "Main push needs release evidence",
+      "Project": "Global",
+      "Area": "Release / Main Push",
+      "Status": "Active",
+      "Scope": "Global",
+      "Trigger Condition": "A branch is pushed to main or master.",
+      "Wrong Approach": "Push first and reconstruct verification evidence later.",
+      "Correct Approach": "Write a Release record before the push or leave an outbox item with verification commands and result.",
+      "Search Keywords": "main push release evidence kb-updated outbox receipt"
+    }
+  ],
+  "Playbooks": [
+    {
+      "Title": "Bugfix writeback checklist",
+      "Project": "Global",
+      "Area": "Bugfix",
+      "Status": "Active",
+      "Scenario": "A bug was investigated and changed code or configuration.",
+      "Diagnosis Order": "Search old Pitfalls/Bugfixes -> collect symptom evidence -> identify root cause -> fix -> run verification -> write Bugfix and AI Run.",
+      "Must Check Evidence": "Relevant old records, changed files, verification command output, regression risk.",
+      "Forbidden Actions": "Do not mark a bug fixed without recording what proved the fix.",
+      "Search Keywords": "bugfix writeback checklist evidence verification"
+    }
+  ],
+  "Decisions": [
+    {
+      "Title": "Base is the structured source of truth",
+      "Project": "Global",
+      "Area": "Dev Hub",
+      "Status": "Accepted",
+      "Decision": "Feishu Base stores structured records. Docs store long-form context. Whiteboard stores visual maps with text summaries linked back to Base.",
+      "Context": "Humans need a browsable workspace; AI agents need searchable records and stable field names.",
+      "Consequences": "Agents search Base first, then open linked Docs or Whiteboards only when needed.",
+      "Search Keywords": "Feishu Base source of truth Docs Whiteboard AI searchable"
+    }
+  ],
+  "Releases": [],
+  "Artifacts": [],
+  "AI Runs": []
+}
