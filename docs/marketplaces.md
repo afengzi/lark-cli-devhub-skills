@@ -30,6 +30,14 @@ npx -y clawhub@0.16.0 install lark-cli-devhub-base
 npx -y clawhub@0.16.0 install lark-cli-devhub-docs-wiki
 npx -y clawhub@0.16.0 install lark-cli-devhub-taskflow
 npx -y clawhub@0.16.0 install lark-cli-devhub-whiteboard
+npx -y clawhub@0.16.0 install lark-cli-devhub-drive
+npx -y clawhub@0.16.0 install lark-cli-devhub-sheets
+npx -y clawhub@0.16.0 install lark-cli-devhub-calendar
+npx -y clawhub@0.16.0 install lark-cli-devhub-communications
+npx -y clawhub@0.16.0 install lark-cli-devhub-meetings
+npx -y clawhub@0.16.0 install lark-cli-devhub-approvals-okr
+npx -y clawhub@0.16.0 install lark-cli-devhub-slides
+npx -y clawhub@0.16.0 install lark-cli-devhub-events
 ```
 
 Republish each folder under `skills/` after changes:
@@ -67,6 +75,54 @@ npx -y clawhub@0.16.0 publish skills/lark-cli-devhub-whiteboard \
   --name "Lark CLI Dev Hub Whiteboard" \
   --version 0.1.1 \
   --tags feishu,lark,lark-cli,feishu-cli,whiteboard,diagrams,architecture
+
+npx -y clawhub@0.16.0 publish skills/lark-cli-devhub-drive \
+  --slug lark-cli-devhub-drive \
+  --name "Lark CLI Dev Hub Drive" \
+  --version 0.1.0 \
+  --tags feishu,lark,lark-cli,feishu-cli,drive,files,artifacts
+
+npx -y clawhub@0.16.0 publish skills/lark-cli-devhub-sheets \
+  --slug lark-cli-devhub-sheets \
+  --name "Lark CLI Dev Hub Sheets" \
+  --version 0.1.0 \
+  --tags feishu,lark,lark-cli,feishu-cli,sheets,spreadsheet,reports
+
+npx -y clawhub@0.16.0 publish skills/lark-cli-devhub-calendar \
+  --slug lark-cli-devhub-calendar \
+  --name "Lark CLI Dev Hub Calendar" \
+  --version 0.1.0 \
+  --tags feishu,lark,lark-cli,feishu-cli,calendar,scheduling,freebusy
+
+npx -y clawhub@0.16.0 publish skills/lark-cli-devhub-communications \
+  --slug lark-cli-devhub-communications \
+  --name "Lark CLI Dev Hub Communications" \
+  --version 0.1.0 \
+  --tags feishu,lark,lark-cli,feishu-cli,im,mail,communication
+
+npx -y clawhub@0.16.0 publish skills/lark-cli-devhub-meetings \
+  --slug lark-cli-devhub-meetings \
+  --name "Lark CLI Dev Hub Meetings" \
+  --version 0.1.0 \
+  --tags feishu,lark,lark-cli,feishu-cli,vc,minutes,meetings
+
+npx -y clawhub@0.16.0 publish skills/lark-cli-devhub-approvals-okr \
+  --slug lark-cli-devhub-approvals-okr \
+  --name "Lark CLI Dev Hub Approvals OKR" \
+  --version 0.1.0 \
+  --tags feishu,lark,lark-cli,feishu-cli,approval,okr,governance
+
+npx -y clawhub@0.16.0 publish skills/lark-cli-devhub-slides \
+  --slug lark-cli-devhub-slides \
+  --name "Lark CLI Dev Hub Slides" \
+  --version 0.1.0 \
+  --tags feishu,lark,lark-cli,feishu-cli,slides,presentations,briefings
+
+npx -y clawhub@0.16.0 publish skills/lark-cli-devhub-events \
+  --slug lark-cli-devhub-events \
+  --name "Lark CLI Dev Hub Events" \
+  --version 0.1.0 \
+  --tags feishu,lark,lark-cli,feishu-cli,events,automation,watchers
 ```
 
 Publishing requires a ClawHub login. The GitHub install path works independently from ClawHub.

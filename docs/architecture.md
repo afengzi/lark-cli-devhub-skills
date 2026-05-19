@@ -15,8 +15,17 @@ skills/
     SKILL.md
   lark-cli-devhub-whiteboard/
     SKILL.md
+  lark-cli-devhub-drive/
+  lark-cli-devhub-sheets/
+  lark-cli-devhub-calendar/
+  lark-cli-devhub-communications/
+  lark-cli-devhub-meetings/
+  lark-cli-devhub-approvals-okr/
+  lark-cli-devhub-slides/
+  lark-cli-devhub-events/
 scripts/
   devhub.py
+  devhub_lib/
   kb-gate.sh
   install-devhub.sh
 templates/
@@ -40,7 +49,24 @@ Domain skills answer:
 - What are the safety rules?
 - What should future agents avoid?
 
-This follows progressive disclosure: the agent loads the small orchestrator first, then only reads Base, Docs/Wiki, Tasks, or Whiteboard guidance when needed.
+This follows progressive disclosure: the agent loads the small orchestrator first, then only reads the domain guidance it needs: Base, Docs/Wiki, Tasks, Whiteboard, Drive, Sheets, Calendar, Communications, Meetings, Approvals/OKR, Slides, or Events.
+
+## Helper Script Modules
+
+`scripts/devhub.py` is only the entrypoint. Implementation lives in `scripts/devhub_lib/`:
+
+| Module | Responsibility |
+|---|---|
+| `paths.py` | Runtime paths and environment overrides |
+| `io.py` | JSON IO, timestamping, output parsing, token extraction |
+| `config.py` | Config loading, redaction, receipt/outbox directories |
+| `lark.py` | `lark-cli` subprocess calls |
+| `base.py` | Base creation, schema provisioning, record upsert |
+| `wiki_docs.py` | Wiki/Docs creation and starter artifacts |
+| `records.py` | Bugfix/AI Run/Release receipts and outbox |
+| `hooks.py` | Commit/push writeback gate |
+| `commands.py` | CLI command implementations |
+| `cli.py` | Argument parser and command routing |
 
 ## Why Not Only Obsidian Or Agent Memory
 

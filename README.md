@@ -25,6 +25,14 @@ Also discoverable as: `feishu-cli`, `飞书 CLI`, `lark-cli`, `Lark CLI`, `Feish
 | `lark-cli-devhub-docs-wiki` | You want Docs/Wiki pages for design notes, bug retrospectives, runbooks, and project pages. |
 | `lark-cli-devhub-taskflow` | You want Feishu/Lark Tasks for bug queues, task lists, blockers, owners, and next actions. |
 | `lark-cli-devhub-whiteboard` | You want Whiteboards for architecture maps, workflow maps, dependency maps, and knowledge graphs. |
+| `lark-cli-devhub-drive` | You want Drive files, folders, imports, exports, sync, comments, permissions, and artifacts. |
+| `lark-cli-devhub-sheets` | You want spreadsheet reports, QA matrices, release checklists, and human-editable trackers. |
+| `lark-cli-devhub-calendar` | You want agendas, scheduling, freebusy, meeting rooms, release windows, and review blocks. |
+| `lark-cli-devhub-communications` | You want IM/Mail search, summaries, drafts, replies, announcements, and artifact sharing. |
+| `lark-cli-devhub-meetings` | You want VC/Minutes records, meeting notes, recordings, action items, and decision extraction. |
+| `lark-cli-devhub-approvals-okr` | You want approvals, sign-offs, OKR progress, release governance, and goal evidence. |
+| `lark-cli-devhub-slides` | You want briefings, release review decks, retrospectives, roadmap decks, and stakeholder updates. |
+| `lark-cli-devhub-events` | You want event consumers, watchers, automation triggers, and writeback loops. |
 
 ## Supported Agents
 
@@ -85,6 +93,14 @@ npx -y clawhub@0.16.0 install lark-cli-devhub-base
 npx -y clawhub@0.16.0 install lark-cli-devhub-docs-wiki
 npx -y clawhub@0.16.0 install lark-cli-devhub-taskflow
 npx -y clawhub@0.16.0 install lark-cli-devhub-whiteboard
+npx -y clawhub@0.16.0 install lark-cli-devhub-drive
+npx -y clawhub@0.16.0 install lark-cli-devhub-sheets
+npx -y clawhub@0.16.0 install lark-cli-devhub-calendar
+npx -y clawhub@0.16.0 install lark-cli-devhub-communications
+npx -y clawhub@0.16.0 install lark-cli-devhub-meetings
+npx -y clawhub@0.16.0 install lark-cli-devhub-approvals-okr
+npx -y clawhub@0.16.0 install lark-cli-devhub-slides
+npx -y clawhub@0.16.0 install lark-cli-devhub-events
 ```
 
 Note: `npx skills find` searches the Agent Skills / skills.sh index, not the ClawHub registry. Use `npx skills add afengzi/lark-cli-devhub-skills --all` for GitHub install, or `npx clawhub search/install` for ClawHub.
@@ -198,8 +214,17 @@ skills/
   lark-cli-devhub-docs-wiki/
   lark-cli-devhub-taskflow/
   lark-cli-devhub-whiteboard/
+  lark-cli-devhub-drive/
+  lark-cli-devhub-sheets/
+  lark-cli-devhub-calendar/
+  lark-cli-devhub-communications/
+  lark-cli-devhub-meetings/
+  lark-cli-devhub-approvals-okr/
+  lark-cli-devhub-slides/
+  lark-cli-devhub-events/
 scripts/
   devhub.py
+  devhub_lib/
   kb-gate.sh
   install-devhub.sh
 templates/
@@ -208,6 +233,7 @@ templates/
   config.example.json
 docs/
   architecture.md
+  lark-cli-capability-map.md
   marketplaces.md
 ```
 

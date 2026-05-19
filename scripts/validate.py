@@ -56,6 +56,8 @@ def validate_skills() -> list[str]:
             errors.append(f"{skill_file}: missing description")
         if len(description) > 1024:
             errors.append(f"{skill_file}: description exceeds 1024 chars")
+        if description and not description.startswith(("\"", "'", "|", ">")) and ": " in description:
+            errors.append(f"{skill_file}: quote description values that contain ': ' so YAML parsers can load them")
     return errors
 
 
@@ -78,7 +80,7 @@ def scan_forbidden() -> list[str]:
 
 def compile_python() -> list[str]:
     errors: list[str] = []
-    for path in [ROOT / "scripts" / "devhub.py", ROOT / "scripts" / "validate.py"]:
+    for path in sorted((ROOT / "scripts").rglob("*.py")):
         result = subprocess.run([sys.executable, "-m", "py_compile", str(path)], text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if result.returncode:
             errors.append(result.stderr.strip())

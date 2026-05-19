@@ -83,5 +83,13 @@ Use the split domain skills when the work needs deeper Feishu CLI behavior:
 - `lark-cli-devhub-docs-wiki` for Docs, Wiki spaces, long-form pages, and node organization.
 - `lark-cli-devhub-taskflow` for task lists, bug/feature tasks, owners, and status discipline.
 - `lark-cli-devhub-whiteboard` for architecture maps, workflow maps, dependency graphs, and visual summaries.
+- `lark-cli-devhub-drive` for Drive files, imports, exports, folder sync, comments, permissions, and artifact registration.
+- `lark-cli-devhub-sheets` for spreadsheet reports, QA matrices, release checklists, and human-editable trackers.
+- `lark-cli-devhub-calendar` for agenda, freebusy, scheduling, rooms, review blocks, and release windows.
+- `lark-cli-devhub-communications` for IM and Mail search, summaries, drafts, replies, announcements, and sharing artifacts.
+- `lark-cli-devhub-meetings` for VC, Minutes, meeting notes, recordings, action items, and decision extraction.
+- `lark-cli-devhub-approvals-okr` for formal approvals, OKR progress, release governance, and goal alignment.
+- `lark-cli-devhub-slides` for project briefings, release review decks, retrospectives, and stakeholder updates.
+- `lark-cli-devhub-events` for event consumers, watchers, automation triggers, and writeback loops.
 
 See [`references/domain-map.md`](references/domain-map.md) and [`references/knowledge-model.md`](references/knowledge-model.md).

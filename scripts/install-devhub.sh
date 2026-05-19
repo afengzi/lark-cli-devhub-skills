@@ -9,6 +9,8 @@ mkdir -p "$DEVHUB_HOME/bin" "$DEVHUB_HOME/templates" "$SKILLS_HOME"
 
 install -m 755 "$ROOT/scripts/devhub.py" "$DEVHUB_HOME/bin/devhub.py"
 install -m 755 "$ROOT/scripts/kb-gate.sh" "$DEVHUB_HOME/bin/kb-gate.sh"
+rm -rf "$DEVHUB_HOME/bin/devhub_lib"
+cp -R "$ROOT/scripts/devhub_lib" "$DEVHUB_HOME/bin/devhub_lib"
 cp "$ROOT/templates/base-schema.json" "$DEVHUB_HOME/templates/base-schema.json"
 cp "$ROOT/templates/seed.example.json" "$DEVHUB_HOME/templates/seed.example.json"
 cp "$ROOT/templates/config.example.json" "$DEVHUB_HOME/templates/config.example.json"
