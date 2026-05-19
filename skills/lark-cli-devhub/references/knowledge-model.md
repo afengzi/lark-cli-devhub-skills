@@ -6,7 +6,7 @@ Dev Hub separates human browsing from AI retrieval.
 
 | Layer | Role | AI Use |
 |---|---|---|
-| Base | Structured facts: Projects, Areas, Tasks, Bugfixes, Pitfalls, Playbooks, Decisions, Releases, Artifacts, AI Runs | Search first; use field names and keywords |
+| Base | Structured facts: Projects, Areas, Tasks, Bugfixes, Pitfalls, Playbooks, Decisions, Project Facts, Releases, Artifacts, AI Runs | Search first; use field names and keywords |
 | Docs/Wiki | Long-form design notes, retrospectives, runbooks, incident notes | Open when a Base record links to a useful page |
 | Whiteboard | Architecture, workflow, dependency, and knowledge maps | Visual aid; always pair with a Base Artifact summary |
 | Tasks | Operational work queue and ownership | Use for current work state, not historical root cause detail |
@@ -20,6 +20,7 @@ Dev Hub separates human browsing from AI retrieval.
 - `Pitfalls`: reusable traps and what to check next time.
 - `Playbooks`: diagnosis order, required evidence, commands, and forbidden actions.
 - `Decisions`: accepted technical/product choices and review triggers.
+- `Project Facts`: current implementation truths, retired paths, invariants, source, and review trigger. Use this before trusting older docs or old bug paths.
 - `Releases`: branch, commit, verification, rollback notes, related tasks and bugfixes.
 - `Artifacts`: Docs, Whiteboards, dashboards, links, and summaries.
 - `AI Runs`: what the AI did, what evidence it checked, what changed, and writeback status.

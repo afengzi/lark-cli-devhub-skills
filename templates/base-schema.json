@@ -1058,6 +1058,93 @@
       ]
     },
     {
+      "name": "Project Facts",
+      "fields": [
+        {
+          "type": "text",
+          "name": "Title"
+        },
+        {
+          "type": "text",
+          "name": "Project"
+        },
+        {
+          "type": "text",
+          "name": "Area"
+        },
+        {
+          "type": "select",
+          "name": "Status",
+          "multiple": false,
+          "options": [
+            {
+              "name": "Current",
+              "hue": "Green",
+              "lightness": "Light"
+            },
+            {
+              "name": "Needs Review",
+              "hue": "Orange",
+              "lightness": "Light"
+            },
+            {
+              "name": "Retired",
+              "hue": "Gray",
+              "lightness": "Light"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "name": "Tags"
+        },
+        {
+          "type": "text",
+          "name": "AI Summary"
+        },
+        {
+          "type": "text",
+          "name": "Search Keywords"
+        },
+        {
+          "type": "text",
+          "name": "Source URL"
+        },
+        {
+          "type": "datetime",
+          "name": "Last Reviewed At"
+        },
+        {
+          "type": "text",
+          "name": "Fact"
+        },
+        {
+          "type": "text",
+          "name": "Current Truth"
+        },
+        {
+          "type": "text",
+          "name": "Retired Paths"
+        },
+        {
+          "type": "text",
+          "name": "Source"
+        },
+        {
+          "type": "text",
+          "name": "Review Trigger"
+        },
+        {
+          "type": "text",
+          "name": "Related Decisions"
+        },
+        {
+          "type": "text",
+          "name": "Related Artifacts"
+        }
+      ]
+    },
+    {
       "name": "Releases",
       "fields": [
         {

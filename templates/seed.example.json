@@ -79,6 +79,21 @@
       "Search Keywords": "Feishu Base source of truth Docs Whiteboard AI searchable"
     }
   ],
+  "Project Facts": [
+    {
+      "Title": "Project Facts store current implementation truth",
+      "Project": "Global",
+      "Area": "Dev Hub",
+      "Status": "Current",
+      "Fact": "Project-specific current truths and retired paths live in Project Facts, not in public skills.",
+      "Current Truth": "Agents should search Project Facts before relying on old code paths or stale architecture notes.",
+      "Retired Paths": "Project-specific retired endpoints, modules, or workflows should be recorded here.",
+      "Source": "Dev Hub V1.5 design",
+      "Review Trigger": "Review after architecture changes, PR review feedback, or repeated stale-agent behavior.",
+      "AI Summary": "Project Facts prevent stale AI behavior by storing current implementation truth and retired paths.",
+      "Search Keywords": "project facts current truth retired paths stale AI"
+    }
+  ],
   "Releases": [],
   "Artifacts": [],
   "AI Runs": []

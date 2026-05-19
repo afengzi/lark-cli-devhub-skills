@@ -30,11 +30,16 @@ python3 "$DEVHUB_HOME/bin/devhub.py" search --project music-agent --query "bug"
 
 Read in this order:
 
-1. `Pitfalls`: traps and forbidden approaches.
-2. `Playbooks`: diagnosis order and evidence requirements.
-3. `Bugfixes`: old root causes and verification.
-4. `Decisions`: constraints that explain why the system is shaped this way.
-5. `Areas`: code paths and risk level.
+1. `Project Facts`: current truths and retired paths.
+2. `Pitfalls`: traps and forbidden approaches.
+3. `Playbooks`: diagnosis order and evidence requirements.
+4. `Bugfixes`: old root causes and verification.
+5. `AI Runs`: previous agent actions, evidence, and caveats.
+6. `Releases`: what reached the default branch and when.
+7. `Decisions`: constraints that explain why the system is shaped this way.
+8. `Tasks`: current work state and blockers.
+9. `Artifacts`: linked docs, whiteboards, PRs, commits, and files.
+10. `Areas`: code paths and risk level.
 
 ## When Search Is Optional
 
