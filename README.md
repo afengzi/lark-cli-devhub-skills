@@ -209,7 +209,16 @@ Write release evidence:
 python3 "$DEVHUB_HOME/bin/devhub.py" record-release --payload /tmp/devhub-release.json
 ```
 
-Search scope note: the current helper search covers the core bug-memory path first. When you depend on full project-history recall, make sure your workflow also checks AI Runs, Releases, Tasks, Decisions, and related artifacts, or records an outbox item saying that expanded search still needs to run.
+Write task, decision, artifact, or project fact evidence:
+
+```bash
+python3 "$DEVHUB_HOME/bin/devhub.py" record-task --payload /tmp/devhub-task.json
+python3 "$DEVHUB_HOME/bin/devhub.py" record-decision --payload /tmp/devhub-decision.json
+python3 "$DEVHUB_HOME/bin/devhub.py" record-artifact --payload /tmp/devhub-artifact.json
+python3 "$DEVHUB_HOME/bin/devhub.py" record-project-fact --payload /tmp/devhub-project-fact.json
+```
+
+Search scope note: full project-history recall should cover Tasks, Bugfixes, AI Runs, Releases, Decisions, Project Facts, Artifacts, Pitfalls, Playbooks, and Areas. The helper reports its coverage so agents do not overclaim what they checked.
 
 ## Automation Roadmap
 

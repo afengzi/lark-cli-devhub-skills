@@ -87,6 +87,110 @@ Command:
 python3 "$DEVHUB_HOME/bin/devhub.py" record-release --payload /tmp/devhub-release.json
 ```
 
+## Task Payload
+
+Write when work needs explicit status, ownership, blocker, or next action tracking:
+
+```json
+{
+  "Title": "Task title",
+  "Project": "project-name",
+  "Area": "module or product area",
+  "Status": "Ready",
+  "Type": "Bug",
+  "Priority": "P1",
+  "Expected Outcome": "What should be true when this task is done.",
+  "Blocked By": "Current blocker or empty.",
+  "Next Action": "Concrete next action.",
+  "AI Summary": "Dense searchable task summary.",
+  "Search Keywords": "task area blocker keywords"
+}
+```
+
+Command:
+
+```bash
+python3 "$DEVHUB_HOME/bin/devhub.py" record-task --payload /tmp/devhub-task.json
+```
+
+## Decision Payload
+
+Write after PR review, architecture choices, product tradeoffs, or process decisions:
+
+```json
+{
+  "Title": "Decision title",
+  "Project": "project-name",
+  "Area": "module or product area",
+  "Status": "Accepted",
+  "Decision": "What was decided.",
+  "Context": "Why this decision was needed.",
+  "Alternatives": "Options considered.",
+  "Tradeoffs": "What this gives up and gains.",
+  "Consequences": "Follow-up impact.",
+  "Review Trigger": "When this should be revisited.",
+  "AI Summary": "Dense searchable decision summary.",
+  "Search Keywords": "decision architecture tradeoff keywords"
+}
+```
+
+Command:
+
+```bash
+python3 "$DEVHUB_HOME/bin/devhub.py" record-decision --payload /tmp/devhub-decision.json
+```
+
+## Artifact Payload
+
+Write when a Doc, Wiki page, Whiteboard, PR, commit, file, screenshot, dashboard, or generated report should be linked back to structured records:
+
+```json
+{
+  "Title": "Artifact title",
+  "Project": "project-name",
+  "Area": "module or product area",
+  "Status": "Draft",
+  "Artifact Type": "Doc",
+  "Source URL": "safe link or local path",
+  "Summary": "What this artifact contains.",
+  "Related Records": "Bugfix, Decision, Release, AI Run, or Task titles/URLs.",
+  "AI Summary": "Dense searchable artifact summary.",
+  "Search Keywords": "artifact doc whiteboard report keywords"
+}
+```
+
+Command:
+
+```bash
+python3 "$DEVHUB_HOME/bin/devhub.py" record-artifact --payload /tmp/devhub-artifact.json
+```
+
+## Project Fact Payload
+
+Write when the current implementation truth changes or an old path becomes retired:
+
+```json
+{
+  "Title": "Current fact title",
+  "Project": "project-name",
+  "Area": "module or product area",
+  "Status": "Current",
+  "Fact": "Short factual statement.",
+  "Current Truth": "What agents should trust now.",
+  "Retired Paths": "Old endpoints, modules, assumptions, or workflows to avoid.",
+  "Source": "PR, commit, doc, code path, or user confirmation.",
+  "Review Trigger": "When this fact should be checked again.",
+  "AI Summary": "Dense searchable project fact summary.",
+  "Search Keywords": "project fact retired path current truth keywords"
+}
+```
+
+Command:
+
+```bash
+python3 "$DEVHUB_HOME/bin/devhub.py" record-project-fact --payload /tmp/devhub-project-fact.json
+```
+
 ## Outbox Rule
 
 If Feishu write fails, do not fake success. Leave the generated `.devhub/outbox/*.json` item and mention it in the work summary. A later agent can retry with:

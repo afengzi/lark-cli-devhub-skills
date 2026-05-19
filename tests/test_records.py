@@ -4,6 +4,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from scripts.devhub_lib.cli import build_parser
 from scripts.devhub_lib.records import write_outbox, write_receipt
 
 
@@ -50,6 +51,22 @@ class RecordEvidenceTests(unittest.TestCase):
         self.assertEqual(data["error"], "missing scope")
         self.assertEqual(data["payload"]["table"], "Releases")
         self.assertEqual(data["retry_count"], 0)
+
+
+class ParserRecordCommandTests(unittest.TestCase):
+    def test_v15_record_commands_exist(self):
+        parser = build_parser()
+        for command in [
+            "record-task",
+            "record-bugfix",
+            "record-ai-run",
+            "record-release",
+            "record-decision",
+            "record-artifact",
+            "record-project-fact",
+        ]:
+            args = parser.parse_args([command, "--payload", "/tmp/payload.json"])
+            self.assertTrue(callable(args.func))
 
 
 if __name__ == "__main__":

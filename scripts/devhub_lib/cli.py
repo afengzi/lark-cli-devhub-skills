@@ -24,7 +24,16 @@ def build_parser() -> argparse.ArgumentParser:
     search.add_argument("--query", required=True)
     search.set_defaults(func=command_search)
 
-    for name, table in [("record-bugfix", "Bugfixes"), ("record-ai-run", "AI Runs"), ("record-release", "Releases")]:
+    record_tables = [
+        ("record-task", "Tasks"),
+        ("record-bugfix", "Bugfixes"),
+        ("record-ai-run", "AI Runs"),
+        ("record-release", "Releases"),
+        ("record-decision", "Decisions"),
+        ("record-artifact", "Artifacts"),
+        ("record-project-fact", "Project Facts"),
+    ]
+    for name, table in record_tables:
         item = sub.add_parser(name)
         item.add_argument("--payload", required=True)
         item.set_defaults(func=lambda ns, n=name, t=table: record_command(n, t, Path(ns.payload), Path.cwd()))
