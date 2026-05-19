@@ -4,6 +4,19 @@ Turn Feishu/Lark into an AI-readable development knowledge hub for Codex, Claude
 
 Use it to remember bug fixes, avoid repeated debugging, keep task state clear, write release evidence, and build a reusable engineering knowledge base on top of `lark-cli` / `feishu-cli`.
 
+It is designed to bridge the last wall between AI coding tools and office knowledge work: your AI IDE/CLI fixes code, Dev Hub writes the evidence into Feishu/Lark, and future AI runs can search that memory before repeating the same debugging path. Start with manual commands, then add hooks, PR writeback, cron reports, and Whiteboard drafts when your workflow is ready.
+
+## Why Developers Use It
+
+- Let your AI IDE/CLI search old bug evidence before investigating a new failure.
+- Build a repeatable bug location -> fix -> verification -> writeback loop.
+- Avoid repeated debugging by turning pitfalls, root causes, and playbooks into searchable Feishu/Lark records.
+- Keep tasks, blockers, release notes, and AI run evidence in the same workspace your team already uses.
+- Make reports easier: daily notes, weekly summaries, bugfix briefs, and release updates can be generated from structured records instead of memory.
+- Connect Codex, Claude Code, Cursor, Trae, OpenClaw, and custom agents to Feishu/Lark without forcing every automation to be configured on day one.
+
+You do not need to set up full automation up front. The reliable baseline is manual command + receipt/outbox; local git hooks, GitHub Actions, cron reports, and Whiteboard workflows can be added gradually.
+
 Also discoverable as: `feishu-cli`, `飞书 CLI`, `lark-cli`, `Lark CLI`, `Feishu Dev Hub`, `Lark Dev Hub`, `Feishu knowledge base`, `Lark knowledge base`, `Codex Feishu`, and `Claude Code Feishu`.
 
 ## What It Does
@@ -50,6 +63,26 @@ This pack is plain `SKILL.md` plus helper scripts. It works best with tools that
 If your AI tool does not have first-class Agent Skills support yet, the fallback is still simple: copy the relevant `skills/<name>/SKILL.md` folder into the tool's custom instruction or skill directory.
 
 ## Quick Install
+
+### Dependency Checklist
+
+Required for local helper scripts:
+
+- Python 3.10+
+- `git`
+- `lark-cli` configured with Feishu/Lark app credentials and user auth
+
+Required for one-command skill installation:
+
+- Node.js 18+ with `npx`
+
+Optional, depending on the workflow you enable:
+
+- `clawhub` via `npx -y clawhub@0.16.0` for ClawHub install/publish.
+- `gh` or GitHub Actions for PR/CI writeback automation.
+- `cron`, GitHub scheduled workflows, or another scheduler for daily/weekly report drafts.
+- `@larksuite/whiteboard-cli` for Whiteboard rendering and architecture map workflows.
+- Feishu/Lark app scopes for Base, Docs/Wiki, Drive, Tasks, IM, Calendar, Sheets, Meetings, Approvals, or Whiteboard depending on the domain skills you use.
 
 Install all skills from GitHub:
 
@@ -108,9 +141,14 @@ Note: `npx skills find` searches the Agent Skills / skills.sh index, not the Cla
 ## Requirements
 
 - `lark-cli` configured with Feishu/Lark app credentials.
-- User auth for personal Wiki, Docs, Tasks, and Base operations.
-- Python 3.10+.
-- Optional: `npx` and `@larksuite/whiteboard-cli` for Whiteboard rendering.
+- User auth and app scopes for the Feishu/Lark resources you want to write.
+- Python 3.10+ and `git`.
+- Node.js 18+ with `npx` if you install from GitHub/ClawHub using npm commands.
+- Optional: `gh` or GitHub Actions for PR/CI writeback.
+- Optional: cron/scheduled workflows for daily, weekly, or monthly report drafts.
+- Optional: `@larksuite/whiteboard-cli` for Whiteboard rendering.
+
+Minimum useful Feishu/Lark scopes are Docs/Wiki read-write plus Base record read-write. Add Drive, Task, IM, Calendar, Sheets, Meetings, Approvals, and Whiteboard scopes only when you enable those workflows.
 
 Preflight:
 
@@ -170,6 +208,20 @@ Write release evidence:
 ```bash
 python3 "$DEVHUB_HOME/bin/devhub.py" record-release --payload /tmp/devhub-release.json
 ```
+
+Search scope note: the current helper search covers the core bug-memory path first. When you depend on full project-history recall, make sure your workflow also checks AI Runs, Releases, Tasks, Decisions, and related artifacts, or records an outbox item saying that expanded search still needs to run.
+
+## Automation Roadmap
+
+The pack is useful without installing every automation. Add these layers gradually:
+
+| Layer | What It Adds | Safe Default |
+|---|---|---|
+| Manual commands | Search, bugfix writeback, AI run evidence, release records. | Always available; every write creates receipt or outbox evidence. |
+| Local git hook | Reminds you to write knowledge evidence before bugfix commits or main pushes. | Shadow Mode warnings before enforcement. |
+| PR writeback | PR created/updated writes AI Runs, reviews write Decisions/Bugfixes, merges write Releases, CI failures write task/bug candidates. | A PR event is only a trigger; success requires a receipt. |
+| Cron reports | Daily, weekly, monthly, and release report drafts from Base records. | Draft first; publish only after explicit approval. |
+| Whiteboard workflow | Architecture maps, dependency maps, and bug investigation diagrams. | Dry-run or draft first; link final boards back to Base Artifacts. |
 
 ## Hook Gate
 
