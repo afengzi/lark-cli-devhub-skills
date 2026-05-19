@@ -1,6 +1,7 @@
 import unittest
 
 from scripts.devhub_lib.reports import draft_report
+from scripts.devhub_lib.whiteboard import draft_whiteboard
 
 
 class ReportDraftTests(unittest.TestCase):
@@ -29,6 +30,19 @@ class ReportDraftTests(unittest.TestCase):
         self.assertIn("# Release Brief: music-agent", text)
         self.assertIn("## Rollback Notes", text)
         self.assertIn("Revert commit abc", text)
+
+
+class WhiteboardDraftTests(unittest.TestCase):
+    def test_architecture_draft_contains_artifact_instruction(self):
+        text = draft_whiteboard(
+            "architecture",
+            "music-agent",
+            "voice command stream replaces retired audio ack path",
+        )
+        self.assertIn("# Whiteboard Draft: music-agent", text)
+        self.assertIn("## Diagram Nodes", text)
+        self.assertIn("voice command stream", text)
+        self.assertIn("Create an Artifacts record", text)
 
 
 if __name__ == "__main__":

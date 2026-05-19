@@ -4,7 +4,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from .commands import command_preflight, command_provision, command_report_draft, command_search
+from .commands import command_preflight, command_provision, command_report_draft, command_search, command_whiteboard_draft
 from .hooks import command_hook_check
 from .records import command_receipt, command_sync_outbox, record_command
 
@@ -29,6 +29,12 @@ def build_parser() -> argparse.ArgumentParser:
     report.add_argument("--project", required=True)
     report.add_argument("--records", required=True)
     report.set_defaults(func=command_report_draft)
+
+    board = sub.add_parser("whiteboard-draft")
+    board.add_argument("--kind", required=True)
+    board.add_argument("--project", required=True)
+    board.add_argument("--summary", required=True)
+    board.set_defaults(func=command_whiteboard_draft)
 
     record_tables = [
         ("record-task", "Tasks"),

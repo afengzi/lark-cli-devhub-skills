@@ -12,6 +12,7 @@ from .lark import run_lark
 from .records import write_outbox
 from .reports import draft_report
 from .search import search_devhub
+from .whiteboard import draft_whiteboard
 from .wiki_docs import create_artifacts, ensure_wiki
 
 
@@ -75,4 +76,9 @@ def command_search(args: Any) -> int:
 def command_report_draft(args: Any) -> int:
     records = load_json(Path(args.records))
     print(draft_report(args.kind, args.project, records))
+    return 0
+
+
+def command_whiteboard_draft(args: Any) -> int:
+    print(draft_whiteboard(args.kind, args.project, args.summary))
     return 0
