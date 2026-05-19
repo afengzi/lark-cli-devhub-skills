@@ -9,6 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 NAME_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+IGNORED_DIRS = {".git", ".superpowers", "__pycache__"}
 FORBIDDEN_PATTERNS = [
     (re.compile(r"/Users/[^/\s]+"), "absolute macOS user path"),
     (re.compile(r"https://[^/\s]*feishu\.cn/(base|wiki|docx|docs|sheets)/[A-Za-z0-9]{10,}"), "concrete Feishu resource URL"),
@@ -61,10 +62,14 @@ def validate_skills() -> list[str]:
     return errors
 
 
+def is_ignored_path(path: Path) -> bool:
+    return any(part in IGNORED_DIRS for part in path.relative_to(ROOT).parts)
+
+
 def scan_forbidden() -> list[str]:
     errors: list[str] = []
     for path in ROOT.rglob("*"):
-        if not path.is_file() or ".git" in path.parts:
+        if not path.is_file() or is_ignored_path(path):
             continue
         if path == Path(__file__).resolve():
             continue
