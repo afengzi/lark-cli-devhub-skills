@@ -48,7 +48,7 @@ npx -y clawhub@0.16.0 login
 npx -y clawhub@0.16.0 publish skills/lark-cli-devhub \
   --slug lark-cli-devhub \
   --name "Lark CLI Dev Hub" \
-  --version 0.1.1 \
+  --version 0.1.2 \
   --tags feishu,lark,lark-cli,feishu-cli,devtools,knowledge-base,codex,claude-code \
   --clawscan-note "Uses local Python and lark-cli. Network access is delegated to the user's configured lark-cli credentials; no credentials are bundled."
 
