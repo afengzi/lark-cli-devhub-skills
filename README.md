@@ -21,7 +21,7 @@ Also discoverable as: `feishu-cli`, `飞书 CLI`, `lark-cli`, `Lark CLI`, `Feish
 
 ## What It Does
 
-- Searches old Bugfixes, Pitfalls, Playbooks, Decisions, and Areas before a new bug investigation.
+- Searches old Tasks, Bugfixes, AI Runs, Releases, Decisions, Project Facts, Artifacts, Pitfalls, Playbooks, and Areas before a new bug investigation.
 - Writes structured Bugfix and AI Run records after meaningful fixes.
 - Writes Release records before pushing `main` or `master`.
 - Keeps task state, next actions, blockers, and bug queues explicit.
@@ -34,6 +34,10 @@ Also discoverable as: `feishu-cli`, `飞书 CLI`, `lark-cli`, `Lark CLI`, `Feish
 | Skill | Use When |
 |---|---|
 | `lark-cli-devhub` | You want the full Dev Hub workflow: search before fixing, write after fixing, release evidence, and routing to domain skills. |
+| `lark-cli-devhub-code-loop` | You want bug investigation, old-record search, Bugfix/AI Run writeback, and receipt/outbox discipline. |
+| `lark-cli-devhub-report-loop` | You want daily, weekly, bugfix, release, or project report drafts from Dev Hub records. |
+| `lark-cli-devhub-pr-writeback` | You want GitHub PR/CI events mapped to AI Runs, Decisions, Bugfix candidates, Tasks, or Releases. |
+| `lark-cli-devhub-whiteboard-loop` | You want architecture, workflow, dependency, or bug investigation diagram drafts linked to Artifacts. |
 | `lark-cli-devhub-base` | You want Feishu/Lark Base as the structured AI-readable database. |
 | `lark-cli-devhub-docs-wiki` | You want Docs/Wiki pages for design notes, bug retrospectives, runbooks, and project pages. |
 | `lark-cli-devhub-taskflow` | You want Feishu/Lark Tasks for bug queues, task lists, blockers, owners, and next actions. |

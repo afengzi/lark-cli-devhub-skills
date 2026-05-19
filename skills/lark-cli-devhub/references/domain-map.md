@@ -2,6 +2,17 @@
 
 Use one small domain document per Feishu capability. This keeps the orchestrator skill easy to load and lets each domain evolve independently.
 
+## Workflow Skills
+
+Workflow skills compose domains into user-facing loops. Domain skills should not implicitly call each other.
+
+| Workflow | Skill | Use For |
+|---|---|---|
+| Code Loop | `lark-cli-devhub-code-loop` | Bug investigation, old-record search, Bugfix/AI Run writeback |
+| Report Loop | `lark-cli-devhub-report-loop` | Daily, weekly, bugfix, release, and project report drafts |
+| PR Writeback | `lark-cli-devhub-pr-writeback` | PR/CI event mapping to AI Runs, Decisions, Bugfix candidates, Tasks, and Releases |
+| Whiteboard Loop | `lark-cli-devhub-whiteboard-loop` | Architecture, workflow, dependency, and bug investigation diagram drafts |
+
 ## Split
 
 | Domain | Skill | Use For |

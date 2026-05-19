@@ -44,13 +44,20 @@ Project-local receipts and outbox:
 .devhub/outbox/
 ```
 
+## Workflow Routing
+
+- Use `lark-cli-devhub-code-loop` for bug investigation and fix evidence.
+- Use `lark-cli-devhub-report-loop` for daily, weekly, bugfix, release, and project reports.
+- Use `lark-cli-devhub-pr-writeback` for PR and CI event writeback.
+- Use `lark-cli-devhub-whiteboard-loop` for architecture, workflow, and bug investigation diagrams.
+
 ## When Working On Bugs
 
 Before investigation:
 
 1. Extract project, area/module, symptom, error keywords, and relevant file paths.
 2. Run `devhub.py search` with a concise query.
-3. Read relevant Pitfalls, Bugfixes, Playbooks, Decisions, and Areas from the output.
+3. Read relevant Project Facts, Pitfalls, Playbooks, Bugfixes, AI Runs, Releases, Decisions, Tasks, Artifacts, and Areas from the output.
 4. Let old records influence the fix, but only mention them in the final summary when they materially changed the work.
 
 After a meaningful fix:

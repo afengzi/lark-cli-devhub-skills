@@ -7,6 +7,14 @@ skills/
   lark-cli-devhub/
     SKILL.md
     references/
+  lark-cli-devhub-code-loop/
+    SKILL.md
+  lark-cli-devhub-report-loop/
+    SKILL.md
+  lark-cli-devhub-pr-writeback/
+    SKILL.md
+  lark-cli-devhub-whiteboard-loop/
+    SKILL.md
   lark-cli-devhub-base/
     SKILL.md
   lark-cli-devhub-docs-wiki/
@@ -43,6 +51,13 @@ The main skill is an orchestrator. It answers:
 - What is Base versus Docs versus Whiteboard versus Tasks?
 - Which domain skill should the agent read next?
 
+Workflow skills compose domains into useful developer loops:
+
+- `lark-cli-devhub-code-loop` searches old records before investigation and writes Bugfix/AI Run evidence after fixes.
+- `lark-cli-devhub-report-loop` turns structured records into daily, weekly, bugfix, release, and project report drafts.
+- `lark-cli-devhub-pr-writeback` maps PR and CI events to Dev Hub records.
+- `lark-cli-devhub-whiteboard-loop` creates safe architecture, workflow, and bug investigation diagram drafts.
+
 Domain skills answer:
 
 - How should this Feishu component be used for Dev Hub?
@@ -50,6 +65,8 @@ Domain skills answer:
 - What should future agents avoid?
 
 This follows progressive disclosure: the agent loads the small orchestrator first, then only reads the domain guidance it needs: Base, Docs/Wiki, Tasks, Whiteboard, Drive, Sheets, Calendar, Communications, Meetings, Approvals/OKR, Slides, or Events.
+
+Boundary rule: workflow skills may compose domain skills, but domain skills should not implicitly compose each other.
 
 ## Helper Script Modules
 
