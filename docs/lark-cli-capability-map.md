@@ -11,6 +11,16 @@ This map is derived from `lark-cli --help` and domain `--help` output from `lark
 | `task` | `lark-cli-devhub-taskflow` | Work queue, blockers, ownership, task comments and attachments |
 | `whiteboard` | `lark-cli-devhub-whiteboard` | Architecture maps, workflow maps, knowledge graphs |
 
+## V1.5 Workflow Layer
+
+| Capability | Workflow Skill Or Template | Office Value |
+|---|---|---|
+| Base records and search | `lark-cli-devhub-code-loop`, `lark-cli-devhub-base` | Bugfix memory, AI Runs, Releases, Decisions, Project Facts, dashboard-ready data |
+| Docs/Wiki report drafts | `lark-cli-devhub-report-loop`, `templates/report-*.md` | Daily, weekly, bugfix, release, and project briefs |
+| Whiteboard drafts | `lark-cli-devhub-whiteboard-loop`, `templates/whiteboard-draft.md` | Architecture maps and investigation diagrams with Artifact links |
+| GitHub PR/CI triggers | `lark-cli-devhub-pr-writeback`, `templates/github-pr-writeback.yml` | PR updates, reviews, merges, and CI failures become structured Dev Hub evidence |
+| Scheduled reports | `templates/cron-report.yml` | Cron or GitHub schedule creates report drafts without auto-publishing |
+
 ## Office Expansion
 
 | CLI Domain | Dev Hub Skill | Office Value |

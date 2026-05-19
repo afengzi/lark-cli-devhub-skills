@@ -40,6 +40,15 @@ npx -y clawhub@0.16.0 install lark-cli-devhub-slides
 npx -y clawhub@0.16.0 install lark-cli-devhub-events
 ```
 
+V1.5 workflow skills to publish after release:
+
+```bash
+npx -y clawhub@0.16.0 install lark-cli-devhub-code-loop
+npx -y clawhub@0.16.0 install lark-cli-devhub-report-loop
+npx -y clawhub@0.16.0 install lark-cli-devhub-pr-writeback
+npx -y clawhub@0.16.0 install lark-cli-devhub-whiteboard-loop
+```
+
 Republish each folder under `skills/` after changes:
 
 ```bash
@@ -51,6 +60,30 @@ npx -y clawhub@0.16.0 publish skills/lark-cli-devhub \
   --version 0.1.2 \
   --tags feishu,lark,lark-cli,feishu-cli,devtools,knowledge-base,codex,claude-code \
   --clawscan-note "Uses local Python and lark-cli. Network access is delegated to the user's configured lark-cli credentials; no credentials are bundled."
+
+npx -y clawhub@0.16.0 publish skills/lark-cli-devhub-code-loop \
+  --slug lark-cli-devhub-code-loop \
+  --name "Lark CLI Dev Hub Code Loop" \
+  --version 0.1.0 \
+  --tags feishu,lark,lark-cli,feishu-cli,bugfix,ai-ide,knowledge-base,codex,claude-code
+
+npx -y clawhub@0.16.0 publish skills/lark-cli-devhub-report-loop \
+  --slug lark-cli-devhub-report-loop \
+  --name "Lark CLI Dev Hub Report Loop" \
+  --version 0.1.0 \
+  --tags feishu,lark,lark-cli,feishu-cli,reports,weekly-report,release-notes,knowledge-base
+
+npx -y clawhub@0.16.0 publish skills/lark-cli-devhub-pr-writeback \
+  --slug lark-cli-devhub-pr-writeback \
+  --name "Lark CLI Dev Hub PR Writeback" \
+  --version 0.1.0 \
+  --tags feishu,lark,lark-cli,feishu-cli,github,pr,ci,automation
+
+npx -y clawhub@0.16.0 publish skills/lark-cli-devhub-whiteboard-loop \
+  --slug lark-cli-devhub-whiteboard-loop \
+  --name "Lark CLI Dev Hub Whiteboard Loop" \
+  --version 0.1.0 \
+  --tags feishu,lark,lark-cli,feishu-cli,whiteboard,architecture,diagrams
 
 npx -y clawhub@0.16.0 publish skills/lark-cli-devhub-base \
   --slug lark-cli-devhub-base \

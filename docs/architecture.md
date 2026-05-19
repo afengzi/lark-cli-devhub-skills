@@ -40,6 +40,12 @@ templates/
   base-schema.json
   seed.example.json
   config.example.json
+  report-daily.md
+  report-weekly.md
+  report-release.md
+  whiteboard-draft.md
+  github-pr-writeback.yml
+  cron-report.yml
 ```
 
 ## Why Multiple Skills
@@ -80,7 +86,10 @@ Boundary rule: workflow skills may compose domain skills, but domain skills shou
 | `lark.py` | `lark-cli` subprocess calls |
 | `base.py` | Base creation, schema provisioning, record upsert |
 | `wiki_docs.py` | Wiki/Docs creation and starter artifacts |
-| `records.py` | Bugfix/AI Run/Release receipts and outbox |
+| `records.py` | Bugfix/AI Run/Release/Task/Decision/Artifact/Project Fact receipts and outbox |
+| `search.py` | Record search across the V1.5 full-recall table set with coverage metadata |
+| `reports.py` | Deterministic daily, weekly, and release Markdown report drafts |
+| `whiteboard.py` | Deterministic Whiteboard or fallback Doc diagram drafts |
 | `hooks.py` | Commit/push writeback gate |
 | `commands.py` | CLI command implementations |
 | `cli.py` | Argument parser and command routing |

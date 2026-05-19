@@ -123,6 +123,15 @@ Install the main skill:
 npx -y clawhub@0.16.0 install lark-cli-devhub
 ```
 
+Install workflow skills:
+
+```bash
+npx -y clawhub@0.16.0 install lark-cli-devhub-code-loop
+npx -y clawhub@0.16.0 install lark-cli-devhub-report-loop
+npx -y clawhub@0.16.0 install lark-cli-devhub-pr-writeback
+npx -y clawhub@0.16.0 install lark-cli-devhub-whiteboard-loop
+```
+
 Install optional domain skills:
 
 ```bash
@@ -266,6 +275,7 @@ Base is the structured source of truth. Docs/Wiki and Whiteboards are linked art
 | `Pitfalls` | Reusable traps and "check this first" notes. |
 | `Playbooks` | Diagnosis order, commands, success criteria, and forbidden actions. |
 | `Decisions` | Architecture/product decisions, alternatives, consequences, review triggers. |
+| `Project Facts` | Current implementation truths, retired paths, invariants, source, and review triggers. |
 | `Releases` | Branch, commit SHA, verification, rollback notes, related tasks and bugfixes. |
 | `Artifacts` | Linked Docs, Whiteboards, dashboards, files, and summaries. |
 | `AI Runs` | Agent task intent, actions taken, evidence checked, files changed, verification result. |
@@ -275,6 +285,10 @@ Base is the structured source of truth. Docs/Wiki and Whiteboards are linked art
 ```text
 skills/
   lark-cli-devhub/
+  lark-cli-devhub-code-loop/
+  lark-cli-devhub-report-loop/
+  lark-cli-devhub-pr-writeback/
+  lark-cli-devhub-whiteboard-loop/
   lark-cli-devhub-base/
   lark-cli-devhub-docs-wiki/
   lark-cli-devhub-taskflow/
@@ -296,6 +310,12 @@ templates/
   base-schema.json
   seed.example.json
   config.example.json
+  report-daily.md
+  report-weekly.md
+  report-release.md
+  whiteboard-draft.md
+  github-pr-writeback.yml
+  cron-report.yml
 docs/
   architecture.md
   lark-cli-capability-map.md
