@@ -68,6 +68,8 @@ If your AI tool does not have first-class Agent Skills support yet, the fallback
 
 ## Quick Install
 
+Most users should start with the Agent Skills installer, not individual ClawHub commands. The installer can install the whole pack in one command, list available sub-skills, or install only the sub-skills you select.
+
 ### Dependency Checklist
 
 Required for local helper scripts:
@@ -88,11 +90,19 @@ Optional, depending on the workflow you enable:
 - `@larksuite/whiteboard-cli` for Whiteboard rendering and architecture map workflows.
 - Feishu/Lark app scopes for Base, Docs/Wiki, Drive, Tasks, IM, Calendar, Sheets, Meetings, Approvals, or Whiteboard depending on the domain skills you use.
 
+Preview available skills before installing:
+
+```bash
+npx skills add afengzi/lark-cli-devhub-skills --list
+```
+
 Install all skills from GitHub:
 
 ```bash
-npx skills add afengzi/lark-cli-devhub-skills --all
+npx skills add afengzi/lark-cli-devhub-skills -g -y
 ```
+
+This installs the full skill pack; you do not need to install every sub-skill one by one.
 
 Install for all detected Agent Skills hosts:
 
@@ -100,7 +110,16 @@ Install for all detected Agent Skills hosts:
 npx skills add afengzi/lark-cli-devhub-skills -g --agent '*' --skill '*'
 ```
 
-Install helper scripts and templates:
+Install selected skills when you want a smaller footprint:
+
+```bash
+npx skills add afengzi/lark-cli-devhub-skills -g -y -s lark-cli-devhub
+npx skills add afengzi/lark-cli-devhub-skills -g -y -s lark-cli-devhub -s lark-cli-devhub-code-loop -s lark-cli-devhub-report-loop
+```
+
+Many interactive shells can show prompts when you omit non-interactive flags such as `-y`. In non-interactive AI IDE/CLI sessions, use `-s`/`--skill` for explicit selection.
+
+Install local helper scripts and templates:
 
 ```bash
 git clone https://github.com/afengzi/lark-cli-devhub-skills.git
@@ -108,7 +127,51 @@ cd lark-cli-devhub-skills
 ./scripts/install-devhub.sh
 ```
 
+The helper installer defaults to all local skills, but it can also install a subset:
+
+```bash
+./scripts/install-devhub.sh --list-skills
+./scripts/install-devhub.sh --skills core
+./scripts/install-devhub.sh --skills workflow
+./scripts/install-devhub.sh --skills lark-cli-devhub,lark-cli-devhub-code-loop
+```
+
+The helper installer also prints the recommended `lark-cli auth` setup commands after installation. Use `--no-auth-guide` only if your Feishu/Lark app is already authorized.
+
+## Lark CLI Auth Setup
+
+Dev Hub needs `lark-cli` authentication and Feishu/Lark app scopes before it can write Base, Docs/Wiki, Tasks, or other resources. Use the official `lark-cli auth` flow:
+
+```bash
+lark-cli doctor --offline
+lark-cli auth status --verify
+lark-cli auth login --domain base,wiki,docs --recommend
+lark-cli auth scopes --format pretty
+```
+
+For extra workflows, request only the domains you enable:
+
+```bash
+lark-cli auth login --domain task,drive,im,calendar,sheets,minutes --recommend
+```
+
+To inspect exact scopes before requesting or checking them:
+
+```bash
+lark-cli schema <service.resource.method> --format pretty
+lark-cli auth check --scope "<space-separated scopes>"
+```
+
+For headless agent sessions, start device login and send the browser URL to the user:
+
+```bash
+lark-cli auth login --domain base,wiki,docs --recommend --no-wait --json
+lark-cli auth login --device-code "<device_code>"
+```
+
 ## Install From ClawHub
+
+ClawHub publishes one skill slug at a time. Use it when you want one specific skill from the ClawHub registry. Use `npx skills add afengzi/lark-cli-devhub-skills -g -y` when you want the full pack from GitHub.
 
 Search:
 
@@ -149,7 +212,7 @@ npx -y clawhub@0.16.0 install lark-cli-devhub-slides
 npx -y clawhub@0.16.0 install lark-cli-devhub-events
 ```
 
-Note: `npx skills find` searches the Agent Skills / skills.sh index, not the ClawHub registry. Use `npx skills add afengzi/lark-cli-devhub-skills --all` for GitHub install, or `npx clawhub search/install` for ClawHub.
+Note: `npx skills find` searches the Agent Skills / skills.sh index, not the ClawHub registry. Use `npx skills add afengzi/lark-cli-devhub-skills -g -y` for the full GitHub skill pack, or `npx clawhub search/install` for individual ClawHub skills.
 
 ## Requirements
 
