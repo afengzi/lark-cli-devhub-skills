@@ -10,6 +10,7 @@ from .config import load_config, redact_resource_summary, save_config
 from .io import load_json
 from .lark import run_lark
 from .records import write_outbox
+from .search import search_devhub
 from .wiki_docs import create_artifacts, ensure_wiki
 
 
@@ -61,38 +62,10 @@ def command_provision(args: Any) -> int:
 
 def command_search(args: Any) -> int:
     config = load_config()
-    if not config.get("base", {}).get("token"):
-        print("Dev Hub Base is not configured yet.", file=sys.stderr)
+    try:
+        result = search_devhub(config, args.project, args.query)
+    except RuntimeError as exc:
+        print(str(exc), file=sys.stderr)
         return 1
-    results: dict[str, Any] = {}
-    for table in ["Pitfalls", "Bugfixes", "Playbooks", "Decisions", "Areas"]:
-        table_id = config["base"].get("tables", {}).get(table, {}).get("id", table)
-        query = {
-            "keyword": args.query,
-            "search_fields": ["Title", "AI Summary", "Search Keywords"],
-            "select_fields": ["Title", "Project", "Area", "AI Summary", "Search Keywords"],
-            "limit": 10,
-        }
-        try:
-            data, stdout = run_lark(
-                [
-                    "base",
-                    "+record-search",
-                    "--as",
-                    "user",
-                    "--base-token",
-                    config["base"]["token"],
-                    "--table-id",
-                    table_id,
-                    "--json",
-                    json.dumps(query, ensure_ascii=False),
-                    "--format",
-                    "json",
-                ],
-                check=False,
-            )
-            results[table] = data if data else stdout.strip()
-        except Exception as exc:
-            results[table] = {"error": str(exc)}
-    print(json.dumps({"project": args.project, "query": args.query, "results": results}, ensure_ascii=False, indent=2))
+    print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0
