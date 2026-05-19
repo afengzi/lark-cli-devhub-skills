@@ -1,6 +1,6 @@
 ---
 name: lark-cli-devhub-whiteboard
-description: Use when creating or updating Feishu Whiteboards for a development knowledge hub, including architecture maps, bug investigation paths, task maps, dependency maps, and project knowledge graphs.
+description: Use when creating or updating Feishu/Lark Whiteboards through lark-cli or feishu-cli for a development knowledge hub, including architecture maps, bug investigation paths, task maps, dependency maps, and project knowledge graphs.
 metadata:
   requires:
     bins: ["lark-cli", "npx"]
@@ -9,6 +9,8 @@ metadata:
 # Lark CLI Dev Hub Whiteboard
 
 Whiteboard is for human scanning and relationship maps. It is not the only AI-readable source of truth.
+
+Discovery aliases: `feishu-cli whiteboard`, `飞书画板`, `lark-cli whiteboard`, `Lark Whiteboard`, `architecture diagram`, `knowledge graph`.
 
 ## Good Uses
 

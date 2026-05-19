@@ -1,43 +1,61 @@
 # Lark CLI Dev Hub Skills
 
-Lark CLI Dev Hub Skills turn Feishu/Lark into a development knowledge hub for AI-assisted coding: bugfix memory, task clarity, release evidence, reusable pitfalls, project maps, and AI run summaries.
+Turn Feishu/Lark into an AI-readable development knowledge hub for Codex, Claude Code, Cursor, OpenClaw, Trae-style AI IDEs, and any agent that can load `SKILL.md`.
 
-The pack is designed for Codex, Claude Code, Cursor, OpenClaw, and other agents that understand `SKILL.md`.
+Use it to remember bug fixes, avoid repeated debugging, keep task state clear, write release evidence, and build a reusable engineering knowledge base on top of `lark-cli` / `feishu-cli`.
 
-## What This Solves
+Also discoverable as: `feishu-cli`, `飞书 CLI`, `lark-cli`, `Lark CLI`, `Feishu Dev Hub`, `Lark Dev Hub`, `Feishu knowledge base`, `Lark knowledge base`, `Codex Feishu`, and `Claude Code Feishu`.
 
-- Search old bugfixes before fixing the same class of bug again.
-- Write concise Bugfix and AI Run records after meaningful fixes.
-- Require release evidence before pushing `main` or `master`.
-- Keep current work in tasks and durable facts in Base.
-- Link Docs and Whiteboards back to searchable Base records.
-- Avoid mixing project facts with personal agent memory.
+## What It Does
 
-## Skills
+- Searches old Bugfixes, Pitfalls, Playbooks, Decisions, and Areas before a new bug investigation.
+- Writes structured Bugfix and AI Run records after meaningful fixes.
+- Writes Release records before pushing `main` or `master`.
+- Keeps task state, next actions, blockers, and bug queues explicit.
+- Links long-form Docs/Wiki pages and Whiteboards back to searchable Base records.
+- Separates project facts from personal agent memory so Codex, Claude Code, and other agents can share the same knowledge base.
+- Provides a hook gate that warns when bugfix commits or main pushes lack knowledge writeback evidence.
 
-| Skill | Purpose |
+## Skills Included
+
+| Skill | Use When |
 |---|---|
-| `lark-cli-devhub` | Orchestrates bugfix search, writeback, release gates, and domain routing |
-| `lark-cli-devhub-base` | Designs and writes the structured Base database |
-| `lark-cli-devhub-docs-wiki` | Organizes long-form Docs and Wiki pages |
-| `lark-cli-devhub-taskflow` | Manages task lists, task state, blockers, and task links |
-| `lark-cli-devhub-whiteboard` | Creates architecture maps, flow maps, and knowledge graphs |
+| `lark-cli-devhub` | You want the full Dev Hub workflow: search before fixing, write after fixing, release evidence, and routing to domain skills. |
+| `lark-cli-devhub-base` | You want Feishu/Lark Base as the structured AI-readable database. |
+| `lark-cli-devhub-docs-wiki` | You want Docs/Wiki pages for design notes, bug retrospectives, runbooks, and project pages. |
+| `lark-cli-devhub-taskflow` | You want Feishu/Lark Tasks for bug queues, task lists, blockers, owners, and next actions. |
+| `lark-cli-devhub-whiteboard` | You want Whiteboards for architecture maps, workflow maps, dependency maps, and knowledge graphs. |
 
-## Install From GitHub
+## Supported Agents
 
-After this repository is public:
+This pack is plain `SKILL.md` plus helper scripts. It works best with tools that support Agent Skills or skill-like markdown instructions.
+
+| Platform | Install Path |
+|---|---|
+| Codex | `npx skills add afengzi/lark-cli-devhub-skills -g --agent codex --skill '*'` |
+| Claude Code | `npx skills add afengzi/lark-cli-devhub-skills -g --agent claude-code --skill '*'` |
+| Cursor | `npx skills add afengzi/lark-cli-devhub-skills -g --agent cursor --skill '*'` |
+| OpenClaw / ClawHub | `npx -y clawhub@0.16.0 install lark-cli-devhub` |
+| Multiple Agent Skills hosts | `npx skills add afengzi/lark-cli-devhub-skills -g --agent '*' --skill '*'` |
+| Trae, Windsurf, Continue, Aider, custom agents | Clone the repo and point the tool at `skills/*/SKILL.md`, or copy the skill folders into that tool's skill/rules/instructions directory. |
+
+If your AI tool does not have first-class Agent Skills support yet, the fallback is still simple: copy the relevant `skills/<name>/SKILL.md` folder into the tool's custom instruction or skill directory.
+
+## Quick Install
+
+Install all skills from GitHub:
 
 ```bash
 npx skills add afengzi/lark-cli-devhub-skills --all
 ```
 
-Install for specific agents:
+Install for all detected Agent Skills hosts:
 
 ```bash
-npx skills add afengzi/lark-cli-devhub-skills -g --agent codex claude-code --skill '*'
+npx skills add afengzi/lark-cli-devhub-skills -g --agent '*' --skill '*'
 ```
 
-Install helper scripts:
+Install helper scripts and templates:
 
 ```bash
 git clone https://github.com/afengzi/lark-cli-devhub-skills.git
@@ -50,6 +68,7 @@ cd lark-cli-devhub-skills
 Search:
 
 ```bash
+npx -y clawhub@0.16.0 search feishu-cli
 npx -y clawhub@0.16.0 search lark-cli-devhub
 ```
 
@@ -77,13 +96,15 @@ Note: `npx skills find` searches the Agent Skills / skills.sh index, not the Cla
 - Python 3.10+.
 - Optional: `npx` and `@larksuite/whiteboard-cli` for Whiteboard rendering.
 
-Run:
+Preflight:
 
 ```bash
 python3 "$HOME/.codex/devhub/bin/devhub.py" preflight
 ```
 
-## Provision A Dev Hub
+## Create Your Dev Hub
+
+Provision Base tables, starter records, Wiki pages, and starter artifacts:
 
 ```bash
 export DEVHUB_HOME="$HOME/.codex/devhub"
@@ -93,13 +114,20 @@ python3 "$DEVHUB_HOME/bin/devhub.py" provision \
   --seed "$DEVHUB_HOME/templates/seed.example.json"
 ```
 
-This creates or reuses a Wiki space, creates a Dev Hub Base, creates tables and fields, seeds starter records, and stores config in:
+The generated config lives at:
 
 ```text
 $HOME/.codex/devhub/config.json
 ```
 
-## Everyday Commands
+Project-local runtime files live at:
+
+```text
+.devhub/receipts/
+.devhub/outbox/
+```
+
+## Daily Workflow
 
 Search before fixing a bug:
 
@@ -144,12 +172,58 @@ Script:
 $HOME/.codex/devhub/bin/kb-gate.sh
 ```
 
-## Marketplace
+## Data Model
 
-- `npx skills` can install directly from this GitHub repository.
-- ClawHub publishes each folder under `skills/` as an individual skill.
+Base is the structured source of truth. Docs/Wiki and Whiteboards are linked artifacts.
 
-See [docs/marketplaces.md](docs/marketplaces.md).
+| Table | Purpose |
+|---|---|
+| `Projects` | Repository identity, current focus, default branch, Wiki URL. |
+| `Areas` | Product or code areas, paths, risk, and ownership. |
+| `Tasks` | Current work, priority, blockers, next action, and Feishu task URL. |
+| `Bugfixes` | Symptom, evidence, root cause, fix summary, changed files, verification, regression risk. |
+| `Pitfalls` | Reusable traps and "check this first" notes. |
+| `Playbooks` | Diagnosis order, commands, success criteria, and forbidden actions. |
+| `Decisions` | Architecture/product decisions, alternatives, consequences, review triggers. |
+| `Releases` | Branch, commit SHA, verification, rollback notes, related tasks and bugfixes. |
+| `Artifacts` | Linked Docs, Whiteboards, dashboards, files, and summaries. |
+| `AI Runs` | Agent task intent, actions taken, evidence checked, files changed, verification result. |
+
+## Repository Layout
+
+```text
+skills/
+  lark-cli-devhub/
+  lark-cli-devhub-base/
+  lark-cli-devhub-docs-wiki/
+  lark-cli-devhub-taskflow/
+  lark-cli-devhub-whiteboard/
+scripts/
+  devhub.py
+  kb-gate.sh
+  install-devhub.sh
+templates/
+  base-schema.json
+  seed.example.json
+  config.example.json
+docs/
+  architecture.md
+  marketplaces.md
+```
+
+## Safety
+
+- Do not write secrets, access tokens, app secrets, private keys, raw credentials, or full environment files into Feishu.
+- Git hooks check for receipts or outbox items; they do not perform complex network writes.
+- Whiteboard is a visual aid, not the only source of truth. Always pair durable maps with Base `Artifacts` records.
+- Agent memory should store collaboration preferences. Dev Hub should store project facts and engineering evidence.
+
+## Discovery Keywords
+
+Use these keywords when searching or linking this project:
+
+- English: `feishu-cli`, `lark-cli`, `Feishu CLI`, `Lark CLI`, `Feishu Dev Hub`, `Lark Dev Hub`, `AI knowledge base`, `developer knowledge base`, `bugfix memory`, `release evidence`, `Claude Code Feishu`, `Codex Feishu`
+- Chinese: `飞书 CLI`, `飞书知识库`, `飞书多维表格`, `飞书任务`, `飞书画板`, `AI 项目知识库`, `bug 复盘`, `踩坑记录`, `发布证据`
 
 ## License
 

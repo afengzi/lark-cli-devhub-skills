@@ -1,6 +1,6 @@
 ---
 name: lark-cli-devhub
-description: Use when a developer needs Feishu/Lark as a project knowledge hub for bugfix memory, task clarity, release evidence, pitfall lookup, AI run summaries, or main-branch writeback discipline.
+description: Use when a developer needs lark-cli or feishu-cli workflows to turn Feishu/Lark into a project knowledge hub for bugfix memory, task clarity, release evidence, pitfall lookup, AI run summaries, or main-branch writeback discipline.
 metadata:
   requires:
     bins: ["lark-cli", "python3", "git"]
@@ -9,6 +9,8 @@ metadata:
 # Lark CLI Dev Hub
 
 Lark CLI Dev Hub is a development knowledge system backed by Feishu Base, Docs/Wiki, Tasks, and Whiteboard. Use it to prevent repeated bug investigation, keep task state explicit, and preserve release evidence.
+
+Discovery aliases: `feishu-cli`, `飞书 CLI`, `lark-cli`, `Lark CLI`, `Feishu Dev Hub`, `Lark Dev Hub`, `Codex Feishu`, `Claude Code Feishu`.
 
 ## Core Boundaries
 

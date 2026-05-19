@@ -1,6 +1,6 @@
 ---
 name: lark-cli-devhub-taskflow
-description: Use when turning development work into Feishu tasks, task lists, bug queues, status updates, blocked work, next actions, or task-linked Dev Hub records.
+description: Use when turning development work into Feishu/Lark tasks through lark-cli or feishu-cli, including task lists, bug queues, status updates, blocked work, next actions, or task-linked Dev Hub records.
 metadata:
   requires:
     bins: ["lark-cli"]
@@ -9,6 +9,8 @@ metadata:
 # Lark CLI Dev Hub Taskflow
 
 Use Feishu Tasks for current work state. Use Base for durable bug evidence, decisions, and lessons learned.
+
+Discovery aliases: `feishu-cli task`, `飞书任务`, `lark-cli task`, `Lark Tasks`, `bug queue`, `developer task list`.
 
 ## Task Lists
 

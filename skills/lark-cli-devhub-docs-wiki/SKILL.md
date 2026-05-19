@@ -1,6 +1,6 @@
 ---
 name: lark-cli-devhub-docs-wiki
-description: Use when organizing Feishu Wiki spaces or Docs for a development knowledge hub, including project pages, design notes, runbooks, bug retrospectives, and long-form artifacts linked from Base.
+description: Use when organizing Feishu/Lark Wiki spaces or Docs through lark-cli or feishu-cli for a development knowledge hub, including project pages, design notes, runbooks, bug retrospectives, and long-form artifacts linked from Base.
 metadata:
   requires:
     bins: ["lark-cli"]
@@ -9,6 +9,8 @@ metadata:
 # Lark CLI Dev Hub Docs And Wiki
 
 Use Docs/Wiki for long-form context that would make Base records too noisy. Base remains the index; Docs/Wiki are linked artifacts.
+
+Discovery aliases: `feishu-cli docs`, `feishu-cli wiki`, `飞书知识库`, `飞书文档`, `lark-cli docs`, `lark-cli wiki`.
 
 ## Wiki Structure
 

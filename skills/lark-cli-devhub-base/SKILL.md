@@ -1,6 +1,6 @@
 ---
 name: lark-cli-devhub-base
-description: Use when designing, provisioning, searching, or writing Feishu Base records for a development knowledge hub, including Projects, Areas, Tasks, Bugfixes, Pitfalls, Playbooks, Decisions, Releases, Artifacts, and AI Runs.
+description: Use when designing, provisioning, searching, or writing Feishu/Lark Base records through lark-cli or feishu-cli for a development knowledge hub, including Projects, Areas, Tasks, Bugfixes, Pitfalls, Playbooks, Decisions, Releases, Artifacts, and AI Runs.
 metadata:
   requires:
     bins: ["lark-cli", "python3"]
@@ -9,6 +9,8 @@ metadata:
 # Lark CLI Dev Hub Base
 
 Base is the AI-readable database for Dev Hub. Prefer Base for facts, state, relationships, and search keywords.
+
+Discovery aliases: `feishu-cli base`, `飞书多维表格`, `lark-cli base`, `Lark Base`, `Feishu Base`, `Bitable`.
 
 ## Schema
 
