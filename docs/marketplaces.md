@@ -5,13 +5,13 @@
 Primary distribution is GitHub because `npx skills` can install from `owner/repo`:
 
 ```bash
-npx skills add afengzi/feishu-dev-hub-skills --all
+npx skills add afengzi/lark-cli-devhub-skills --all
 ```
 
 List available skills without installing:
 
 ```bash
-npx skills add afengzi/feishu-dev-hub-skills --list
+npx skills add afengzi/lark-cli-devhub-skills --list
 ```
 
 ## skills.sh
@@ -25,34 +25,34 @@ ClawHub publishes one skill folder at a time. Publish each folder under `skills/
 ```bash
 npx -y clawhub@0.16.0 login
 
-npx -y clawhub@0.16.0 publish skills/feishu-dev-hub \
-  --slug feishu-dev-hub \
-  --name "Feishu Dev Hub" \
+npx -y clawhub@0.16.0 publish skills/lark-cli-devhub \
+  --slug lark-cli-devhub \
+  --name "Lark CLI Dev Hub" \
   --version 0.1.0 \
   --tags feishu,lark,devtools,knowledge-base,codex,claude-code \
   --clawscan-note "Uses local Python and lark-cli. Network access is delegated to the user's configured lark-cli credentials; no credentials are bundled."
 
-npx -y clawhub@0.16.0 publish skills/feishu-devhub-base \
-  --slug feishu-devhub-base \
-  --name "Feishu Dev Hub Base" \
+npx -y clawhub@0.16.0 publish skills/lark-cli-devhub-base \
+  --slug lark-cli-devhub-base \
+  --name "Lark CLI Dev Hub Base" \
   --version 0.1.0 \
   --tags feishu,lark,base,knowledge-base
 
-npx -y clawhub@0.16.0 publish skills/feishu-devhub-docs-wiki \
-  --slug feishu-devhub-docs-wiki \
-  --name "Feishu Dev Hub Docs Wiki" \
+npx -y clawhub@0.16.0 publish skills/lark-cli-devhub-docs-wiki \
+  --slug lark-cli-devhub-docs-wiki \
+  --name "Lark CLI Dev Hub Docs Wiki" \
   --version 0.1.0 \
   --tags feishu,lark,docs,wiki,knowledge-base
 
-npx -y clawhub@0.16.0 publish skills/feishu-devhub-taskflow \
-  --slug feishu-devhub-taskflow \
-  --name "Feishu Dev Hub Taskflow" \
+npx -y clawhub@0.16.0 publish skills/lark-cli-devhub-taskflow \
+  --slug lark-cli-devhub-taskflow \
+  --name "Lark CLI Dev Hub Taskflow" \
   --version 0.1.0 \
   --tags feishu,lark,tasks,project-management
 
-npx -y clawhub@0.16.0 publish skills/feishu-devhub-whiteboard \
-  --slug feishu-devhub-whiteboard \
-  --name "Feishu Dev Hub Whiteboard" \
+npx -y clawhub@0.16.0 publish skills/lark-cli-devhub-whiteboard \
+  --slug lark-cli-devhub-whiteboard \
+  --name "Lark CLI Dev Hub Whiteboard" \
   --version 0.1.0 \
   --tags feishu,lark,whiteboard,diagrams,architecture
 ```

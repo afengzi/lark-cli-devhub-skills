@@ -1,6 +1,6 @@
-# Feishu Dev Hub Skills
+# Lark CLI Dev Hub Skills
 
-Feishu Dev Hub Skills turn Feishu/Lark into a development knowledge hub for AI-assisted coding: bugfix memory, task clarity, release evidence, reusable pitfalls, project maps, and AI run summaries.
+Lark CLI Dev Hub Skills turn Feishu/Lark into a development knowledge hub for AI-assisted coding: bugfix memory, task clarity, release evidence, reusable pitfalls, project maps, and AI run summaries.
 
 The pack is designed for Codex, Claude Code, Cursor, OpenClaw, and other agents that understand `SKILL.md`.
 
@@ -17,31 +17,31 @@ The pack is designed for Codex, Claude Code, Cursor, OpenClaw, and other agents 
 
 | Skill | Purpose |
 |---|---|
-| `feishu-dev-hub` | Orchestrates bugfix search, writeback, release gates, and domain routing |
-| `feishu-devhub-base` | Designs and writes the structured Base database |
-| `feishu-devhub-docs-wiki` | Organizes long-form Docs and Wiki pages |
-| `feishu-devhub-taskflow` | Manages task lists, task state, blockers, and task links |
-| `feishu-devhub-whiteboard` | Creates architecture maps, flow maps, and knowledge graphs |
+| `lark-cli-devhub` | Orchestrates bugfix search, writeback, release gates, and domain routing |
+| `lark-cli-devhub-base` | Designs and writes the structured Base database |
+| `lark-cli-devhub-docs-wiki` | Organizes long-form Docs and Wiki pages |
+| `lark-cli-devhub-taskflow` | Manages task lists, task state, blockers, and task links |
+| `lark-cli-devhub-whiteboard` | Creates architecture maps, flow maps, and knowledge graphs |
 
 ## Install From GitHub
 
 After this repository is public:
 
 ```bash
-npx skills add afengzi/feishu-dev-hub-skills --all
+npx skills add afengzi/lark-cli-devhub-skills --all
 ```
 
 Install for specific agents:
 
 ```bash
-npx skills add afengzi/feishu-dev-hub-skills -g --agent codex claude-code --skill '*'
+npx skills add afengzi/lark-cli-devhub-skills -g --agent codex claude-code --skill '*'
 ```
 
 Install helper scripts:
 
 ```bash
-git clone https://github.com/afengzi/feishu-dev-hub-skills.git
-cd feishu-dev-hub-skills
+git clone https://github.com/afengzi/lark-cli-devhub-skills.git
+cd lark-cli-devhub-skills
 ./scripts/install-devhub.sh
 ```
 

@@ -4,16 +4,16 @@
 
 ```text
 skills/
-  feishu-dev-hub/
+  lark-cli-devhub/
     SKILL.md
     references/
-  feishu-devhub-base/
+  lark-cli-devhub-base/
     SKILL.md
-  feishu-devhub-docs-wiki/
+  lark-cli-devhub-docs-wiki/
     SKILL.md
-  feishu-devhub-taskflow/
+  lark-cli-devhub-taskflow/
     SKILL.md
-  feishu-devhub-whiteboard/
+  lark-cli-devhub-whiteboard/
     SKILL.md
 scripts/
   devhub.py

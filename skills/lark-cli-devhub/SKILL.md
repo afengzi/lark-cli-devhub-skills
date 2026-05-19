@@ -1,19 +1,19 @@
 ---
-name: feishu-dev-hub
+name: lark-cli-devhub
 description: Use when a developer needs Feishu/Lark as a project knowledge hub for bugfix memory, task clarity, release evidence, pitfall lookup, AI run summaries, or main-branch writeback discipline.
 metadata:
   requires:
     bins: ["lark-cli", "python3", "git"]
 ---
 
-# Feishu Dev Hub
+# Lark CLI Dev Hub
 
-Feishu Dev Hub is a development knowledge system backed by Feishu Base, Docs/Wiki, Tasks, and Whiteboard. Use it to prevent repeated bug investigation, keep task state explicit, and preserve release evidence.
+Lark CLI Dev Hub is a development knowledge system backed by Feishu Base, Docs/Wiki, Tasks, and Whiteboard. Use it to prevent repeated bug investigation, keep task state explicit, and preserve release evidence.
 
 ## Core Boundaries
 
 - Agent memory stores collaboration preferences and workflow style.
-- Feishu Dev Hub stores project facts, tasks, bug evidence, pitfalls, playbooks, decisions, releases, artifacts, and AI run summaries.
+- Lark CLI Dev Hub stores project facts, tasks, bug evidence, pitfalls, playbooks, decisions, releases, artifacts, and AI run summaries.
 - Do not write secrets, access tokens, app secrets, private keys, raw credentials, or full environment files.
 - Treat Base as the structured source of truth. Docs hold long-form context. Whiteboard is a visual aid with a text summary linked back to Base.
 
@@ -77,9 +77,9 @@ See [`references/hook-policy.md`](references/hook-policy.md).
 
 Use the split domain skills when the work needs deeper Feishu CLI behavior:
 
-- `feishu-devhub-base` for Base schema, records, views, dashboards, and structured AI search.
-- `feishu-devhub-docs-wiki` for Docs, Wiki spaces, long-form pages, and node organization.
-- `feishu-devhub-taskflow` for task lists, bug/feature tasks, owners, and status discipline.
-- `feishu-devhub-whiteboard` for architecture maps, workflow maps, dependency graphs, and visual summaries.
+- `lark-cli-devhub-base` for Base schema, records, views, dashboards, and structured AI search.
+- `lark-cli-devhub-docs-wiki` for Docs, Wiki spaces, long-form pages, and node organization.
+- `lark-cli-devhub-taskflow` for task lists, bug/feature tasks, owners, and status discipline.
+- `lark-cli-devhub-whiteboard` for architecture maps, workflow maps, dependency graphs, and visual summaries.
 
 See [`references/domain-map.md`](references/domain-map.md) and [`references/knowledge-model.md`](references/knowledge-model.md).

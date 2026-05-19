@@ -1,6 +1,6 @@
 # Agent Notes
 
-This repository publishes Agent Skills for Feishu Dev Hub.
+This repository publishes Agent Skills for Lark CLI Dev Hub.
 
 ## Editing Rules
 

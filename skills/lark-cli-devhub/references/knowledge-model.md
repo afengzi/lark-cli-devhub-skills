@@ -33,7 +33,7 @@ Use agent memory for collaboration behavior:
 - how the user likes summaries
 - recurring workflow preferences
 
-Use Feishu Dev Hub for project facts:
+Use Lark CLI Dev Hub for project facts:
 
 - bugs and fixes
 - code paths and architecture decisions

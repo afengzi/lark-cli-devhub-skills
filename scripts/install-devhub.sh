@@ -29,7 +29,7 @@ done
 mkdir -p ".devhub/receipts" ".devhub/outbox"
 
 cat <<EOF
-Feishu Dev Hub installed.
+Lark CLI Dev Hub installed.
 
 Helper:
   $DEVHUB_HOME/bin/devhub.py
@@ -39,11 +39,11 @@ Templates:
   $DEVHUB_HOME/templates/seed.example.json
 
 Skills:
-  $SKILLS_HOME/feishu-dev-hub
-  $SKILLS_HOME/feishu-devhub-base
-  $SKILLS_HOME/feishu-devhub-docs-wiki
-  $SKILLS_HOME/feishu-devhub-taskflow
-  $SKILLS_HOME/feishu-devhub-whiteboard
+  $SKILLS_HOME/lark-cli-devhub
+  $SKILLS_HOME/lark-cli-devhub-base
+  $SKILLS_HOME/lark-cli-devhub-docs-wiki
+  $SKILLS_HOME/lark-cli-devhub-taskflow
+  $SKILLS_HOME/lark-cli-devhub-whiteboard
 
 Next:
   python3 "$DEVHUB_HOME/bin/devhub.py" preflight
