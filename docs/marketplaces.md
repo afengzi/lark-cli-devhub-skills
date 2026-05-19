@@ -20,7 +20,18 @@ npx skills add afengzi/lark-cli-devhub-skills --list
 
 ## ClawHub
 
-ClawHub publishes one skill folder at a time. Publish each folder under `skills/`:
+ClawHub publishes one skill folder at a time. These slugs are published:
+
+```bash
+npx -y clawhub@0.16.0 search lark-cli-devhub
+npx -y clawhub@0.16.0 install lark-cli-devhub
+npx -y clawhub@0.16.0 install lark-cli-devhub-base
+npx -y clawhub@0.16.0 install lark-cli-devhub-docs-wiki
+npx -y clawhub@0.16.0 install lark-cli-devhub-taskflow
+npx -y clawhub@0.16.0 install lark-cli-devhub-whiteboard
+```
+
+Republish each folder under `skills/` after changes:
 
 ```bash
 npx -y clawhub@0.16.0 login
@@ -57,7 +68,7 @@ npx -y clawhub@0.16.0 publish skills/lark-cli-devhub-whiteboard \
   --tags feishu,lark,whiteboard,diagrams,architecture
 ```
 
-Publishing requires a ClawHub login. The repository can be prepared and pushed without it.
+Publishing requires a ClawHub login. The GitHub install path works independently from ClawHub.
 
 ## Security Notes
 

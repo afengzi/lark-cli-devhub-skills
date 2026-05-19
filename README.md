@@ -45,6 +45,31 @@ cd lark-cli-devhub-skills
 ./scripts/install-devhub.sh
 ```
 
+## Install From ClawHub
+
+Search:
+
+```bash
+npx -y clawhub@0.16.0 search lark-cli-devhub
+```
+
+Install the main skill:
+
+```bash
+npx -y clawhub@0.16.0 install lark-cli-devhub
+```
+
+Install optional domain skills:
+
+```bash
+npx -y clawhub@0.16.0 install lark-cli-devhub-base
+npx -y clawhub@0.16.0 install lark-cli-devhub-docs-wiki
+npx -y clawhub@0.16.0 install lark-cli-devhub-taskflow
+npx -y clawhub@0.16.0 install lark-cli-devhub-whiteboard
+```
+
+Note: `npx skills find` searches the Agent Skills / skills.sh index, not the ClawHub registry. Use `npx skills add afengzi/lark-cli-devhub-skills --all` for GitHub install, or `npx clawhub search/install` for ClawHub.
+
 ## Requirements
 
 - `lark-cli` configured with Feishu/Lark app credentials.
@@ -122,7 +147,7 @@ $HOME/.codex/devhub/bin/kb-gate.sh
 ## Marketplace
 
 - `npx skills` can install directly from this GitHub repository.
-- ClawHub can publish each folder under `skills/` as an individual skill.
+- ClawHub publishes each folder under `skills/` as an individual skill.
 
 See [docs/marketplaces.md](docs/marketplaces.md).
 
