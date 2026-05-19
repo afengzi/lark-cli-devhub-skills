@@ -154,3 +154,5 @@ Public skills are part of the agent supply chain. Keep the package boring:
 - clear script behavior
 - MIT license at repository root
 - validation workflow on every push
+
+The workflow templates under `templates/` are examples. They do not bundle credentials and start in draft/outbox mode until the user configures their own Feishu/Lark app credentials and scopes.

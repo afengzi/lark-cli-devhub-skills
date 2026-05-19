@@ -1,0 +1,38 @@
+name: Dev Hub Scheduled Report Draft
+
+on:
+  schedule:
+    - cron: "0 1 * * 1"
+  workflow_dispatch:
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Create report records input
+        run: |
+          cat > /tmp/devhub-report-records.json <<'JSON'
+          {
+            "Tasks": [],
+            "Bugfixes": [],
+            "AI Runs": [],
+            "Releases": [],
+            "Decisions": [],
+            "Project Facts": [],
+            "Artifacts": []
+          }
+          JSON
+      - name: Generate weekly report draft
+        run: |
+          python3 scripts/devhub.py report-draft \
+            --kind weekly \
+            --project "${{ github.repository }}" \
+            --records /tmp/devhub-report-records.json > devhub-weekly-report.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: devhub-weekly-report
+          path: devhub-weekly-report.md

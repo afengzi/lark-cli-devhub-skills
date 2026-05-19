@@ -19,3 +19,8 @@ Use cron or scheduled workflows to generate report drafts. Publish drafts only a
 ## Whiteboard Workflow
 
 Use draft and dry-run first. Final boards must be linked through Artifacts records.
+
+## Templates
+
+- `templates/github-pr-writeback.yml` starts in outbox mode and maps PR/CI triggers to Dev Hub operations.
+- `templates/cron-report.yml` generates a weekly report draft artifact without publishing it.

@@ -1,0 +1,55 @@
+name: Dev Hub PR Writeback
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+  pull_request_review:
+    types: [submitted]
+  workflow_run:
+    types: [completed]
+
+jobs:
+  writeback:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Dev Hub helper
+        run: |
+          python3 scripts/devhub.py --help
+      - name: Build AI Run payload for PR update
+        if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
+        run: |
+          mkdir -p .devhub/outbox
+          cat > .devhub/outbox/pr-ai-run-${{ github.event.pull_request.number }}.json <<'JSON'
+          {
+            "operation": "record-ai-run",
+            "source": "github-action",
+            "event": "pull_request",
+            "pr": "${{ github.event.pull_request.html_url }}",
+            "note": "Configure lark-cli credentials before enabling real Feishu/Lark writes."
+          }
+          JSON
+      - name: Build Release payload for merged PR
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true }}
+        run: |
+          mkdir -p .devhub/outbox
+          cat > .devhub/outbox/pr-release-${{ github.event.pull_request.number }}.json <<'JSON'
+          {
+            "operation": "record-release",
+            "source": "github-action",
+            "event": "pull_request_merged",
+            "pr": "${{ github.event.pull_request.html_url }}",
+            "merge_commit_sha": "${{ github.event.pull_request.merge_commit_sha }}",
+            "note": "Configure lark-cli credentials before enabling real Feishu/Lark writes."
+          }
+          JSON
+      - name: Upload Dev Hub outbox
+        uses: actions/upload-artifact@v4
+        with:
+          name: devhub-outbox
+          path: .devhub/outbox/*.json
+          if-no-files-found: ignore
