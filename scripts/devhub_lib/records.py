@@ -9,6 +9,7 @@ from typing import Any
 from .base import upsert_record
 from .config import load_config, repo_runtime_dir
 from .io import find_first_token, load_json, now_iso, write_json
+from .relationships import write_record_relations
 
 
 def write_outbox(cwd: Path, kind: str, payload: dict[str, Any], error: str) -> Path:
@@ -65,9 +66,34 @@ def record_command(kind: str, table: str, payload_path: Path, cwd: Path) -> int:
         record_url = find_first_token(output, {"record_url", "url", "link", "record_id", "record_id_list"})
         if not record_url:
             raise RuntimeError("lark-cli write succeeded but returned no record identifier")
+        relation_records: list[str] = []
+        relation_outbox = ""
+        try:
+            relation_records = write_record_relations(config, table, str(record_url), payload)
+        except Exception as relation_exc:
+            relation_outbox = str(
+                write_outbox(
+                    cwd,
+                    "record-relations",
+                    {"source_table": table, "source_record_id": str(record_url), "payload": payload},
+                    str(relation_exc),
+                )
+            )
         summary = payload.get("AI Summary") or payload.get("Title") or kind
         receipt = write_receipt(cwd, kind, record_url, summary, {"table": table, "payload_title": payload.get("Title", "")})
-        print(json.dumps({"ok": True, "record_url": record_url, "receipt": str(receipt)}, ensure_ascii=False, indent=2))
+        print(
+            json.dumps(
+                {
+                    "ok": True,
+                    "record_url": record_url,
+                    "receipt": str(receipt),
+                    "relation_records": relation_records,
+                    "relation_outbox": relation_outbox,
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
         return 0
     except Exception as exc:
         outbox = write_outbox(cwd, kind, {"table": table, "payload": payload}, str(exc))

@@ -14,6 +14,7 @@ class SearchCoverageTests(unittest.TestCase):
                 "Releases",
                 "Decisions",
                 "Project Facts",
+                "Record Relations",
                 "Artifacts",
                 "Pitfalls",
                 "Playbooks",
@@ -39,6 +40,7 @@ class SearchCoverageTests(unittest.TestCase):
                     "Releases": {"id": "tbl_releases"},
                     "Decisions": {"id": "tbl_decisions"},
                     "Project Facts": {"id": "tbl_project_facts"},
+                    "Record Relations": {"id": "tbl_record_relations"},
                     "Artifacts": {"id": "tbl_artifacts"},
                     "Pitfalls": {"id": "tbl_pitfalls"},
                     "Playbooks": {"id": "tbl_playbooks"},
@@ -54,6 +56,18 @@ class SearchCoverageTests(unittest.TestCase):
         self.assertEqual(result["missing_for_full_recall"], [])
         self.assertEqual(set(result["results"].keys()), set(FULL_RECALL_TABLES))
         self.assertEqual(len(calls), len(FULL_RECALL_TABLES))
+
+    def test_search_marks_empty_table_output_as_warning(self):
+        config = {"base": {"token": "base-token", "tables": {"Tasks": {"id": "tbl_tasks"}}}}
+
+        def fake_run_lark(_args, check=True):
+            return {}, ""
+
+        result = search_devhub(config, "music-agent", "voice", tables=["Tasks"], run_lark_func=fake_run_lark)
+
+        self.assertEqual(result["results"]["Tasks"]["ok"], False)
+        self.assertEqual(result["results"]["Tasks"]["warning"], "lark-cli returned empty output")
+        self.assertEqual(result["results"]["Tasks"]["table_id"], "tbl_tasks")
 
 
 if __name__ == "__main__":

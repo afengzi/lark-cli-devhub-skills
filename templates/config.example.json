@@ -6,7 +6,8 @@
   "wiki": {
     "space_id": "",
     "root_node_token": "",
-    "root_url": ""
+    "root_url": "",
+    "nodes": {}
   },
   "base": {
     "token": "",

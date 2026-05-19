@@ -11,6 +11,26 @@ Dev Hub separates human browsing from AI retrieval.
 | Whiteboard | Architecture, workflow, dependency, and knowledge maps | Visual aid; always pair with a Base Artifact summary |
 | Tasks | Operational work queue and ownership | Use for current work state, not historical root cause detail |
 
+## Wiki Layout
+
+Provisioning should create scoped pages instead of dumping starter artifacts at the root:
+
+```text
+Dev Knowledge Hub
+  00 Global
+    02 Templates
+    50 Maps
+  10 Projects
+    <project>
+      00 Overview
+      20 Bugfix Retros
+      30 Playbooks
+      40 Decisions
+      50 Maps
+      60 Reports
+  90 Archive
+```
+
 ## Records
 
 - `Projects`: repository identity, default branch, current focus, wiki URL.
@@ -24,6 +44,40 @@ Dev Hub separates human browsing from AI retrieval.
 - `Releases`: branch, commit, verification, rollback notes, related tasks and bugfixes.
 - `Artifacts`: Docs, Whiteboards, dashboards, links, and summaries.
 - `AI Runs`: what the AI did, what evidence it checked, what changed, and writeback status.
+
+## Field Policy
+
+Fill these fields whenever they exist:
+
+- `Title`
+- `Project`
+- `Area`
+- `Status`
+- `AI Summary`
+- `Search Keywords`
+
+Fill content-specific evidence fields when the record type calls for them, such as `Symptom`, `Root Cause`, `Verification Result`, `Decision`, or `Current Truth`.
+
+Keep the default Base lightweight. Do not add many `Related ... Relation(s)` columns to business tables.
+
+Use `Record Relations` for AI-readable graph edges:
+
+- `Source Table` / `Source Record ID` / `Source Title`
+- `Relation Type`
+- `Target Table` / `Target Record ID` / `Target Ref`
+- `Evidence`
+- `Search Keywords`
+
+Feishu Base relation fields are still available for custom schemas. Describe them as 单向关联 / official `type: 18` or 双向关联 / official `type: 21`, but do not make them part of the default Dev Hub model.
+
+## Task Layers
+
+Feishu/Lark Tasks and Base `Tasks` are not the same thing:
+
+- Feishu/Lark Tasks: native execution, reminders, assignees, and completion.
+- Base `Tasks`: AI-readable index and task history anchor. Cross-record links are written into `Record Relations`.
+
+Before coding, agents may create or pick an existing task. During work, update Base `Tasks` to `Doing`/`Blocked`/`Review`. After completion, update the native Feishu task when one exists and update the Base task to `Verify` or `Done` with links to the resulting Bugfix/AI Run/Release records.
 
 ## Avoiding Memory Conflict
 

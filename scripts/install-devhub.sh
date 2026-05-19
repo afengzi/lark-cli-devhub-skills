@@ -136,12 +136,16 @@ install -m 755 "$ROOT/scripts/kb-gate.sh" "$DEVHUB_HOME/bin/kb-gate.sh"
 rm -rf "$DEVHUB_HOME/bin/devhub_lib"
 cp -R "$ROOT/scripts/devhub_lib" "$DEVHUB_HOME/bin/devhub_lib"
 cp "$ROOT/templates/base-schema.json" "$DEVHUB_HOME/templates/base-schema.json"
+cp "$ROOT/templates/base-views.json" "$DEVHUB_HOME/templates/base-views.json"
 cp "$ROOT/templates/seed.example.json" "$DEVHUB_HOME/templates/seed.example.json"
 cp "$ROOT/templates/config.example.json" "$DEVHUB_HOME/templates/config.example.json"
 cp "$ROOT/templates/report-daily.md" "$DEVHUB_HOME/templates/report-daily.md"
 cp "$ROOT/templates/report-weekly.md" "$DEVHUB_HOME/templates/report-weekly.md"
 cp "$ROOT/templates/report-release.md" "$DEVHUB_HOME/templates/report-release.md"
 cp "$ROOT/templates/whiteboard-draft.md" "$DEVHUB_HOME/templates/whiteboard-draft.md"
+rm -rf "$DEVHUB_HOME/templates/wiki" "$DEVHUB_HOME/templates/whiteboards"
+cp -R "$ROOT/templates/wiki" "$DEVHUB_HOME/templates/wiki"
+cp -R "$ROOT/templates/whiteboards" "$DEVHUB_HOME/templates/whiteboards"
 
 installed_skills=()
 for name in "${SELECTED_SKILLS[@]}"; do
@@ -180,9 +184,12 @@ Helper:
 
 Templates:
   $DEVHUB_HOME/templates/base-schema.json
+  $DEVHUB_HOME/templates/base-views.json
   $DEVHUB_HOME/templates/seed.example.json
   $DEVHUB_HOME/templates/report-weekly.md
   $DEVHUB_HOME/templates/whiteboard-draft.md
+  $DEVHUB_HOME/templates/wiki/
+  $DEVHUB_HOME/templates/whiteboards/
 
 Skills selected:
   $SKILL_SET
@@ -194,7 +201,8 @@ Next:
   python3 "$DEVHUB_HOME/bin/devhub.py" preflight
   python3 "$DEVHUB_HOME/bin/devhub.py" provision \
     --schema "$DEVHUB_HOME/templates/base-schema.json" \
-    --seed "$DEVHUB_HOME/templates/seed.example.json"
+    --seed "$DEVHUB_HOME/templates/seed.example.json" \
+    --views "$DEVHUB_HOME/templates/base-views.json"
   python3 "$DEVHUB_HOME/bin/devhub.py" search --project "$(basename "$PWD")" --query "area symptom"
   python3 "$DEVHUB_HOME/bin/devhub.py" report-draft --kind weekly --project "$(basename "$PWD")" --records "$DEVHUB_HOME/templates/seed.example.json"
 EOF

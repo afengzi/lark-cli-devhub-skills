@@ -68,6 +68,12 @@ class ParserRecordCommandTests(unittest.TestCase):
             args = parser.parse_args([command, "--payload", "/tmp/payload.json"])
             self.assertTrue(callable(args.func))
 
+    def test_cleanup_relation_fields_command_exists(self):
+        parser = build_parser()
+        args = parser.parse_args(["cleanup-relation-fields", "--dry-run"])
+        self.assertTrue(callable(args.func))
+        self.assertTrue(args.dry_run)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -67,6 +67,14 @@ After a meaningful fix:
 3. Create or update a Pitfall or Playbook when the lesson is reusable.
 4. Keep long narratives in Docs only when they are worth reading later.
 
+## Write Preflight
+
+Before writing Bugfix, AI Run, Release, Decision, Artifact, or Project Fact records, check the matching Wiki template shape when it exists under `00 Global/02 Templates` or local `$DEVHUB_HOME/templates/wiki/`. Do not invent a thinner schema when the template has required evidence sections.
+
+This is a skill-level requirement: when this skill is active, read the template or use the local template file before composing the payload. If the template cannot be read, say so in the AI Run or outbox instead of silently writing a thin record.
+
+If the work changes architecture, module boundaries, PR/writeback flow, task flow, or a recurring bug investigation path, update the relevant map under both `00 Global/50 Maps` or `10 Projects/<project>/50 Maps` when appropriate, or leave an outbox/explicit note explaining why the map was not updated.
+
 See [`references/writeback-flows.md`](references/writeback-flows.md).
 
 ## Before Main Pushes

@@ -40,6 +40,8 @@ templates/
   base-schema.json
   seed.example.json
   config.example.json
+  wiki/
+  whiteboards/
   report-daily.md
   report-weekly.md
   report-release.md
@@ -85,7 +87,7 @@ Boundary rule: workflow skills may compose domain skills, but domain skills shou
 | `config.py` | Config loading, redaction, receipt/outbox directories |
 | `lark.py` | `lark-cli` subprocess calls |
 | `base.py` | Base creation, schema provisioning, record upsert |
-| `wiki_docs.py` | Wiki/Docs creation and starter artifacts |
+| `wiki_docs.py` | Wiki/Docs creation, complete starter templates, and generated Whiteboard artifacts |
 | `records.py` | Bugfix/AI Run/Release/Task/Decision/Artifact/Project Fact receipts and outbox |
 | `search.py` | Record search across the V1.5 full-recall table set with coverage metadata |
 | `reports.py` | Deterministic daily, weekly, and release Markdown report drafts |
@@ -104,3 +106,42 @@ Obsidian is excellent for personal note taking and graph browsing. Agent memory 
 - Tasks give operational state.
 
 The AI-readable layer is Base. The human-readable layer is Docs/Wiki/Whiteboard. The personal preference layer stays in agent memory.
+
+## Wiki And Base Boundaries
+
+Provisioning creates scoped Wiki areas:
+
+```text
+Dev Knowledge Hub
+  00 Global
+  10 Projects/<project>
+  90 Archive
+```
+
+Starter docs and maps belong under `00 Global` or `10 Projects/<project>`, never directly under the root. This keeps global templates, project-specific knowledge, and future cleanup separate.
+
+Provisioning writes complete template content into Docs/Wiki rather than leaving placeholder pages. The reusable template set covers project records, bugfix retrospectives, playbooks, decisions, releases, AI runs, and bug investigation paths.
+
+Provisioning creates starter Whiteboard pages in three places:
+
+- `00 Global/50 Maps`: `Global: Dev Hub 总览图`, `Global: Bug 排查路径图`, `Global: PR 写回流程图`, and `Global: 任务执行闭环图`.
+- `10 Projects/<project>/50 Maps`: `<project>: 架构图`, `<project>: Bug 排查路径图`, `<project>: PR 写回流程图`, and `<project>: 任务执行闭环图`.
+- `00 Global/02 Templates`: `Template: Bug 排查路径图`, `Template: PR 写回流程图`, and `Template: 任务执行闭环图`.
+
+Every generated map is a human-readable SVG visual template converted into Feishu Whiteboard native nodes. Each map gets an `Artifacts` Base record. The map itself helps humans scan relationships; the Artifact summary and keywords make the map discoverable to AI.
+
+The Whiteboard writer accepts SVG, Mermaid, or raw OpenAPI JSON. Starter maps use SVG for human-readable layouts. SVG conversion output is cached under `$DEVHUB_HOME/cache/whiteboards/`, and existing boards are preserved by default unless `DEVHUB_WHITEBOARD_OVERWRITE=1` is set.
+
+Artifact indexing uses a batched Base path where safe: list existing records once by match fields, skip unchanged rows, batch-create new rows, and update only changed existing rows individually. This avoids treating `record-batch-update` as row-specific, because current `lark-cli base +record-batch-update` applies one shared patch to every listed record.
+
+Provisioning also archives known Wiki noise created by earlier or failed runs: root/global `Untitled` pages and old duplicate `Dev Hub 使用说明` / `AI 写入规则` nodes are moved under `90 Archive/99 Provision Cleanup` instead of being deleted.
+
+Base stays lightweight:
+
+- Business tables keep text search fields and evidence fields, not many cross-table relation columns.
+- `Record Relations` stores graph edges for AI recall: source table/record, relation type, target table/ref, evidence, and search keywords.
+- `base-views.json` creates human-facing views so people can browse task boards, bug triage, artifacts, current facts, and knowledge edges without widening every table.
+- Advanced custom schemas may still use Feishu Base relation fields: 单向关联 maps to official `type: 18`, and 双向关联 maps to official `type: 21`.
+- Existing Bases from older versions can remove deprecated `Project Relation`, `Area Relation`, and `Related ... Relation(s)` fields with `devhub.py cleanup-relation-fields` after reviewing `--dry-run`.
+
+Native Feishu Tasks remain the execution/reminder system. Base `Tasks` is the searchable mirror; cross-record context belongs in `Record Relations`.

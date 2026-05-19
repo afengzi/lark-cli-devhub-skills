@@ -10,6 +10,7 @@ Write after a meaningful bug fix:
   "Project": "project-name",
   "Area": "module or product area",
   "Status": "Fixed",
+  "Related Task": "Task title or rec_xxx when known",
   "Symptom": "What failed from the user's or system's point of view.",
   "Evidence": "Logs, test failures, screenshots, command output, or code facts checked.",
   "Root Cause": "The actual cause, not only the visible symptom.",
@@ -24,6 +25,8 @@ Write after a meaningful bug fix:
   "Search Keywords": "symptom module error file names"
 }
 ```
+
+Do not add `Related ... Relation(s)` columns to every table. The helper consumes text hints such as `Related Task`, `Related Bugfixes`, and `Related Records`, writes the main business record, then writes lightweight graph edges into `Record Relations` when that table exists.
 
 Command:
 
@@ -97,6 +100,9 @@ Write when work needs explicit status, ownership, blocker, or next action tracki
   "Project": "project-name",
   "Area": "module or product area",
   "Status": "Ready",
+  "Task Source": "Feishu Task",
+  "Feishu Task URL": "https://...",
+  "Feishu Task GUID": "task guid from the native Tasks URL or API",
   "Type": "Bug",
   "Priority": "P1",
   "Expected Outcome": "What should be true when this task is done.",
@@ -106,6 +112,8 @@ Write when work needs explicit status, ownership, blocker, or next action tracki
   "Search Keywords": "task area blocker keywords"
 }
 ```
+
+Base `Tasks` is an AI-readable index. When there is a native Feishu/Lark Task, mirror its URL/GUID here. When there is no native task, set `Task Source` to `Base Only`.
 
 Command:
 

@@ -25,6 +25,8 @@ Also discoverable as: `feishu-cli`, `飞书 CLI`, `lark-cli`, `Lark CLI`, `Feish
 - Writes structured Bugfix and AI Run records after meaningful fixes.
 - Writes Release records before pushing `main` or `master`.
 - Keeps task state, next actions, blockers, and bug queues explicit.
+- Creates complete Docs/Wiki templates for projects, bugfixes, playbooks, decisions, releases, AI runs, and investigation paths.
+- Creates starter Whiteboards for the global knowledge model, the current project architecture, bug investigation, PR writeback, and task execution loops.
 - Links long-form Docs/Wiki pages and Whiteboards back to searchable Base records.
 - Separates project facts from personal agent memory so Codex, Claude Code, and other agents can share the same knowledge base.
 - Provides a hook gate that warns when bugfix commits or main pushes lack knowledge writeback evidence.
@@ -234,14 +236,15 @@ python3 "$HOME/.codex/devhub/bin/devhub.py" preflight
 
 ## Create Your Dev Hub
 
-Provision Base tables, starter records, Wiki pages, and starter artifacts:
+Provision Base tables, starter records, Wiki pages, starter artifacts, and starter Whiteboards:
 
 ```bash
 export DEVHUB_HOME="$HOME/.codex/devhub"
 
 python3 "$DEVHUB_HOME/bin/devhub.py" provision \
   --schema "$DEVHUB_HOME/templates/base-schema.json" \
-  --seed "$DEVHUB_HOME/templates/seed.example.json"
+  --seed "$DEVHUB_HOME/templates/seed.example.json" \
+  --views "$DEVHUB_HOME/templates/base-views.json"
 ```
 
 The generated config lives at:
@@ -255,6 +258,27 @@ Project-local runtime files live at:
 ```text
 .devhub/receipts/
 .devhub/outbox/
+```
+
+Provisioning creates complete starter content, not just empty folders:
+
+- Wiki templates: project record, bugfix retro, playbook, decision, release writeback, AI run summary, and bug investigation path.
+- Whiteboard maps: human-readable SVG visual maps under both global Maps and project Maps, including overview/architecture, bug investigation path, PR writeback flow, and task execution loop.
+- Base `Artifacts` records for every generated Doc or Whiteboard so future agents can find them through search before opening visual pages.
+- Base views that keep the default tables readable without adding many relation columns.
+- Known provisioning noise such as `Untitled` root/global pages is archived under `90 Archive/99 Provision Cleanup`, not left in the main navigation.
+
+Whiteboard input can be SVG, Mermaid, or raw OpenAPI JSON. The starter maps use SVG because it gives a readable mind-map style after conversion to native Feishu Whiteboard nodes. The helper caches SVG conversion output under `$DEVHUB_HOME/cache/whiteboards/`.
+
+Base writes use the fastest safe path available: new Artifact rows are batch-created, existing rows are listed once and skipped when unchanged, and only changed existing rows are updated individually. This matches current `lark-cli base` behavior: `+record-batch-create` is row-specific, while `+record-batch-update` applies one shared patch to many rows.
+
+Existing Whiteboards are preserved by default so rerunning provision does not overwrite human edits. To redraw starter maps from templates, run with:
+
+```bash
+DEVHUB_WHITEBOARD_OVERWRITE=1 python3 "$DEVHUB_HOME/bin/devhub.py" provision \
+  --schema "$DEVHUB_HOME/templates/base-schema.json" \
+  --seed "$DEVHUB_HOME/templates/seed.example.json" \
+  --views "$DEVHUB_HOME/templates/base-views.json"
 ```
 
 ## Daily Workflow
@@ -294,7 +318,11 @@ python3 "$DEVHUB_HOME/bin/devhub.py" record-artifact --payload /tmp/devhub-artif
 python3 "$DEVHUB_HOME/bin/devhub.py" record-project-fact --payload /tmp/devhub-project-fact.json
 ```
 
-Search scope note: full project-history recall should cover Tasks, Bugfixes, AI Runs, Releases, Decisions, Project Facts, Artifacts, Pitfalls, Playbooks, and Areas. The helper reports its coverage so agents do not overclaim what they checked.
+Search scope note: full project-history recall should cover Tasks, Bugfixes, AI Runs, Releases, Decisions, Project Facts, Record Relations, Artifacts, Pitfalls, Playbooks, and Areas. The helper reports its coverage so agents do not overclaim what they checked.
+
+Template discipline: when the Dev Hub skills are active, agents must check the matching Wiki template or local template before writing Bugfix, AI Run, Release, Decision, Artifact, or Project Fact records. If the template cannot be read, the writeback should say that explicitly in the AI Run or outbox instead of silently producing a thin record.
+
+Map discipline: architecture, module boundary, PR/writeback flow, task flow, or reusable bug investigation path changes should update the matching project map under `10 Projects/<project>/50 Maps`. Reusable cross-project changes should also update the global map under `00 Global/50 Maps`.
 
 ## Automation Roadmap
 
@@ -329,16 +357,54 @@ $HOME/.codex/devhub/bin/kb-gate.sh
 
 Base is the structured source of truth. Docs/Wiki and Whiteboards are linked artifacts.
 
+Wiki is project-scoped by default:
+
+```text
+Dev Knowledge Hub
+  00 Global
+    02 Templates
+    50 Maps
+  10 Projects
+    <project>
+      00 Overview
+      20 Bugfix Retros
+      30 Playbooks
+      40 Decisions
+      50 Maps
+      60 Reports
+  90 Archive
+```
+
+Base is intentionally lightweight:
+
+- Business tables keep searchable text fields and evidence fields. They do not get many `Related ... Relation(s)` columns by default.
+- `Record Relations` is the AI-readable graph edge table. Agents can write edges from payload hints such as `Related Task`, `Related Bugfixes`, or `Related Records` without making every business table wider.
+- Views from `base-views.json` keep human browsing comfortable by showing the right fields for task boards, bug triage, current facts, artifacts, and knowledge edges.
+- Feishu Base relation fields are still supported for advanced custom schemas: 单向关联 uses official `type: 18`, and 双向关联 uses official `type: 21`. They are not part of the default lightweight schema.
+
+For existing Bases created by older versions, remove deprecated relation columns after review:
+
+```bash
+python3 "$DEVHUB_HOME/bin/devhub.py" cleanup-relation-fields --dry-run
+python3 "$DEVHUB_HOME/bin/devhub.py" cleanup-relation-fields
+```
+
+Tasks also have two layers:
+
+- Feishu/Lark Tasks are the native execution/reminder module.
+- Base `Tasks` is the AI-readable task index and history anchor. It stores `Feishu Task URL`, `Feishu Task GUID`, status, blocker, next action, and links to Bugfix/Release/AI Run records.
+
 | Table | Purpose |
 |---|---|
 | `Projects` | Repository identity, current focus, default branch, Wiki URL. |
 | `Areas` | Product or code areas, paths, risk, and ownership. |
-| `Tasks` | Current work, priority, blockers, next action, and Feishu task URL. |
+| `Tasks` | Searchable task index: current work, priority, blockers, next action, native task URL/GUID, and related records. |
 | `Bugfixes` | Symptom, evidence, root cause, fix summary, changed files, verification, regression risk. |
 | `Pitfalls` | Reusable traps and "check this first" notes. |
 | `Playbooks` | Diagnosis order, commands, success criteria, and forbidden actions. |
 | `Decisions` | Architecture/product decisions, alternatives, consequences, review triggers. |
 | `Project Facts` | Current implementation truths, retired paths, invariants, source, and review triggers. |
+| `Record Relations` | Lightweight AI graph edges between records. |
 | `Releases` | Branch, commit SHA, verification, rollback notes, related tasks and bugfixes. |
 | `Artifacts` | Linked Docs, Whiteboards, dashboards, files, and summaries. |
 | `AI Runs` | Agent task intent, actions taken, evidence checked, files changed, verification result. |
@@ -371,8 +437,11 @@ scripts/
   install-devhub.sh
 templates/
   base-schema.json
+  base-views.json
   seed.example.json
   config.example.json
+  wiki/
+  whiteboards/
   report-daily.md
   report-weekly.md
   report-release.md

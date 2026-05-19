@@ -15,7 +15,7 @@ def load_config() -> dict[str, Any]:
         "mode": "shadow",
         "identity": "user",
         "timezone": "Asia/Shanghai",
-        "wiki": {"space_id": "", "root_node_token": "", "root_url": ""},
+        "wiki": {"space_id": "", "root_node_token": "", "root_url": "", "nodes": {}},
         "base": {"token": "", "url": "", "tables": {}},
         "defaults": {
             "project": DEFAULT_REPO.name,

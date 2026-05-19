@@ -5,13 +5,14 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from .base import create_tables_and_fields, ensure_base, seed_records
+from .base import cleanup_deprecated_relation_fields, create_tables_and_fields, ensure_base, seed_records
 from .config import load_config, redact_resource_summary, save_config
 from .io import load_json
 from .lark import run_lark
 from .records import write_outbox
 from .reports import draft_report
 from .search import search_devhub
+from .views import ensure_base_views
 from .whiteboard import draft_whiteboard
 from .wiki_docs import create_artifacts, ensure_wiki
 
@@ -35,10 +36,14 @@ def command_provision(args: Any) -> int:
         config_loaded = True
         schema = load_json(Path(args.schema))
         seed = load_json(Path(args.seed))
+        views = load_json(Path(args.views)) if getattr(args, "views", "") else {}
         ensure_wiki(config)
         ensure_base(config)
         create_tables_and_fields(config, schema)
         save_config(config)
+        if views:
+            ensure_base_views(config, views)
+            save_config(config)
         seed_records(config, seed)
         create_artifacts(config)
         save_config(config)
@@ -54,12 +59,23 @@ def command_provision(args: Any) -> int:
                 "operation": "provision",
                 "schema_path": str(Path(args.schema)),
                 "seed_path": str(Path(args.seed)),
+                "views_path": str(Path(args.views)) if getattr(args, "views", "") else "",
                 "resource_summary": redact_resource_summary(config),
             },
             str(exc),
         )
         print(json.dumps({"ok": False, "outbox": str(outbox), "error": str(exc)}, ensure_ascii=False, indent=2), file=sys.stderr)
         return 1
+
+
+def command_cleanup_relation_fields(args: Any) -> int:
+    config = load_config()
+    removed = cleanup_deprecated_relation_fields(config, dry_run=args.dry_run)
+    if not args.dry_run:
+        save_config(config)
+    failed = [item for item in removed if item.get("status") == "failed"]
+    print(json.dumps({"ok": not failed, "dry_run": args.dry_run, "fields": removed}, ensure_ascii=False, indent=2))
+    return 1 if failed else 0
 
 
 def command_search(args: Any) -> int:

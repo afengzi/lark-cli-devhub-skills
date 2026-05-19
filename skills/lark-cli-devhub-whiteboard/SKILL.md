@@ -21,6 +21,16 @@ Discovery aliases: `feishu-cli whiteboard`, `飞书画板`, `lark-cli whiteboard
 - Project knowledge graph overview.
 - Decision impact map.
 
+## Starter Maps
+
+`devhub.py provision` should create and index these durable maps when permissions allow:
+
+- Global Maps: `Global: Dev Hub 总览图`, `Global: Bug 排查路径图`, `Global: PR 写回流程图`, `Global: 任务执行闭环图`.
+- Project Maps: `<project>: 架构图`, `<project>: Bug 排查路径图`, `<project>: PR 写回流程图`, `<project>: 任务执行闭环图`.
+- Templates: `Template: Bug 排查路径图`, `Template: PR 写回流程图`, `Template: 任务执行闭环图`.
+
+If a map is written to Wiki/Docs, create or update a matching Base `Artifacts` row. Do not leave Whiteboard-only knowledge without an AI-readable summary.
+
 ## Required Pairing
 
 Every durable Whiteboard should have a Base `Artifacts` record with:
@@ -38,8 +48,12 @@ This lets future agents discover the map without needing to visually inspect it 
 
 ## Rendering Rules
 
+- Default Dev Hub starter maps use SVG visual templates converted to Feishu Whiteboard nodes. Prefer this for overview maps intended for human scanning.
 - Mermaid is good for simple flows, timelines, sequence diagrams, and mind maps.
 - SVG or DSL is better for dense architecture and knowledge maps.
+- Raw OpenAPI JSON can be used when a workflow already has native Whiteboard node data.
+- Existing provisioned maps are preserved by default; use `DEVHUB_WHITEBOARD_OVERWRITE=1` only when intentionally redrawing from templates.
+- SVG conversion output is cached by template content under `$DEVHUB_HOME/cache/whiteboards/`.
 - Keep line count low. Prefer grouping and adjacency over all-to-all edges.
 - Validate locally before writing to Feishu when possible.
 

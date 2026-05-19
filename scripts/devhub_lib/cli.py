@@ -4,7 +4,14 @@ import argparse
 import sys
 from pathlib import Path
 
-from .commands import command_preflight, command_provision, command_report_draft, command_search, command_whiteboard_draft
+from .commands import (
+    command_cleanup_relation_fields,
+    command_preflight,
+    command_provision,
+    command_report_draft,
+    command_search,
+    command_whiteboard_draft,
+)
 from .hooks import command_hook_check
 from .records import command_receipt, command_sync_outbox, record_command
 
@@ -17,7 +24,12 @@ def build_parser() -> argparse.ArgumentParser:
     provision = sub.add_parser("provision")
     provision.add_argument("--schema", required=True)
     provision.add_argument("--seed", required=True)
+    provision.add_argument("--views", default="")
     provision.set_defaults(func=command_provision)
+
+    cleanup = sub.add_parser("cleanup-relation-fields")
+    cleanup.add_argument("--dry-run", action="store_true")
+    cleanup.set_defaults(func=command_cleanup_relation_fields)
 
     search = sub.add_parser("search")
     search.add_argument("--project", required=True)

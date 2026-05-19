@@ -17,6 +17,16 @@ Use this workflow for PR and CI event writeback.
 - PR merged to the default branch: write `Releases`.
 - CI failed: write a Bugfix candidate or `Tasks`.
 
+Before writing each record, use the matching template shape when available:
+
+- AI Run: `Template: AI Run 总结模板`.
+- Decision: `Template: Decision 决策模板`.
+- Bugfix: `Template: Bugfix 复盘模板`.
+- Release: `Template: Release 写回模板`.
+- PR workflow changes: update `PR 写回流程图` in the project Maps folder, and the global Maps folder when the change is reusable.
+
+If a template cannot be read, include that gap in the AI Run or outbox. Do not silently produce a minimal record that omits the expected evidence sections.
+
 ## Reliability
 
 A GitHub event is only a trigger. The workflow succeeds only when a receipt exists. On failure, keep the outbox item and report its path.

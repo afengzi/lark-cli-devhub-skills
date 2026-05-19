@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="900" viewBox="0 0 1500 900">
+  <rect width="1500" height="900" fill="#f8fafc"/>
+  <text x="750" y="70" font-family="Inter, PingFang SC, Arial" font-size="40" font-weight="800" text-anchor="middle" fill="#0f172a">PR 写回流程图</text>
+  <text x="750" y="108" font-family="Inter, PingFang SC, Arial" font-size="18" text-anchor="middle" fill="#64748b">PR / review / merge / CI failure 都只是触发器，成功标准是 Base 记录和 receipt</text>
+
+  <g font-family="Inter, PingFang SC, Arial">
+    <circle cx="105" cy="165" r="8" fill="#2563eb"/>
+    <text x="127" y="174" font-size="27" font-weight="800" fill="#0f172a">GitHub / Git 事件</text>
+    <rect x="95" y="215" width="315" height="84" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
+    <rect x="95" y="215" width="8" height="84" rx="4" fill="#2563eb"/>
+    <text x="125" y="250" font-size="21" font-weight="800" fill="#0f172a">PR created / updated</text>
+    <text x="125" y="278" font-size="15" fill="#475569">记录本次 agent 做了什么</text>
+
+    <rect x="95" y="325" width="315" height="84" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
+    <rect x="95" y="325" width="8" height="84" rx="4" fill="#2563eb"/>
+    <text x="125" y="360" font-size="21" font-weight="800" fill="#0f172a">PR reviewed</text>
+    <text x="125" y="388" font-size="15" fill="#475569">记录决策、缺陷或修复要求</text>
+
+    <rect x="95" y="435" width="315" height="84" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
+    <rect x="95" y="435" width="8" height="84" rx="4" fill="#2563eb"/>
+    <text x="125" y="470" font-size="21" font-weight="800" fill="#0f172a">PR merged to main</text>
+    <text x="125" y="498" font-size="15" fill="#475569">发布证据和回滚说明</text>
+
+    <rect x="95" y="545" width="315" height="84" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
+    <rect x="95" y="545" width="8" height="84" rx="4" fill="#2563eb"/>
+    <text x="125" y="580" font-size="21" font-weight="800" fill="#0f172a">CI failed</text>
+    <text x="125" y="608" font-size="15" fill="#475569">Bugfix candidate 或 Task</text>
+  </g>
+
+  <g stroke="#2563eb" stroke-width="3" fill="#2563eb">
+    <path d="M410 257 L520 257"/><polygon points="520,257 505,248 505,266"/>
+    <path d="M410 367 L520 367"/><polygon points="520,367 505,358 505,376"/>
+    <path d="M410 477 L520 477"/><polygon points="520,477 505,468 505,486"/>
+    <path d="M410 587 L520 587"/><polygon points="520,587 505,578 505,596"/>
+  </g>
+
+  <g font-family="Inter, PingFang SC, Arial">
+    <circle cx="545" cy="165" r="8" fill="#0f766e"/>
+    <text x="567" y="174" font-size="27" font-weight="800" fill="#0f172a">写入目标</text>
+    <rect x="530" y="215" width="365" height="84" rx="8" fill="#ecfdf5" stroke="#5eead4" stroke-width="2"/>
+    <rect x="530" y="215" width="8" height="84" rx="4" fill="#0f766e"/>
+    <text x="560" y="250" font-size="21" font-weight="800" fill="#0f172a">AI Runs</text>
+    <text x="560" y="278" font-size="15" fill="#475569">Actions / Evidence / Files / Verification</text>
+
+    <rect x="530" y="325" width="365" height="84" rx="8" fill="#ecfdf5" stroke="#5eead4" stroke-width="2"/>
+    <rect x="530" y="325" width="8" height="84" rx="4" fill="#0f766e"/>
+    <text x="560" y="360" font-size="21" font-weight="800" fill="#0f172a">Decisions 或 Bugfixes</text>
+    <text x="560" y="388" font-size="15" fill="#475569">取舍、review 发现、缺陷修复</text>
+
+    <rect x="530" y="435" width="365" height="84" rx="8" fill="#ecfdf5" stroke="#5eead4" stroke-width="2"/>
+    <rect x="530" y="435" width="8" height="84" rx="4" fill="#0f766e"/>
+    <text x="560" y="470" font-size="21" font-weight="800" fill="#0f172a">Releases</text>
+    <text x="560" y="498" font-size="15" fill="#475569">Branch / Commit / Verification / Rollback</text>
+
+    <rect x="530" y="545" width="365" height="84" rx="8" fill="#ecfdf5" stroke="#5eead4" stroke-width="2"/>
+    <rect x="530" y="545" width="8" height="84" rx="4" fill="#0f766e"/>
+    <text x="560" y="580" font-size="21" font-weight="800" fill="#0f172a">Tasks / Bugfix candidates</text>
+    <text x="560" y="608" font-size="15" fill="#475569">失败原因、下一步、阻塞项</text>
+  </g>
+
+  <g stroke="#0f766e" stroke-width="3" fill="#0f766e">
+    <path d="M895 257 L1005 257"/><polygon points="1005,257 990,248 990,266"/>
+    <path d="M895 367 L1005 367"/><polygon points="1005,367 990,358 990,376"/>
+    <path d="M895 477 L1005 477"/><polygon points="1005,477 990,468 990,486"/>
+    <path d="M895 587 L1005 587"/><polygon points="1005,587 990,578 990,596"/>
+  </g>
+
+  <g font-family="Inter, PingFang SC, Arial">
+    <circle cx="1035" cy="165" r="8" fill="#ea580c"/>
+    <text x="1057" y="174" font-size="27" font-weight="800" fill="#0f172a">成功标准</text>
+    <rect x="1020" y="215" width="360" height="194" rx="10" fill="#fff7ed" stroke="#fed7aa" stroke-width="2"/>
+    <rect x="1020" y="215" width="8" height="194" rx="4" fill="#ea580c"/>
+    <text x="1050" y="254" font-size="23" font-weight="800" fill="#0f172a">Receipt discipline</text>
+    <text x="1050" y="292" font-size="16" fill="#475569">1. 每次写 Base 后检查 .devhub/receipts/</text>
+    <text x="1050" y="322" font-size="16" fill="#475569">2. 写失败必须留 .devhub/outbox/</text>
+    <text x="1050" y="352" font-size="16" fill="#475569">3. PR / push 不代表写入成功</text>
+    <text x="1050" y="382" font-size="16" fill="#475569">4. 不伪造 receipt</text>
+
+    <rect x="1020" y="455" width="360" height="174" rx="10" fill="#fff7ed" stroke="#fed7aa" stroke-width="2"/>
+    <rect x="1020" y="455" width="8" height="174" rx="4" fill="#ea580c"/>
+    <text x="1050" y="494" font-size="23" font-weight="800" fill="#0f172a">Relation backfill</text>
+    <text x="1050" y="532" font-size="16" fill="#475569">跨记录链接写入 Record Relations</text>
+    <text x="1050" y="562" font-size="16" fill="#475569">不知道时先写文本字段和关键词</text>
+    <text x="1050" y="592" font-size="16" fill="#475569">Release / AI Run / Artifact 要互相关联</text>
+  </g>
+
+  <g font-family="Inter, PingFang SC, Arial">
+    <circle cx="105" cy="755" r="8" fill="#7c3aed"/>
+    <text x="127" y="764" font-size="27" font-weight="800" fill="#0f172a">自动化层级</text>
+    <rect x="95" y="798" width="310" height="68" rx="8" fill="#ffffff" stroke="#ddd6fe" stroke-width="2"/>
+    <text x="130" y="839" font-size="20" font-weight="800" fill="#0f172a">Local hook：提醒/生成 outbox</text>
+    <rect x="455" y="798" width="310" height="68" rx="8" fill="#ffffff" stroke="#ddd6fe" stroke-width="2"/>
+    <text x="490" y="839" font-size="20" font-weight="800" fill="#0f172a">GitHub Action：事件写回</text>
+    <rect x="815" y="798" width="310" height="68" rx="8" fill="#ffffff" stroke="#ddd6fe" stroke-width="2"/>
+    <text x="850" y="839" font-size="20" font-weight="800" fill="#0f172a">Cron：日报 / 周报 / 月报</text>
+    <rect x="1175" y="798" width="260" height="68" rx="8" fill="#ffffff" stroke="#ddd6fe" stroke-width="2"/>
+    <text x="1210" y="839" font-size="20" font-weight="800" fill="#0f172a">Whiteboard：先草稿</text>
+  </g>
+</svg>

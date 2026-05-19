@@ -25,7 +25,8 @@ Provision:
 ```bash
 python3 "$DEVHUB_HOME/bin/devhub.py" provision \
   --schema "$DEVHUB_HOME/templates/base-schema.json" \
-  --seed "$DEVHUB_HOME/templates/seed.example.json"
+  --seed "$DEVHUB_HOME/templates/seed.example.json" \
+  --views "$DEVHUB_HOME/templates/base-views.json"
 ```
 
 ## Tables
@@ -39,13 +40,18 @@ python3 "$DEVHUB_HOME/bin/devhub.py" provision \
 - `Decisions`: accepted choices, tradeoffs, and review triggers.
 - `Releases`: release evidence before main/master push.
 - `Artifacts`: Docs, Whiteboards, dashboards, files, and links.
+- `Record Relations`: lightweight AI graph edges between records.
 - `AI Runs`: agent work summaries and verification trail.
 
 ## Write Rules
 
 - Always include `Project`, `Area`, `AI Summary`, and `Search Keywords` when the fields exist.
 - Put long prose in Docs only when useful; keep Base summaries dense and searchable.
-- Use stable names in text fields when relation fields are not configured yet.
+- Keep business tables lightweight. Prefer `Project`, `Area`, `AI Summary`, `Search Keywords`, `Source URL`, and domain evidence fields over many cross-table relation fields.
+- Use `Record Relations` as the canonical AI-readable graph edge table. It stores source table/record, relation type, target table/ref, evidence, and search keywords.
+- Do not add `Related ... Relation(s)` fields to every table by default. Use Base views to make records readable for humans instead of adding more columns.
+- If a legacy Base already has `Project Relation`, `Area Relation`, or `Related ... Relation(s)` fields, remove them with `python3 "$DEVHUB_HOME/bin/devhub.py" cleanup-relation-fields` after reviewing `--dry-run`.
+- Feishu Base relation fields are still supported for advanced custom schemas: 单向关联 is `type: 18`, 双向关联 is `type: 21`. They are not part of the default lightweight schema.
 - Do not store secrets or raw credentials.
 - If a write fails, leave an outbox item. Do not create fake receipts.
 

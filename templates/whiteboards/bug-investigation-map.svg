@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="960" viewBox="0 0 1500 960">
+  <rect width="1500" height="960" fill="#f8fafc"/>
+  <text x="750" y="70" font-family="Inter, PingFang SC, Arial" font-size="40" font-weight="800" text-anchor="middle" fill="#0f172a">Bug 排查路径模板图</text>
+  <text x="750" y="108" font-family="Inter, PingFang SC, Arial" font-size="18" text-anchor="middle" fill="#64748b">从症状到证据、根因、修复、验证、沉淀，避免重复踩坑</text>
+
+  <g font-family="Inter, PingFang SC, Arial">
+    <circle cx="88" cy="165" r="8" fill="#2563eb"/>
+    <text x="110" y="174" font-size="27" font-weight="800" fill="#0f172a">1. 入口与历史</text>
+    <rect x="80" y="205" width="330" height="94" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
+    <rect x="80" y="205" width="8" height="94" rx="4" fill="#2563eb"/>
+    <text x="112" y="242" font-size="22" font-weight="800" fill="#0f172a">明确症状和范围</text>
+    <text x="112" y="272" font-size="15" fill="#475569">现象、影响用户、是否可复现</text>
+
+    <rect x="80" y="325" width="330" height="118" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
+    <rect x="80" y="325" width="8" height="118" rx="4" fill="#2563eb"/>
+    <text x="112" y="362" font-size="22" font-weight="800" fill="#0f172a">先查旧坑</text>
+    <text x="112" y="392" font-size="15" fill="#475569">Bugfixes / Pitfalls / Playbooks</text>
+    <text x="112" y="416" font-size="15" fill="#475569">命中旧问题时先读旧证据</text>
+
+    <rect x="80" y="470" width="330" height="94" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
+    <rect x="80" y="470" width="8" height="94" rx="4" fill="#2563eb"/>
+    <text x="112" y="507" font-size="22" font-weight="800" fill="#0f172a">创建或更新 Task</text>
+    <text x="112" y="537" font-size="15" fill="#475569">没有原生 Feishu Task 先创建</text>
+  </g>
+
+  <path d="M410 384 L492 384" stroke="#2563eb" stroke-width="3"/>
+  <polygon points="492,384 477,375 477,393" fill="#2563eb"/>
+
+  <g font-family="Inter, PingFang SC, Arial">
+    <circle cx="520" cy="165" r="8" fill="#0f766e"/>
+    <text x="542" y="174" font-size="27" font-weight="800" fill="#0f172a">2. 证据分层</text>
+    <rect x="500" y="205" width="500" height="450" rx="10" fill="#ecfdf5" stroke="#5eead4" stroke-width="2"/>
+    <text x="750" y="252" font-size="31" font-weight="800" text-anchor="middle" fill="#065f46">不要猜，先找真实证据</text>
+
+    <rect x="540" y="295" width="190" height="72" rx="8" fill="#ffffff" stroke="#5eead4" stroke-width="2"/>
+    <rect x="540" y="295" width="8" height="72" rx="4" fill="#0f766e"/>
+    <text x="568" y="326" font-size="20" font-weight="800" fill="#0f172a">用户输入</text>
+    <text x="568" y="352" font-size="14" fill="#475569">截图 / 复现步骤</text>
+
+    <rect x="770" y="295" width="190" height="72" rx="8" fill="#ffffff" stroke="#5eead4" stroke-width="2"/>
+    <rect x="770" y="295" width="8" height="72" rx="4" fill="#0f766e"/>
+    <text x="798" y="326" font-size="20" font-weight="800" fill="#0f172a">前端</text>
+    <text x="798" y="352" font-size="14" fill="#475569">状态 / 请求 / UI gate</text>
+
+    <rect x="540" y="395" width="190" height="72" rx="8" fill="#ffffff" stroke="#5eead4" stroke-width="2"/>
+    <rect x="540" y="395" width="8" height="72" rx="4" fill="#0f766e"/>
+    <text x="568" y="426" font-size="20" font-weight="800" fill="#0f172a">API / 后端</text>
+    <text x="568" y="452" font-size="14" fill="#475569">trace / 日志 / 异常</text>
+
+    <rect x="770" y="395" width="190" height="72" rx="8" fill="#ffffff" stroke="#5eead4" stroke-width="2"/>
+    <rect x="770" y="395" width="8" height="72" rx="4" fill="#0f766e"/>
+    <text x="798" y="426" font-size="20" font-weight="800" fill="#0f172a">数据库</text>
+    <text x="798" y="452" font-size="14" fill="#475569">真实记录 / 幂等键</text>
+
+    <rect x="540" y="495" width="190" height="72" rx="8" fill="#ffffff" stroke="#5eead4" stroke-width="2"/>
+    <rect x="540" y="495" width="8" height="72" rx="4" fill="#0f766e"/>
+    <text x="568" y="526" font-size="20" font-weight="800" fill="#0f172a">第三方</text>
+    <text x="568" y="552" font-size="14" fill="#475569">scope / 权限 / 远端返回</text>
+
+    <rect x="770" y="495" width="190" height="72" rx="8" fill="#ffffff" stroke="#5eead4" stroke-width="2"/>
+    <rect x="770" y="495" width="8" height="72" rx="4" fill="#0f766e"/>
+    <text x="798" y="526" font-size="20" font-weight="800" fill="#0f172a">测试</text>
+    <text x="798" y="552" font-size="14" fill="#475569">失败用例 / 覆盖缺口</text>
+  </g>
+
+  <path d="M1000 430 L1080 430" stroke="#0f766e" stroke-width="3"/>
+  <polygon points="1080,430 1065,421 1065,439" fill="#0f766e"/>
+
+  <g font-family="Inter, PingFang SC, Arial">
+    <circle cx="1105" cy="165" r="8" fill="#ea580c"/>
+    <text x="1127" y="174" font-size="27" font-weight="800" fill="#0f172a">3. 修复与写回</text>
+    <rect x="1090" y="205" width="330" height="86" rx="8" fill="#fff7ed" stroke="#fed7aa" stroke-width="2"/>
+    <rect x="1090" y="205" width="8" height="86" rx="4" fill="#ea580c"/>
+    <text x="1120" y="240" font-size="22" font-weight="800" fill="#0f172a">解释根因</text>
+    <text x="1120" y="270" font-size="15" fill="#475569">区分原因、触发条件、偶发现象</text>
+
+    <rect x="1090" y="320" width="330" height="86" rx="8" fill="#fff7ed" stroke="#fed7aa" stroke-width="2"/>
+    <rect x="1090" y="320" width="8" height="86" rx="4" fill="#ea580c"/>
+    <text x="1120" y="355" font-size="22" font-weight="800" fill="#0f172a">最小修复</text>
+    <text x="1120" y="385" font-size="15" fill="#475569">按模块边界改，不扩散无关重构</text>
+
+    <rect x="1090" y="435" width="330" height="86" rx="8" fill="#fff7ed" stroke="#fed7aa" stroke-width="2"/>
+    <rect x="1090" y="435" width="8" height="86" rx="4" fill="#ea580c"/>
+    <text x="1120" y="470" font-size="22" font-weight="800" fill="#0f172a">验证</text>
+    <text x="1120" y="500" font-size="15" fill="#475569">命令、运行证据、残余风险</text>
+
+    <rect x="1090" y="550" width="330" height="86" rx="8" fill="#fff7ed" stroke="#fed7aa" stroke-width="2"/>
+    <rect x="1090" y="550" width="8" height="86" rx="4" fill="#ea580c"/>
+    <text x="1120" y="585" font-size="22" font-weight="800" fill="#0f172a">写回飞书</text>
+    <text x="1120" y="615" font-size="15" fill="#475569">Task / AI Run / Bugfix / Artifact</text>
+  </g>
+
+  <g font-family="Inter, PingFang SC, Arial">
+    <circle cx="88" cy="735" r="8" fill="#7c3aed"/>
+    <text x="110" y="744" font-size="27" font-weight="800" fill="#0f172a">4. 收尾沉淀</text>
+    <rect x="80" y="780" width="300" height="92" rx="8" fill="#ffffff" stroke="#ddd6fe" stroke-width="2"/>
+    <rect x="80" y="780" width="8" height="92" rx="4" fill="#7c3aed"/>
+    <text x="112" y="816" font-size="21" font-weight="800" fill="#0f172a">Receipt</text>
+    <text x="112" y="846" font-size="15" fill="#475569">确认真实写入，不伪造</text>
+
+    <rect x="430" y="780" width="300" height="92" rx="8" fill="#ffffff" stroke="#ddd6fe" stroke-width="2"/>
+    <rect x="430" y="780" width="8" height="92" rx="4" fill="#dc2626"/>
+    <text x="462" y="816" font-size="21" font-weight="800" fill="#0f172a">Outbox</text>
+    <text x="462" y="846" font-size="15" fill="#475569">失败补偿，可重试</text>
+
+    <rect x="780" y="780" width="300" height="92" rx="8" fill="#ffffff" stroke="#ddd6fe" stroke-width="2"/>
+    <rect x="780" y="780" width="8" height="92" rx="4" fill="#0f766e"/>
+    <text x="812" y="816" font-size="21" font-weight="800" fill="#0f172a">Pitfall / Playbook</text>
+    <text x="812" y="846" font-size="15" fill="#475569">高频坑和稳定流程要升级</text>
+
+    <rect x="1130" y="780" width="300" height="92" rx="8" fill="#ffffff" stroke="#ddd6fe" stroke-width="2"/>
+    <rect x="1130" y="780" width="8" height="92" rx="4" fill="#f59e0b"/>
+    <text x="1162" y="816" font-size="21" font-weight="800" fill="#0f172a">Decision / Whiteboard</text>
+    <text x="1162" y="846" font-size="15" fill="#475569">架构变化要更新关系图</text>
+  </g>
+</svg>

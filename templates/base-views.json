@@ -1,0 +1,107 @@
+{
+  "Tasks": [
+    {
+      "name": "Task Board",
+      "type": "grid",
+      "visible_fields": ["ID", "Title", "Project", "Area", "Status", "Priority", "Type", "Next Action", "AI Summary", "Search Keywords", "Source URL"],
+      "filter": {"logic": "and", "conditions": [["Status", "intersects", ["Inbox", "Ready", "Doing", "Blocked", "Review", "Verify"]]]}
+    },
+    {
+      "name": "Done Tasks",
+      "type": "grid",
+      "visible_fields": ["ID", "Title", "Project", "Area", "Status", "Completed At", "AI Summary", "Source URL"],
+      "filter": {"logic": "and", "conditions": [["Status", "intersects", ["Done"]]]}
+    }
+  ],
+  "Bugfixes": [
+    {
+      "name": "Bug Triage",
+      "type": "grid",
+      "visible_fields": ["ID", "Title", "Project", "Area", "Status", "Symptom", "Root Cause", "Fix Summary", "Verification Result", "Regression Risk", "Next Time Check", "Search Keywords", "Source URL"],
+      "filter": {"logic": "and", "conditions": [["Status", "intersects", ["Inbox", "Doing", "Fixed"]]]}
+    },
+    {
+      "name": "Verified Bugs",
+      "type": "grid",
+      "visible_fields": ["ID", "Title", "Project", "Area", "Status", "Root Cause", "Fix Summary", "Verification Commands", "Verification Result", "Commit SHA", "Search Keywords"]
+    }
+  ],
+  "Record Relations": [
+    {
+      "name": "Knowledge Edges",
+      "type": "grid",
+      "visible_fields": ["ID", "Title", "Project", "Area", "Status", "Relation Type", "Source Table", "Source Title", "Target Table", "Target Ref", "Evidence", "Search Keywords"]
+    },
+    {
+      "name": "Active Edges",
+      "type": "grid",
+      "visible_fields": ["ID", "Project", "Area", "Relation Type", "Source Table", "Source Title", "Target Table", "Target Ref", "Evidence"],
+      "filter": {"logic": "and", "conditions": [["Status", "intersects", ["Active"]]]}
+    }
+  ],
+  "AI Runs": [
+    {
+      "name": "AI Run Receipts",
+      "type": "grid",
+      "visible_fields": ["ID", "Title", "Project", "Area", "Status", "Trigger", "AI Summary", "Changed Files", "Verification Commands", "Verification Result", "Receipt Path", "Source URL", "Search Keywords"]
+    }
+  ],
+  "Releases": [
+    {
+      "name": "Release Evidence",
+      "type": "grid",
+      "visible_fields": ["ID", "Title", "Project", "Area", "Status", "Version", "Commit SHA", "Verification Commands", "Verification Result", "Rollback Notes", "AI Summary", "Source URL"]
+    }
+  ],
+  "Artifacts": [
+    {
+      "name": "Docs And Maps",
+      "type": "grid",
+      "visible_fields": ["ID", "Title", "Project", "Area", "Status", "Artifact Type", "URL", "AI Summary", "Search Keywords", "Source URL"]
+    }
+  ],
+  "Project Facts": [
+    {
+      "name": "Current Facts",
+      "type": "grid",
+      "visible_fields": ["ID", "Title", "Project", "Area", "Status", "Fact", "Current Truth", "Retired Paths", "Source", "Review Trigger", "Search Keywords"],
+      "filter": {"logic": "and", "conditions": [["Status", "intersects", ["Current", "Needs Review"]]]}
+    }
+  ],
+  "Decisions": [
+    {
+      "name": "Decision Log",
+      "type": "grid",
+      "visible_fields": ["ID", "Title", "Project", "Area", "Status", "Decision", "Context", "Consequences", "Review Trigger", "AI Summary", "Search Keywords"]
+    }
+  ],
+  "Pitfalls": [
+    {
+      "name": "Active Pitfalls",
+      "type": "grid",
+      "visible_fields": ["ID", "Title", "Project", "Area", "Status", "Scope", "Trigger Condition", "Wrong Approach", "Correct Approach", "Check Command", "Search Keywords"],
+      "filter": {"logic": "and", "conditions": [["Status", "intersects", ["Active", "Needs Review"]]]}
+    }
+  ],
+  "Playbooks": [
+    {
+      "name": "Playbook Index",
+      "type": "grid",
+      "visible_fields": ["ID", "Title", "Project", "Area", "Status", "Scenario", "Diagnosis Order", "Must Check Evidence", "Forbidden Actions", "Search Keywords"]
+    }
+  ],
+  "Areas": [
+    {
+      "name": "Area Index",
+      "type": "grid",
+      "visible_fields": ["ID", "Title", "Project", "Status", "Code Paths", "Owner", "Risk Level", "AI Summary", "Search Keywords"]
+    }
+  ],
+  "Projects": [
+    {
+      "name": "Project Index",
+      "type": "grid",
+      "visible_fields": ["ID", "Title", "Status", "Repo Path", "Repo URL", "Wiki URL", "Default Branch", "Current Focus", "AI Summary", "Search Keywords"]
+    }
+  ]
+}

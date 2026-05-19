@@ -13,6 +13,7 @@ FULL_RECALL_TABLES = [
     "Releases",
     "Decisions",
     "Project Facts",
+    "Record Relations",
     "Artifacts",
     "Pitfalls",
     "Playbooks",
@@ -30,6 +31,15 @@ def build_record_search_query(query: str) -> dict[str, Any]:
         "select_fields": SELECT_FIELDS,
         "limit": 10,
     }
+
+
+def normalize_search_result(table: str, table_id: str, data: dict[str, Any], stdout: str) -> Any:
+    if data:
+        return data
+    text = stdout.strip()
+    if text:
+        return {"ok": False, "table": table, "table_id": table_id, "raw": text, "warning": "lark-cli returned non-JSON output"}
+    return {"ok": False, "table": table, "table_id": table_id, "warning": "lark-cli returned empty output"}
 
 
 def search_devhub(
@@ -67,7 +77,7 @@ def search_devhub(
                 ],
                 check=False,
             )
-            results[table] = data if data else stdout.strip()
+            results[table] = normalize_search_result(table, table_id, data, stdout)
         except Exception as exc:
             results[table] = {"error": str(exc)}
 

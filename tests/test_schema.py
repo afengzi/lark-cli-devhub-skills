@@ -6,12 +6,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def field_name(field):
+    return field.get("name") or field.get("field_name")
+
+
 class SchemaTests(unittest.TestCase):
     def test_project_facts_table_exists_with_required_fields(self):
         schema = json.loads((ROOT / "templates" / "base-schema.json").read_text(encoding="utf-8"))
         tables = {table["name"]: table for table in schema["tables"]}
         self.assertIn("Project Facts", tables)
-        fields = {field["name"] for field in tables["Project Facts"]["fields"]}
+        fields = {field_name(field) for field in tables["Project Facts"]["fields"]}
         self.assertTrue(
             {
                 "Title",
@@ -33,6 +37,28 @@ class SchemaTests(unittest.TestCase):
         seed = json.loads((ROOT / "templates" / "seed.example.json").read_text(encoding="utf-8"))
         self.assertIn("Project Facts", seed)
         self.assertIsInstance(seed["Project Facts"], list)
+        self.assertIn("Record Relations", seed)
+
+    def test_schema_is_lightweight_and_has_record_relations(self):
+        schema = json.loads((ROOT / "templates" / "base-schema.json").read_text(encoding="utf-8"))
+        tables = {table["name"]: table for table in schema["tables"]}
+        self.assertIn("Record Relations", tables)
+
+        for table_name, table in tables.items():
+            fields = {field_name(field): field for field in table["fields"]}
+            self.assertIn("ID", fields)
+            if table_name not in {"Projects", "Record Relations"}:
+                self.assertEqual(fields["Project"]["type"], "text")
+            if table_name not in {"Projects", "Areas", "Record Relations"}:
+                self.assertEqual(fields["Area"]["type"], "text")
+            self.assertFalse(any(name and "Relation" in name for name in fields if table_name != "Record Relations"))
+
+        relation_fields = {field_name(field): field for field in tables["Record Relations"]["fields"]}
+        self.assertEqual(relation_fields["Relation Type"]["type"], "select")
+        self.assertEqual(relation_fields["Source Table"]["type"], "text")
+        self.assertEqual(relation_fields["Source Record ID"]["type"], "text")
+        self.assertEqual(relation_fields["Target Table"]["type"], "text")
+        self.assertEqual(relation_fields["Target Ref"]["type"], "text")
 
 
 if __name__ == "__main__":
