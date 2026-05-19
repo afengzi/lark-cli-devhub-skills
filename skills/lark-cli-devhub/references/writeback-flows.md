@@ -94,3 +94,26 @@ If Feishu write fails, do not fake success. Leave the generated `.devhub/outbox/
 ```bash
 python3 "$DEVHUB_HOME/bin/devhub.py" sync-outbox --cwd "$PWD"
 ```
+
+## Receipt Format
+
+Every successful write must create `.devhub/receipts/*.json` with:
+
+- `operation`
+- `created_at`
+- `target.type`
+- `target.table`
+- `target.record_id`
+- `source.type`
+- `summary`
+
+Every failed write must create `.devhub/outbox/*.json` with:
+
+- `operation`
+- `created_at`
+- `error`
+- `payload`
+- `retry_count`
+- `retry_hint`
+
+Do not claim success from a push, PR event, merge, or cron run unless a receipt exists.

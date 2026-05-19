@@ -20,10 +20,12 @@ def write_outbox(cwd: Path, kind: str, payload: dict[str, Any], error: str) -> P
         path,
         {
             "kind": kind,
+            "operation": kind,
             "created_at": now_iso(),
             "error": error,
             "payload": payload,
             "retry_count": 0,
+            "retry_hint": 'python3 "$DEVHUB_HOME/bin/devhub.py" sync-outbox --cwd "$PWD"',
         },
     )
     return path
@@ -32,14 +34,23 @@ def write_outbox(cwd: Path, kind: str, payload: dict[str, Any], error: str) -> P
 def write_receipt(cwd: Path, kind: str, record_url: str, summary: str, extra: dict[str, Any] | None = None) -> Path:
     receipts = repo_runtime_dir(cwd, "receipt_dir")
     receipts.mkdir(parents=True, exist_ok=True)
+    extra = extra or {}
+    source = extra.get("source") or {"type": "manual", "commit": "", "pr": ""}
+    target = {
+        "type": "base-record",
+        "table": extra.get("table", ""),
+        "record_id": record_url,
+    }
     data = {
         "kind": kind,
+        "operation": kind,
         "created_at": now_iso(),
         "record_url": record_url,
+        "target": target,
+        "source": source,
         "summary": summary,
+        "payload_title": extra.get("payload_title", ""),
     }
-    if extra:
-        data.update(extra)
     digest = hashlib.sha256(json.dumps(data, ensure_ascii=False, sort_keys=True).encode()).hexdigest()[:12]
     path = receipts / f"{now_iso().replace(':', '-')}-{kind}-{digest}.json"
     write_json(path, data)
