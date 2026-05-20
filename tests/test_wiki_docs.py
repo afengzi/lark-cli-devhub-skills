@@ -176,12 +176,12 @@ class WikiArtifactLayoutTests(unittest.TestCase):
             wiki_docs.write_record_relations = original_relations
             wiki_docs.now_iso = original_now_iso
 
-        self.assertEqual(result["title"], "Bugfix Retro: Voice command ack mismatch")
+        self.assertEqual(result["title"], "20 Bugfix Retros")
         self.assertEqual(result["entry_title"], "2026-05-20 19:58:12 - Bugfix Retro: Voice command ack mismatch (rec_bug)")
         self.assertEqual(result["mode"], "append")
         self.assertEqual(
             result["path"],
-            "Dev Knowledge Hub / 10 Projects / music_agent / 20 Bugfix Retros / Bugfix Retro: Voice command ack mismatch",
+            "Dev Knowledge Hub / 10 Projects / music_agent / 20 Bugfix Retros",
         )
         self.assertTrue(result["url"].startswith("https://wiki/"))
         self.assertEqual(result["artifact_record_id"], "rec_artifact")
@@ -190,7 +190,7 @@ class WikiArtifactLayoutTests(unittest.TestCase):
         self.assertTrue(any("Base record: `rec_bug`" in body for body in written_docs))
         self.assertTrue(any("## 2026-05-20 19:58:12 - Bugfix Retro: Voice command ack mismatch (rec_bug)" in body for body in written_docs))
         artifact_titles = [payload["Title"] for table, payload in records if table == "Artifacts"]
-        self.assertIn("Bugfix Retro: Voice command ack mismatch", artifact_titles)
+        self.assertIn("20 Bugfix Retros", artifact_titles)
 
     def test_write_report_wiki_artifact_creates_report_doc_and_artifact(self):
         records = []
@@ -242,12 +242,12 @@ class WikiArtifactLayoutTests(unittest.TestCase):
             wiki_docs.upsert_record = original_upsert
             wiki_docs.now_iso = original_now_iso
 
-        self.assertEqual(result["title"], "Report: music_agent weekly")
+        self.assertEqual(result["title"], "60 Reports")
         self.assertEqual(result["entry_title"], "2026-05-20 20:01:03 - Weekly Report")
         self.assertEqual(result["mode"], "append")
         self.assertEqual(
             result["path"],
-            "Dev Knowledge Hub / 10 Projects / music_agent / 60 Reports / Report: music_agent weekly",
+            "Dev Knowledge Hub / 10 Projects / music_agent / 60 Reports",
         )
         self.assertEqual(result["artifact_record_id"], "rec_report")
         self.assertTrue(any("## 2026-05-20 20:01:03 - Weekly Report" in body for body in written_docs))
@@ -314,12 +314,12 @@ class WikiArtifactLayoutTests(unittest.TestCase):
             wiki_docs.write_record_relations = original_relations
             wiki_docs.now_iso = original_now_iso
 
-        self.assertEqual(result["title"], "Report: music_agent Releases")
-        self.assertEqual(result["path"], "Dev Knowledge Hub / 10 Projects / music_agent / 60 Reports / Report: music_agent Releases")
+        self.assertEqual(result["title"], "60 Reports")
+        self.assertEqual(result["path"], "Dev Knowledge Hub / 10 Projects / music_agent / 60 Reports")
         self.assertEqual(result["entry_title"], "2026-05-20 20:20:00 - Release: Release 2026-05-20 (rec_release)")
         self.assertTrue(any("### Release 写回模板" in body for body in written_docs))
         artifact_titles = [payload["Title"] for table, payload in records if table == "Artifacts"]
-        self.assertIn("Report: music_agent Releases", artifact_titles)
+        self.assertIn("60 Reports", artifact_titles)
 
     def test_whiteboard_idempotent_tokens_do_not_collide_for_chinese_titles(self):
         titles = [

@@ -66,7 +66,7 @@ After a meaningful fix:
 1. Write a Bugfix record.
 2. Write an AI Run record.
 3. Create or update a Pitfall or Playbook when the lesson is reusable.
-4. Use `--wiki` for durable retrospectives or long narratives worth reading later. This writes the Base row first, then appends a timestamped section to the matching Wiki page and indexes that page in Base `Artifacts`.
+4. Use `--wiki` for durable retrospectives or long narratives worth reading later. This writes the Base row first, then appends a timestamped section directly into the matching numbered Wiki page and indexes that page in Base `Artifacts`.
 
 ## Write Preflight
 
@@ -76,7 +76,7 @@ This is a skill-level requirement: when this skill is active, read the template 
 
 If the work changes architecture, module boundaries, PR/writeback flow, task flow, or a recurring bug investigation path, update the relevant map under both `00 Global/50 Maps` or `10 Projects/<project>/50 Maps` when appropriate, or leave an outbox/explicit note explaining why the map was not updated.
 
-Normal `record-*` commands write Base only. Use `--wiki` when the user expects human-readable Wiki context for Bugfixes, AI Runs, Releases, Decisions, or Project Facts. Wiki writes are incremental by default: each write appends a timestamped section to a stable page instead of overwriting old content or creating a duplicate report page.
+Normal `record-*` commands write Base only. Use `--wiki` when the user expects human-readable Wiki context for Bugfixes, AI Runs, Releases, Decisions, or Project Facts. Wiki writes are incremental by default: each write appends a timestamped section into an existing numbered page such as `00 Overview`, `20 Bugfix Retros`, `40 Decisions`, or `60 Reports`, instead of overwriting old content or creating duplicate child pages.
 
 See [`references/writeback-flows.md`](references/writeback-flows.md).
 

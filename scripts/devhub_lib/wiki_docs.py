@@ -246,13 +246,6 @@ def strip_top_heading(text: str) -> str:
     return "\n".join(lines).strip()
 
 
-def wiki_log_page_title(table: str, payload: dict[str, Any], project: str) -> str:
-    spec = WIKI_WRITEBACKS[table]
-    if spec["layout_key"] == "project_reports":
-        return f"Report: {project} {table}"
-    return wiki_writeback_base_title(table, payload)
-
-
 def wiki_log_page_body(title: str, *, project: str, table: str) -> str:
     return "\n".join(
         [
@@ -308,16 +301,16 @@ def write_wiki_artifact(config: dict[str, Any], table: str, payload: dict[str, A
     project = str(payload.get("Project") or current_project_name(config)).strip() or current_project_name(config)
     layout = wiki_layout(config, project)
     spec = WIKI_WRITEBACKS[table]
-    parent = layout[spec["layout_key"]]["node_token"]
+    target_page = layout[spec["layout_key"]]
     write_time = wiki_writeback_timestamp()
     base_title = wiki_writeback_base_title(table, payload)
-    title = wiki_log_page_title(table, payload, project)
+    title = spec["area_fallback"]
     entry_title = incremental_wiki_title(base_title, base_record_id=base_record_id, write_time=write_time)
-    folder_name = spec["area_fallback"]
-    wiki_path = f"Dev Knowledge Hub / 10 Projects / {project} / {folder_name} / {title}"
+    wiki_path = f"Dev Knowledge Hub / 10 Projects / {project} / {title}"
     page_body = wiki_log_page_body(title, project=project, table=table)
     entry_body = wiki_writeback_body(table, payload, entry_title=entry_title, base_title=base_title, base_record_id=base_record_id, write_time=write_time)
-    output, _stdout, created = ensure_doc_with_status(config, title, page_body, parent_token=parent)
+    output = target_page
+    created = bool(output.get("created"))
     doc_token = document_token(output)
     if created:
         update_doc_content(doc_token, title, page_body)
@@ -352,10 +345,6 @@ def write_wiki_artifact(config: dict[str, Any], table: str, payload: dict[str, A
         "artifact_relation_records": relation_records,
         "artifact": artifact_payload,
     }
-
-
-def report_wiki_title(kind: str, project: str) -> str:
-    return f"Report: {project} {kind}"
 
 
 def report_wiki_page_body(title: str, *, kind: str, project: str) -> str:
@@ -394,12 +383,13 @@ def write_report_wiki_artifact(config: dict[str, Any], *, kind: str, project: st
     ensure_wiki(config)
     layout = wiki_layout(config, project)
     write_time = wiki_writeback_timestamp()
-    title = report_wiki_title(kind, project)
-    wiki_path = f"Dev Knowledge Hub / 10 Projects / {project} / 60 Reports / {title}"
+    title = "60 Reports"
+    wiki_path = f"Dev Knowledge Hub / 10 Projects / {project} / {title}"
     page_body = report_wiki_page_body(title, kind=kind, project=project)
     entry_title, entry_body = report_wiki_entry_body(kind, project, body, write_time=write_time)
-    output, _stdout, created = ensure_doc_with_status(config, title, page_body, parent_token=layout["project_reports"]["node_token"])
+    output = layout["project_reports"]
     doc_token = document_token(output)
+    created = bool(output.get("created"))
     if created:
         update_doc_content(doc_token, title, page_body)
     append_doc_content(doc_token, entry_body)
@@ -434,10 +424,10 @@ def write_report_wiki_artifact(config: dict[str, Any], *, kind: str, project: st
 
 def document_token(output: dict[str, Any]) -> str:
     if isinstance(output, dict):
-        for key in ("obj_token", "document_id"):
+        for key in ("doc_token", "obj_token", "document_id"):
             if output.get(key):
                 return str(output[key])
-    return find_first_token(output, {"obj_token", "document_id"})
+    return find_first_token(output, {"doc_token", "obj_token", "document_id"})
 
 
 def wiki_node_url(config: dict[str, Any], output: dict[str, Any], fallback: str) -> str:
@@ -741,25 +731,32 @@ def ensure_wiki_node(config: dict[str, Any], title: str, *, parent_token: str = 
     nodes = wiki.setdefault("nodes", {})
     key = f"{parent_token or 'root'}/{title}"
     cached = nodes.get(key)
-    if isinstance(cached, dict) and cached.get("node_token"):
-        return {"node_token": str(cached["node_token"]), "url": str(cached.get("url") or cached["node_token"])}
+    if isinstance(cached, dict) and cached.get("node_token") and cached.get("doc_token"):
+        return {
+            "node_token": str(cached["node_token"]),
+            "doc_token": str(cached["doc_token"]),
+            "url": str(cached.get("url") or cached["node_token"]),
+            "created": False,
+        }
 
     existing = find_child_node(config, parent_token, title)
     if existing:
         token = str(existing.get("node_token") or existing.get("obj_token") or existing.get("token") or "")
+        doc_token = document_token(existing) or token
         url = str(existing.get("url") or existing.get("link") or token)
-        nodes[key] = {"node_token": token, "url": url}
-        return {"node_token": token, "url": url}
+        nodes[key] = {"node_token": token, "doc_token": doc_token, "url": url}
+        return {"node_token": token, "doc_token": doc_token, "url": url, "created": False}
 
     args = ["wiki", "+node-create", "--as", "user", "--space-id", space_id, "--title", title, "--obj-type", "docx"]
     if parent_token:
         args.extend(["--parent-node-token", parent_token])
     created, _ = run_lark(args)
     token = node_token(created)
+    doc_token = document_token(created) or token
     url = node_url(created, token or title)
-    nodes[key] = {"node_token": token, "url": url}
+    nodes[key] = {"node_token": token, "doc_token": doc_token, "url": url}
     cache_child_node(config, parent_token, title, created)
-    return {"node_token": token, "url": url}
+    return {"node_token": token, "doc_token": doc_token, "url": url, "created": True}
 
 
 def create_doc(title: str, body: str, *, parent_token: str = "", space_id: str = "") -> tuple[dict[str, Any], str]:
