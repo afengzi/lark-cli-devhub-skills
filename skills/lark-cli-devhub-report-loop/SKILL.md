@@ -37,4 +37,4 @@ python3 "$DEVHUB_HOME/bin/devhub.py" report-draft \
 ```
 
 Without `--wiki`, `report-draft` only prints Markdown for review.
-With `--wiki`, each report creates a fresh timestamped Wiki page under `10 Projects/<project>/60 Reports`; it does not overwrite the previous report draft.
+With `--wiki`, each report appends a timestamped section to the stable page under `10 Projects/<project>/60 Reports`, such as `Report: <project> weekly`; it does not overwrite the previous report draft or create a duplicate report page.

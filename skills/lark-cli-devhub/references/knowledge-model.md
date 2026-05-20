@@ -51,17 +51,17 @@ Base writes are the default because they are compact, searchable, and reliable. 
 
 Use `--wiki` with these commands when long-form context is needed:
 
-- `record-bugfix --wiki`: creates a page under `10 Projects/<project>/20 Bugfix Retros`.
-- `record-ai-run --wiki`: creates a page under `10 Projects/<project>/60 Reports`.
-- `record-release --wiki`: creates a page under `10 Projects/<project>/60 Reports`.
-- `record-decision --wiki`: creates a page under `10 Projects/<project>/40 Decisions`.
-- `record-project-fact --wiki`: creates a page under `10 Projects/<project>/00 Overview`.
+- `record-bugfix --wiki`: appends to a page under `10 Projects/<project>/20 Bugfix Retros`.
+- `record-ai-run --wiki`: appends to the project AI Runs report page under `10 Projects/<project>/60 Reports`.
+- `record-release --wiki`: appends to the project Releases report page under `10 Projects/<project>/60 Reports`.
+- `record-decision --wiki`: appends to a page under `10 Projects/<project>/40 Decisions`.
+- `record-project-fact --wiki`: appends to a page under `10 Projects/<project>/00 Overview`.
 
-The helper writes the Base row first, then creates a new timestamped Wiki page, then writes a Base `Artifacts` row for that page. If Wiki writing fails, keep the Base row and leave a wiki outbox item; do not pretend the Wiki write succeeded.
+The helper writes the Base row first, then appends a timestamped section to the matching Wiki page, then writes or updates a Base `Artifacts` row for that page. If Wiki writing fails, keep the Base row and leave a wiki outbox item; do not pretend the Wiki write succeeded.
 
-Wiki writeback is incremental by default. Repeated writes with the same summary title create separate pages named with local write time and the source record id when available, such as `2026-05-20 19:58:12 - AI Run: Fix stream (recxxxx)`.
+Wiki writeback is incremental by default. Repeated writes append separate sections named with local write time and the source record id when available, such as `2026-05-20 19:58:12 - AI Run: Fix stream (recxxxx)`. The page title stays stable so humans can keep reading the same report or retrospective.
 
-Reports follow the same rule. `report-draft` prints Markdown by default; `report-draft --wiki` writes a timestamped daily, weekly, or release draft into `10 Projects/<project>/60 Reports` and indexes it through `Artifacts`.
+Reports follow the same rule. `report-draft` prints Markdown by default; `report-draft --wiki` appends a timestamped daily, weekly, or release section into `10 Projects/<project>/60 Reports` and indexes the stable report page through `Artifacts`.
 
 ## Field Policy
 

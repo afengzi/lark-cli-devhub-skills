@@ -325,8 +325,8 @@ python3 "$DEVHUB_HOME/bin/devhub.py" record-decision --payload /tmp/devhub-decis
 python3 "$DEVHUB_HOME/bin/devhub.py" record-ai-run --payload /tmp/devhub-ai-run.json --wiki
 ```
 
-`--wiki` first writes the Base row, then creates a new timestamped Wiki page and registers that page in Base `Artifacts`. If Wiki writing fails, the Base row is kept and a wiki outbox item is left for retry.
-Wiki writes are incremental by default: page titles start with local write time and include the source record id when available, for example `2026-05-20 19:58:12 - AI Run: Fix stream (recxxxx)`. The command output includes a `wiki.path` value so humans can find the page in the Feishu Wiki tree.
+`--wiki` first writes the Base row, then appends a timestamped section to the matching Wiki page and registers that page in Base `Artifacts`. If Wiki writing fails, the Base row is kept and a wiki outbox item is left for retry.
+Wiki writes are incremental by default: the page is stable, while each appended section starts with local write time and includes the source record id when available, for example `2026-05-20 19:58:12 - AI Run: Fix stream (recxxxx)`. The command output includes `wiki.path`, `wiki.entry_title`, and `wiki.mode=append` so humans can find the page and the exact appended section.
 
 Write a report draft into Wiki:
 
@@ -416,14 +416,14 @@ What is automatic:
 
 - `provision` creates or reuses the Wiki tree, Base tables/fields, views, seed records, and starter Artifacts for Docs/Whiteboards.
 - `record-*` commands write Base records, strip relation hints into `Record Relations`, and create receipts or outbox items.
-- `record-bugfix`, `record-ai-run`, `record-release`, `record-decision`, and `record-project-fact` can also write timestamped long-form Wiki pages when passed `--wiki`; those pages are indexed through Base `Artifacts`.
-- `report-draft --wiki` writes a timestamped daily, weekly, or release report draft into the project Wiki `60 Reports` folder and indexes it in Base `Artifacts`.
+- `record-bugfix`, `record-ai-run`, `record-release`, `record-decision`, and `record-project-fact` can also append timestamped long-form sections to their matching Wiki pages when passed `--wiki`; those pages are indexed through Base `Artifacts`.
+- `report-draft --wiki` appends a timestamped daily, weekly, or release report section into the stable project Wiki page under `60 Reports`, using the matching report template shape before indexing it in Base `Artifacts`.
 - Existing Base fields are not force-converted across unsafe types; safe display-style updates such as text URL style and datetime format are reconciled during provisioning.
 
 What remains a skill workflow:
 
 - Before coding, the agent should search/pick/create a native Feishu Task when the work is worth tracking, then mirror it into Base `Tasks`.
-- A normal Base record write without `--wiki` does not create a new Wiki page by itself. Use `--wiki` for durable bug retros, release notes, decisions, major AI runs, or current project facts that humans should read later. Each `--wiki` write creates a new timestamped page instead of overwriting an older page with the same summary title.
+- A normal Base record write without `--wiki` does not create or append Wiki content by itself. Use `--wiki` for durable bug retros, release notes, decisions, major AI runs, or current project facts that humans should read later. Each `--wiki` write appends a new timestamped section instead of overwriting older content or creating another report page.
 - Views update when provisioning or the view helper is run, not on every record write.
 
 For existing Bases created by older versions, remove deprecated `Project Relation` / `Area Relation` and all business-table `Related ...` columns after review:

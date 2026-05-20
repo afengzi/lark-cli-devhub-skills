@@ -122,9 +122,9 @@ Starter docs and maps belong under `00 Global` or `10 Projects/<project>`, never
 
 Provisioning writes complete template content into Docs/Wiki rather than leaving placeholder pages. The reusable template set covers project records, bugfix retrospectives, playbooks, decisions, releases, AI runs, and bug investigation paths.
 
-Runtime record writeback is Base-first. `record-*` writes the structured Base row and receipt by default. When a human-readable long-form page is needed, the agent passes `--wiki` to supported commands. The helper then writes the Base row, creates a new timestamped Wiki page, registers that page in Base `Artifacts`, and leaves a wiki outbox if the Wiki write fails.
+Runtime record writeback is Base-first. `record-*` writes the structured Base row and receipt by default. When a human-readable long-form page is needed, the agent passes `--wiki` to supported commands. The helper then writes the Base row, appends a timestamped section to the matching Wiki page, registers that page in Base `Artifacts`, and leaves a wiki outbox if the Wiki write fails.
 
-Wiki writeback is incremental by default. Page titles start with local write time and include the source record id when available, for example `2026-05-20 19:58:12 - AI Run: Fix stream (recxxxx)`. This keeps repeated writes readable in Feishu without adding another Base table.
+Wiki writeback is incremental by default. Page titles stay stable, while appended section headings start with local write time and include the source record id when available, for example `2026-05-20 19:58:12 - AI Run: Fix stream (recxxxx)`. This keeps repeated writes readable in Feishu without adding another Base table or creating duplicate report pages.
 
 Supported long-form writebacks:
 

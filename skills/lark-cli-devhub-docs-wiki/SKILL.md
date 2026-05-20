@@ -42,7 +42,7 @@ python3 "$DEVHUB_HOME/bin/devhub.py" record-decision --payload /tmp/devhub-decis
 python3 "$DEVHUB_HOME/bin/devhub.py" record-project-fact --payload /tmp/devhub-project-fact.json --wiki
 ```
 
-The helper creates a new timestamped Wiki page for every `--wiki` write. It does not overwrite an older page with the same summary title.
+The helper appends a timestamped section for every `--wiki` write. It keeps stable Wiki pages, does not overwrite older sections, and does not create a duplicate report page just to record another entry.
 
 Use direct Docs/Wiki commands for custom pages that are not tied to a Base record:
 

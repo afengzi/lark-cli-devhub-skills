@@ -24,7 +24,7 @@ class WikiArtifactLayoutTests(unittest.TestCase):
             if args[:2] == ["docs", "+fetch"]:
                 return {"data": {"document": {"content": "<title>generated</title>"}}}, "{}"
             if args[:2] == ["docs", "+update"]:
-                if "--content" in args and '<whiteboard type="blank"></whiteboard>' in args:
+                if "--markdown" in args and '<whiteboard type="blank"></whiteboard>' in args:
                     return {"data": {"document": {"new_blocks": [{"block_type": "whiteboard", "block_token": "wb_token"}]}}}, "{}"
                 return {"ok": True}, "{}"
             raise AssertionError(args)
@@ -176,21 +176,25 @@ class WikiArtifactLayoutTests(unittest.TestCase):
             wiki_docs.write_record_relations = original_relations
             wiki_docs.now_iso = original_now_iso
 
-        self.assertEqual(result["title"], "2026-05-20 19:58:12 - Bugfix Retro: Voice command ack mismatch (rec_bug)")
+        self.assertEqual(result["title"], "Bugfix Retro: Voice command ack mismatch")
+        self.assertEqual(result["entry_title"], "2026-05-20 19:58:12 - Bugfix Retro: Voice command ack mismatch (rec_bug)")
+        self.assertEqual(result["mode"], "append")
         self.assertEqual(
             result["path"],
-            "Dev Knowledge Hub / 10 Projects / music_agent / 20 Bugfix Retros / 2026-05-20 19:58:12 - Bugfix Retro: Voice command ack mismatch (rec_bug)",
+            "Dev Knowledge Hub / 10 Projects / music_agent / 20 Bugfix Retros / Bugfix Retro: Voice command ack mismatch",
         )
         self.assertTrue(result["url"].startswith("https://wiki/"))
         self.assertEqual(result["artifact_record_id"], "rec_artifact")
         self.assertEqual(result["artifact_relation_records"], ["rec_relation"])
         self.assertTrue(any("Write time: `2026-05-20 19:58:12`" in body for body in written_docs))
         self.assertTrue(any("Base record: `rec_bug`" in body for body in written_docs))
+        self.assertTrue(any("## 2026-05-20 19:58:12 - Bugfix Retro: Voice command ack mismatch (rec_bug)" in body for body in written_docs))
         artifact_titles = [payload["Title"] for table, payload in records if table == "Artifacts"]
-        self.assertIn("2026-05-20 19:58:12 - Bugfix Retro: Voice command ack mismatch (rec_bug)", artifact_titles)
+        self.assertIn("Bugfix Retro: Voice command ack mismatch", artifact_titles)
 
     def test_write_report_wiki_artifact_creates_report_doc_and_artifact(self):
         records = []
+        written_docs = []
 
         def fake_run_lark(args, check=True):
             if args[:2] == ["wiki", "+node-list"]:
@@ -205,7 +209,8 @@ class WikiArtifactLayoutTests(unittest.TestCase):
                 return {"ok": True}, "{}"
             raise AssertionError(args)
 
-        def fake_run_lark_with_input(_args, _stdin, check=True):
+        def fake_run_lark_with_input(_args, stdin, check=True):
+            written_docs.append(stdin)
             return {"ok": True}, "{}"
 
         def fake_upsert_record(_config, table, payload, **_kwargs):
@@ -229,7 +234,7 @@ class WikiArtifactLayoutTests(unittest.TestCase):
                 config,
                 kind="weekly",
                 project="music_agent",
-                body="# Weekly Report: music_agent\n",
+                body="# Weekly Report: music_agent\n\n## Completed Work\n\n- Fixed voice command ack.\n",
             )
         finally:
             wiki_docs.run_lark = original_run
@@ -237,14 +242,84 @@ class WikiArtifactLayoutTests(unittest.TestCase):
             wiki_docs.upsert_record = original_upsert
             wiki_docs.now_iso = original_now_iso
 
-        self.assertEqual(result["title"], "2026-05-20 20:01:03 - Report: music_agent weekly")
+        self.assertEqual(result["title"], "Report: music_agent weekly")
+        self.assertEqual(result["entry_title"], "2026-05-20 20:01:03 - Weekly Report")
+        self.assertEqual(result["mode"], "append")
         self.assertEqual(
             result["path"],
-            "Dev Knowledge Hub / 10 Projects / music_agent / 60 Reports / 2026-05-20 20:01:03 - Report: music_agent weekly",
+            "Dev Knowledge Hub / 10 Projects / music_agent / 60 Reports / Report: music_agent weekly",
         )
         self.assertEqual(result["artifact_record_id"], "rec_report")
+        self.assertTrue(any("## 2026-05-20 20:01:03 - Weekly Report" in body for body in written_docs))
+        self.assertTrue(any("### Completed Work" in body for body in written_docs))
         artifact_payloads = [payload for table, payload in records if table == "Artifacts"]
         self.assertEqual(artifact_payloads[0]["Status"], "Draft")
+
+    def test_release_wiki_writeback_appends_to_stable_report_page(self):
+        records = []
+        written_docs = []
+
+        def fake_run_lark(args, check=True):
+            if args[:2] == ["wiki", "+node-list"]:
+                return {"data": {"items": []}}, "{}"
+            if args[:2] == ["wiki", "+node-create"]:
+                title = args[args.index("--title") + 1]
+                token = "node_" + title.replace(" ", "_").replace("/", "_")
+                return {"node_token": token, "obj_token": "doc_" + token, "url": f"https://wiki/{token}"}, "{}"
+            if args[:2] == ["docs", "+fetch"]:
+                return {"data": {"document": {"content": "<title>old</title>"}}}, "{}"
+            if args[:2] == ["docs", "+update"]:
+                return {"ok": True}, "{}"
+            raise AssertionError(args)
+
+        def fake_run_lark_with_input(_args, stdin, check=True):
+            written_docs.append(stdin)
+            return {"ok": True}, "{}"
+
+        def fake_upsert_record(_config, table, payload, **_kwargs):
+            records.append((table, payload))
+            return {"data": {"record": {"record_id": "rec_artifact"}}}, "{}"
+
+        original_run = wiki_docs.run_lark
+        original_run_with_input = wiki_docs.run_lark_with_input
+        original_upsert = wiki_docs.upsert_record
+        original_relations = wiki_docs.write_record_relations
+        original_now_iso = wiki_docs.now_iso
+        wiki_docs.run_lark = fake_run_lark
+        wiki_docs.run_lark_with_input = fake_run_lark_with_input
+        wiki_docs.upsert_record = fake_upsert_record
+        wiki_docs.write_record_relations = lambda *_args, **_kwargs: []
+        wiki_docs.now_iso = lambda: "2026-05-20T20:20:00+08:00"
+        try:
+            config = {
+                "defaults": {"project": "music_agent"},
+                "wiki": {"space_id": "space", "root_node_token": "root", "root_url": "https://wiki/root"},
+            }
+            result = wiki_docs.write_wiki_artifact(
+                config,
+                "Releases",
+                {
+                    "Title": "Release 2026-05-20",
+                    "Project": "music_agent",
+                    "Area": "Release / Main Push",
+                    "Summary": "Published Wiki append behavior.",
+                    "Search Keywords": "release wiki append",
+                },
+                base_record_id="rec_release",
+            )
+        finally:
+            wiki_docs.run_lark = original_run
+            wiki_docs.run_lark_with_input = original_run_with_input
+            wiki_docs.upsert_record = original_upsert
+            wiki_docs.write_record_relations = original_relations
+            wiki_docs.now_iso = original_now_iso
+
+        self.assertEqual(result["title"], "Report: music_agent Releases")
+        self.assertEqual(result["path"], "Dev Knowledge Hub / 10 Projects / music_agent / 60 Reports / Report: music_agent Releases")
+        self.assertEqual(result["entry_title"], "2026-05-20 20:20:00 - Release: Release 2026-05-20 (rec_release)")
+        self.assertTrue(any("### Release 写回模板" in body for body in written_docs))
+        artifact_titles = [payload["Title"] for table, payload in records if table == "Artifacts"]
+        self.assertIn("Report: music_agent Releases", artifact_titles)
 
     def test_whiteboard_idempotent_tokens_do_not_collide_for_chinese_titles(self):
         titles = [
