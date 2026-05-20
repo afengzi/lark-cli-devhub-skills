@@ -47,6 +47,11 @@ class SchemaTests(unittest.TestCase):
         for table_name, table in tables.items():
             fields = {field_name(field): field for field in table["fields"]}
             self.assertIn("ID", fields)
+            if "Source URL" in fields:
+                self.assertEqual(fields["Source URL"].get("style"), {"type": "url"})
+            for field in fields.values():
+                if field.get("type") == "datetime":
+                    self.assertEqual(field.get("style"), {"format": "yyyy-MM-dd HH:mm"})
             if table_name not in {"Projects", "Record Relations"}:
                 self.assertEqual(fields["Project"]["type"], "text")
             if table_name not in {"Projects", "Areas", "Record Relations"}:
@@ -61,6 +66,12 @@ class SchemaTests(unittest.TestCase):
         self.assertEqual(relation_fields["Source Record ID"]["type"], "text")
         self.assertEqual(relation_fields["Target Table"]["type"], "text")
         self.assertEqual(relation_fields["Target Ref"]["type"], "text")
+
+        project_fields = {field_name(field): field for field in tables["Projects"]["fields"]}
+        self.assertEqual(project_fields["Repo URL"].get("style"), {"type": "url"})
+        self.assertEqual(project_fields["Wiki URL"].get("style"), {"type": "url"})
+        task_fields = {field_name(field): field for field in tables["Tasks"]["fields"]}
+        self.assertEqual(task_fields["Feishu Task URL"].get("style"), {"type": "url"})
 
 
 if __name__ == "__main__":

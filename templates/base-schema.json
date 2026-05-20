@@ -58,11 +58,17 @@
         },
         {
           "type": "text",
-          "name": "Source URL"
+          "name": "Source URL",
+          "style": {
+            "type": "url"
+          }
         },
         {
           "type": "datetime",
-          "name": "Last Reviewed At"
+          "name": "Last Reviewed At",
+          "style": {
+            "format": "yyyy-MM-dd HH:mm"
+          }
         },
         {
           "type": "select",
@@ -97,11 +103,17 @@
         },
         {
           "type": "text",
-          "name": "Repo URL"
+          "name": "Repo URL",
+          "style": {
+            "type": "url"
+          }
         },
         {
           "type": "text",
-          "name": "Wiki URL"
+          "name": "Wiki URL",
+          "style": {
+            "type": "url"
+          }
         },
         {
           "type": "text",
@@ -186,11 +198,17 @@
         },
         {
           "type": "text",
-          "name": "Source URL"
+          "name": "Source URL",
+          "style": {
+            "type": "url"
+          }
         },
         {
           "type": "datetime",
-          "name": "Last Reviewed At"
+          "name": "Last Reviewed At",
+          "style": {
+            "format": "yyyy-MM-dd HH:mm"
+          }
         },
         {
           "type": "select",
@@ -339,11 +357,17 @@
         },
         {
           "type": "text",
-          "name": "Source URL"
+          "name": "Source URL",
+          "style": {
+            "type": "url"
+          }
         },
         {
           "type": "datetime",
-          "name": "Last Reviewed At"
+          "name": "Last Reviewed At",
+          "style": {
+            "format": "yyyy-MM-dd HH:mm"
+          }
         },
         {
           "type": "select",
@@ -450,11 +474,17 @@
         },
         {
           "type": "datetime",
-          "name": "Due At"
+          "name": "Due At",
+          "style": {
+            "format": "yyyy-MM-dd HH:mm"
+          }
         },
         {
           "type": "text",
-          "name": "Feishu Task URL"
+          "name": "Feishu Task URL",
+          "style": {
+            "type": "url"
+          }
         },
         {
           "type": "auto_number",
@@ -585,11 +615,17 @@
         },
         {
           "type": "text",
-          "name": "Source URL"
+          "name": "Source URL",
+          "style": {
+            "type": "url"
+          }
         },
         {
           "type": "datetime",
-          "name": "Last Reviewed At"
+          "name": "Last Reviewed At",
+          "style": {
+            "format": "yyyy-MM-dd HH:mm"
+          }
         },
         {
           "type": "select",
@@ -777,11 +813,17 @@
         },
         {
           "type": "text",
-          "name": "Source URL"
+          "name": "Source URL",
+          "style": {
+            "type": "url"
+          }
         },
         {
           "type": "datetime",
-          "name": "Last Reviewed At"
+          "name": "Last Reviewed At",
+          "style": {
+            "format": "yyyy-MM-dd HH:mm"
+          }
         },
         {
           "type": "select",
@@ -880,7 +922,10 @@
         },
         {
           "type": "datetime",
-          "name": "Last Seen At"
+          "name": "Last Seen At",
+          "style": {
+            "format": "yyyy-MM-dd HH:mm"
+          }
         },
         {
           "type": "auto_number",
@@ -957,11 +1002,17 @@
         },
         {
           "type": "text",
-          "name": "Source URL"
+          "name": "Source URL",
+          "style": {
+            "type": "url"
+          }
         },
         {
           "type": "datetime",
-          "name": "Last Reviewed At"
+          "name": "Last Reviewed At",
+          "style": {
+            "format": "yyyy-MM-dd HH:mm"
+          }
         },
         {
           "type": "select",
@@ -1089,11 +1140,17 @@
         },
         {
           "type": "text",
-          "name": "Source URL"
+          "name": "Source URL",
+          "style": {
+            "type": "url"
+          }
         },
         {
           "type": "datetime",
-          "name": "Last Reviewed At"
+          "name": "Last Reviewed At",
+          "style": {
+            "format": "yyyy-MM-dd HH:mm"
+          }
         },
         {
           "type": "select",
@@ -1216,11 +1273,17 @@
         },
         {
           "type": "text",
-          "name": "Source URL"
+          "name": "Source URL",
+          "style": {
+            "type": "url"
+          }
         },
         {
           "type": "datetime",
-          "name": "Last Reviewed At"
+          "name": "Last Reviewed At",
+          "style": {
+            "format": "yyyy-MM-dd HH:mm"
+          }
         },
         {
           "type": "select",
@@ -1344,11 +1407,17 @@
         },
         {
           "type": "text",
-          "name": "Source URL"
+          "name": "Source URL",
+          "style": {
+            "type": "url"
+          }
         },
         {
           "type": "datetime",
-          "name": "Last Reviewed At"
+          "name": "Last Reviewed At",
+          "style": {
+            "format": "yyyy-MM-dd HH:mm"
+          }
         },
         {
           "type": "select",
@@ -1387,7 +1456,10 @@
         },
         {
           "type": "datetime",
-          "name": "Pushed At"
+          "name": "Pushed At",
+          "style": {
+            "format": "yyyy-MM-dd HH:mm"
+          }
         },
         {
           "type": "text",
@@ -1480,11 +1552,17 @@
         },
         {
           "type": "text",
-          "name": "Source URL"
+          "name": "Source URL",
+          "style": {
+            "type": "url"
+          }
         },
         {
           "type": "datetime",
-          "name": "Last Reviewed At"
+          "name": "Last Reviewed At",
+          "style": {
+            "format": "yyyy-MM-dd HH:mm"
+          }
         },
         {
           "type": "select",
@@ -1695,11 +1773,17 @@
         },
         {
           "type": "text",
-          "name": "Source URL"
+          "name": "Source URL",
+          "style": {
+            "type": "url"
+          }
         },
         {
           "type": "datetime",
-          "name": "Last Reviewed At"
+          "name": "Last Reviewed At",
+          "style": {
+            "format": "yyyy-MM-dd HH:mm"
+          }
         },
         {
           "type": "select",
@@ -1803,11 +1887,17 @@
         },
         {
           "type": "text",
-          "name": "Source URL"
+          "name": "Source URL",
+          "style": {
+            "type": "url"
+          }
         },
         {
           "type": "datetime",
-          "name": "Last Reviewed At"
+          "name": "Last Reviewed At",
+          "style": {
+            "format": "yyyy-MM-dd HH:mm"
+          }
         },
         {
           "type": "select",
@@ -1929,7 +2019,10 @@
         },
         {
           "type": "datetime",
-          "name": "Created At"
+          "name": "Created At",
+          "style": {
+            "format": "yyyy-MM-dd HH:mm"
+          }
         },
         {
           "type": "auto_number",

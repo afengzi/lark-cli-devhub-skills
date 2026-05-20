@@ -48,6 +48,7 @@ python3 "$DEVHUB_HOME/bin/devhub.py" provision \
 - Always include `Project`, `Area`, `AI Summary`, and `Search Keywords` when the fields exist.
 - Put long prose in Docs only when useful; keep Base summaries dense and searchable.
 - Keep business tables lightweight. Prefer `Project`, `Area`, `AI Summary`, `Search Keywords`, `Source URL`, and domain evidence fields over many cross-table relation fields.
+- Treat URL-like fields as plain string values written into Base text fields styled as URLs. Do not invent a separate `url` top-level field type.
 - Use `Record Relations` as the canonical AI-readable graph edge table. It stores source table/record, relation type, target table/ref, evidence, and search keywords.
 - Do not add `Related ...` fields to business tables by default, whether text or link/relation fields. Use Base views to make records readable for humans instead of adding more columns.
 - Prefer task/triage kanban, knowledge/artifact gallery, calendar/gantt for dated work, and grid only for exact indexes or relationship edge inspection.

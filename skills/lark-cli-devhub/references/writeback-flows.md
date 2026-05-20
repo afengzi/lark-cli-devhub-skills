@@ -114,6 +114,8 @@ Write when work needs explicit status, ownership, blocker, or next action tracki
 
 Base `Tasks` is an AI-readable index. When there is a native Feishu/Lark Task, mirror its URL/GUID here. When there is no native task, set `Task Source` to `Base Only`.
 
+`Feishu Task URL` is a URL-styled text field. `Feishu Task GUID` stays plain text.
+
 Command:
 
 ```bash
@@ -158,7 +160,7 @@ Write when a Doc, Wiki page, Whiteboard, PR, commit, file, screenshot, dashboard
   "Area": "module or product area",
   "Status": "Draft",
   "Artifact Type": "Doc",
-  "Source URL": "safe link or local path",
+  "Source URL": "safe URL",
   "Summary": "What this artifact contains.",
   "Relation Hints": "Bugfixes: bugfix title; Decisions: decision title; AI Runs: rec_xxx.",
   "AI Summary": "Dense searchable artifact summary.",

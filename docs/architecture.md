@@ -139,9 +139,12 @@ Provisioning also archives known Wiki noise created by earlier or failed runs: r
 Base stays lightweight:
 
 - Business tables keep text search fields and evidence fields, not `Related ...` columns. Temporary `Relation Hints` payload values are stripped before business-table writes.
+- URL-like fields are modeled as Feishu Base `text` fields with `style.type=url`; local receipt/outbox paths stay plain text.
 - `Record Relations` stores graph edges for AI recall: source table/record, relation type, target table/ref, evidence, and search keywords.
 - `base-views.json` creates human-facing views so people can browse task boards, bug triage, artifacts, current facts, and knowledge edges without widening every table. It uses kanban/gallery/calendar/gantt where they match the table's job, with grid only for exact index or edge inspection.
 - Advanced custom schemas may still use Feishu Base relation fields: 单向关联 maps to official `type: 18`, and 双向关联 maps to official `type: 21`.
 - Existing Bases from older versions can remove deprecated `Project Relation`, `Area Relation`, and all business-table `Related ...` fields with `devhub.py cleanup-relation-fields` after reviewing `--dry-run`.
+
+See `docs/base-field-types.md` for field type policy and deferred choices such as tags, attachments, and owner fields.
 
 Native Feishu Tasks remain the execution/reminder system. Base `Tasks` is the searchable mirror; cross-record context belongs in `Record Relations`.

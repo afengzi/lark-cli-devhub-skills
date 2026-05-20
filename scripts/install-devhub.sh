@@ -6,6 +6,7 @@ DEVHUB_HOME="${DEVHUB_HOME:-$HOME/.codex/devhub}"
 SKILLS_HOME="${SKILLS_HOME:-$HOME/.agents/skills}"
 SKILL_SET="${DEVHUB_SKILLS:-all}"
 SHOW_AUTH_GUIDE=1
+FORCE_INSTALL=0
 
 usage() {
   cat <<'EOF'
@@ -15,6 +16,7 @@ Options:
   --skills <set>       all | core | workflow | domain | comma-separated skill names
                        default: all
   --list-skills        show selectable skill groups and exit
+  --force              replace existing skill folders instead of skipping them
   --no-auth-guide      omit lark-cli auth guidance from the final output
   -h, --help           show this help
 
@@ -85,6 +87,10 @@ while [ "$#" -gt 0 ]; do
       ;;
     --no-auth-guide)
       SHOW_AUTH_GUIDE=0
+      shift
+      ;;
+    --force)
+      FORCE_INSTALL=1
       shift
       ;;
     -h|--help)
@@ -159,8 +165,12 @@ for name in "${SELECTED_SKILLS[@]}"; do
   if [ -L "$target" ]; then
     rm "$target"
   elif [ -e "$target" ]; then
-    echo "skip existing non-symlink skill: $target"
-    continue
+    if [ "$FORCE_INSTALL" -eq 1 ]; then
+      rm -rf "$target"
+    else
+      echo "skip existing non-symlink skill: $target"
+      continue
+    fi
   fi
   ln -s "$skill_dir" "$target"
   installed_skills+=("$target")

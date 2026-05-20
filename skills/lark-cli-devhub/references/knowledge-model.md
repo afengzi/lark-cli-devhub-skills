@@ -60,6 +60,8 @@ Fill content-specific evidence fields when the record type calls for them, such 
 
 Keep the default Base lightweight. Do not add `Related ...` columns to business tables.
 
+URL-like fields such as `Source URL`, `Repo URL`, `Wiki URL`, and `Feishu Task URL` are Base `text` fields with URL style. Write them as ordinary strings. Keep local filesystem paths such as `Receipt Path` and `Outbox Path` as plain text.
+
 Use `Record Relations` for AI-readable graph edges:
 
 - `Source Table` / `Source Record ID` / `Source Title`

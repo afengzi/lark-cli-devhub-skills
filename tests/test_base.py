@@ -106,6 +106,53 @@ class BaseProvisionTests(unittest.TestCase):
         self.assertEqual(payload["link_table"], "tbl_releases")
         self.assertFalse(payload["bidirectional"])
 
+    def test_existing_text_field_style_is_updated_when_schema_sets_url_style(self):
+        calls = []
+
+        def fake_run_lark(args, check=True):
+            calls.append(args)
+            if args[:2] == ["base", "+field-list"]:
+                return {
+                    "data": {
+                        "fields": [
+                            {"name": "Source URL", "id": "fld_source", "type": "text", "style": {"type": "plain"}},
+                        ]
+                    }
+                }, "{}"
+            if args[:2] == ["base", "+field-update"]:
+                return {"ok": True}, "{}"
+            raise AssertionError(args)
+
+        original = base_module.run_lark
+        base_module.run_lark = fake_run_lark
+        try:
+            config = {
+                "base": {
+                    "token": "base-token",
+                    "tables": {"Tasks": {"id": "tbl_tasks", "fields": {}}},
+                }
+            }
+            schema = {
+                "tables": [
+                    {
+                        "name": "Tasks",
+                        "fields": [
+                            {"type": "text", "name": "Source URL", "style": {"type": "url"}},
+                        ],
+                    }
+                ]
+            }
+            base_module.create_tables_and_fields(config, schema)
+        finally:
+            base_module.run_lark = original
+
+        updates = [args for args in calls if args[:2] == ["base", "+field-update"]]
+        self.assertEqual(len(updates), 1)
+        self.assertIn("--yes", updates[0])
+        payload = json.loads(updates[0][updates[0].index("--json") + 1])
+        self.assertEqual(payload, {"type": "text", "name": "Source URL", "style": {"type": "url"}})
+        self.assertEqual(config["base"]["tables"]["Tasks"]["field_styles"]["Source URL"], '{"type": "url"}')
+
     def test_upsert_record_can_match_existing_record_by_title_and_project(self):
         calls = []
 

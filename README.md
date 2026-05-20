@@ -138,6 +138,8 @@ The helper installer defaults to all local skills, but it can also install a sub
 ./scripts/install-devhub.sh --skills lark-cli-devhub,lark-cli-devhub-code-loop
 ```
 
+If an older non-symlink skill folder already exists and you intentionally want to replace it with this repo's latest skill files, add `--force`.
+
 The helper installer also prints the recommended `lark-cli auth` setup commands after installation. Use `--no-auth-guide` only if your Feishu/Lark app is already authorized.
 
 ## Lark CLI Auth Setup
@@ -378,9 +380,22 @@ Dev Knowledge Hub
 Base is intentionally lightweight:
 
 - Business tables keep searchable text fields and evidence fields. They do not keep `Related ...` columns by default, whether text or link/relation fields.
+- URL-like fields such as `Source URL`, `Repo URL`, `Wiki URL`, and `Feishu Task URL` are Feishu Base text fields with URL style, so humans can click them while agents still write simple strings.
 - `Record Relations` is the AI-readable graph edge table. Agents may use temporary payload hints such as `Relation Hints: Tasks: Fix login`; the helper strips those hints from the business table write and stores the edge in `Record Relations`.
 - Views from `base-views.json` keep human browsing comfortable: tasks and triage use kanban, reusable knowledge and artifacts use gallery, dated work uses calendar/gantt, and exact edge inspection keeps a grid fallback.
 - Feishu Base relation fields are still supported for advanced custom schemas: 单向关联 uses official `type: 18`, and 双向关联 uses official `type: 21`. They are not part of the default lightweight schema.
+
+What is automatic:
+
+- `provision` creates or reuses the Wiki tree, Base tables/fields, views, seed records, and starter Artifacts for Docs/Whiteboards.
+- `record-*` commands write Base records, strip relation hints into `Record Relations`, and create receipts or outbox items.
+- Existing Base fields are not force-converted across unsafe types; safe display-style updates such as text URL style and datetime format are reconciled during provisioning.
+
+What remains a skill workflow:
+
+- Before coding, the agent should search/pick/create a native Feishu Task when the work is worth tracking, then mirror it into Base `Tasks`.
+- Wiki/Docs long-form pages are created during provisioning or when the docs/wiki skill is used; a normal Base record write does not create a new Wiki page by itself.
+- Views update when provisioning or the view helper is run, not on every record write.
 
 For existing Bases created by older versions, remove deprecated `Project Relation` / `Area Relation` and all business-table `Related ...` columns after review:
 
@@ -450,6 +465,7 @@ templates/
   cron-report.yml
 docs/
   architecture.md
+  base-field-types.md
   lark-cli-capability-map.md
   marketplaces.md
 ```

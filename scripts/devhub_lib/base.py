@@ -43,6 +43,13 @@ def field_id(field: dict[str, Any]) -> str:
     return str(field.get("id") or field.get("field_id") or field_display_name(field))
 
 
+def field_style_signature(field: dict[str, Any]) -> str:
+    style = field.get("style")
+    if isinstance(style, dict):
+        return json.dumps(style, ensure_ascii=False, sort_keys=True)
+    return ""
+
+
 def is_deprecated_relation_field(name: str) -> bool:
     return name in {"Project Relation", "Area Relation", "Project Link", "Area Link"} or name.startswith("Related ")
 
@@ -127,6 +134,7 @@ def hydrate_existing_fields(config: dict[str, Any], table_name: str) -> None:
     known = table_info.setdefault("fields", {})
     types = table_info.setdefault("field_types", {})
     relation_modes = table_info.setdefault("field_relation_modes", {})
+    styles = table_info.setdefault("field_styles", {})
     for field in fields:
         name = field_display_name(field)
         if not name:
@@ -134,6 +142,9 @@ def hydrate_existing_fields(config: dict[str, Any], table_name: str) -> None:
         known[name] = str(field.get("id") or known.get(name) or name)
         if field.get("type"):
             types[name] = str(field["type"])
+        style_signature = field_style_signature(field)
+        if style_signature:
+            styles[name] = style_signature
         if field.get("type") == "link":
             relation_modes[name] = "duplex" if field.get("bidirectional") else "single"
 
@@ -242,6 +253,29 @@ def create_tables_and_fields(config: dict[str, Any], schema: dict[str, Any]) -> 
                         f"existing field type is {existing_type}; schema expects {field.get('type')}. "
                         "Dev Hub will not mutate existing field types automatically."
                     )
+                elif field_style_signature(field) and table_info.setdefault("field_styles", {}).get(field_name) != field_style_signature(field):
+                    try:
+                        run_lark(
+                            [
+                                "base",
+                                "+field-update",
+                                "--as",
+                                "user",
+                                "--base-token",
+                                token,
+                                "--table-id",
+                                table_info["id"],
+                                "--field-id",
+                                known_value,
+                                "--json",
+                                json.dumps(field_create_payload(config, field), ensure_ascii=False),
+                                "--yes",
+                            ],
+                        )
+                        table_info.setdefault("field_styles", {})[field_name] = field_style_signature(field)
+                        table_info.setdefault("field_warnings", {}).pop(field_name, None)
+                    except Exception as exc:
+                        table_info.setdefault("field_warnings", {})[field_name] = str(exc)
                 continue
             try:
                 field_to_create = field_create_payload(config, field)
