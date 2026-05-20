@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-import json
 import re
 from typing import Any
 
 from .base import cell_text, find_matching_record_id, upsert_record
 from .io import find_first_token, now_iso
-from .paths import DEFAULT_REPO
 from .relationships import write_record_relations
 from .wiki_common import (
     append_doc_content,
@@ -15,8 +13,6 @@ from .wiki_common import (
     ensure_doc_title,
     ensure_wiki,
     markdown_table_row,
-    read_template,
-    render_template,
     update_doc_content,
     wiki_layout,
     wiki_node_url,
@@ -116,6 +112,165 @@ def strip_top_heading(text: str) -> str:
     return "\n".join(lines).strip()
 
 
+def payload_value(payload: dict[str, Any], *keys: str, default: str = "未提供") -> str:
+    for key in keys:
+        value = payload.get(key)
+        text = cell_text(value).strip()
+        if text:
+            return text
+    return default
+
+
+def payload_table(payload: dict[str, Any], rows: list[tuple[str, str | tuple[str, ...]]]) -> str:
+    lines = ["| 字段 | 内容 |", "|---|---|"]
+    for label, keys in rows:
+        if isinstance(keys, str):
+            keys = (keys,)
+        lines.append(markdown_table_row(label, payload_value(payload, *keys)))
+    return "\n".join(lines)
+
+
+def code_block(value: str, *, language: str = "bash") -> str:
+    text = value.strip()
+    if not text:
+        text = "# 未提供"
+    return f"```{language}\n{text}\n```"
+
+
+def bullet_block(value: str) -> str:
+    text = value.strip()
+    if not text:
+        return "- 未提供"
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    if not lines:
+        return "- 未提供"
+    if len(lines) == 1 and (";" in lines[0] or "；" in lines[0]):
+        lines = [item.strip() for item in re.split(r"[;；]", lines[0]) if item.strip()]
+    return "\n".join(line if line.startswith(("-", "*", "1.")) else f"- {line}" for line in lines)
+
+
+def section(title: str, content: str) -> list[str]:
+    return [f"### {title}", "", content.strip() or "未提供", ""]
+
+
+def long_form_section(payload: dict[str, Any]) -> list[str]:
+    body = str(payload.get("Wiki Body") or "").strip()
+    if not body:
+        return []
+    return ["### 补充说明", "", demote_markdown_headings(strip_top_heading(body), levels=1), ""]
+
+
+def relation_hints_section(payload: dict[str, Any]) -> list[str]:
+    return section("相关记录线索", payload_value(payload, "Relation Hints", "Linked Records", "Related Records"))
+
+
+def render_bugfix_entry(payload: dict[str, Any]) -> str:
+    parts: list[str] = []
+    parts.extend(section("快速摘要", payload_table(payload, [("Project", "Project"), ("Area", "Area"), ("Status", "Status"), ("Severity", "Severity"), ("Commit / PR", ("Commit SHA", "PR", "Source URL"))])))
+    parts.extend(section("症状", payload_value(payload, "Symptom")))
+    parts.extend(section("证据", payload_value(payload, "Evidence")))
+    parts.extend(section("根因", payload_value(payload, "Root Cause")))
+    parts.extend(section("修复方案", payload_value(payload, "Fix Summary")))
+    parts.extend(section("改动文件", bullet_block(payload_value(payload, "Changed Files", default=""))))
+    parts.extend(section("验证", payload_table(payload, [("Commands", "Verification Commands"), ("Result", "Verification Result")])))
+    parts.extend(section("回归风险", payload_value(payload, "Regression Risk")))
+    parts.extend(section("下次优先检查", payload_value(payload, "Next Time Check")))
+    parts.extend(section("不要再做", payload_value(payload, "Avoid")))
+    parts.extend(relation_hints_section(payload))
+    parts.extend(long_form_section(payload))
+    return "\n".join(parts).rstrip()
+
+
+def render_pitfall_entry(payload: dict[str, Any]) -> str:
+    parts: list[str] = []
+    parts.extend(section("快速摘要", payload_table(payload, [("Project", "Project"), ("Area", "Area"), ("Scope", "Scope"), ("Severity", "Severity"), ("Last Seen", "Last Seen At")])))
+    parts.extend(section("触发条件", payload_value(payload, "Trigger Condition")))
+    parts.extend(section("错误做法", payload_value(payload, "Wrong Approach")))
+    parts.extend(section("正确做法", payload_value(payload, "Correct Approach")))
+    parts.extend(section("检查命令", code_block(payload_value(payload, "Check Command", default=""))))
+    parts.extend(section("下次优先检查", payload_value(payload, "Next Time Check")))
+    parts.extend(section("禁止动作", payload_value(payload, "Avoid")))
+    parts.extend(relation_hints_section(payload))
+    parts.extend(long_form_section(payload))
+    return "\n".join(parts).rstrip()
+
+
+def render_playbook_entry(payload: dict[str, Any]) -> str:
+    parts: list[str] = []
+    parts.extend(section("适用场景", payload_value(payload, "Scenario")))
+    parts.extend(section("排查顺序", payload_value(payload, "Diagnosis Order")))
+    parts.extend(section("必看证据", payload_value(payload, "Must Check Evidence")))
+    parts.extend(section("命令", code_block(payload_value(payload, "Commands", default=""))))
+    parts.extend(section("成功标准", payload_value(payload, "Success Criteria")))
+    parts.extend(section("禁止动作", payload_value(payload, "Forbidden Actions")))
+    parts.extend(relation_hints_section(payload))
+    parts.extend(long_form_section(payload))
+    return "\n".join(parts).rstrip()
+
+
+def render_decision_entry(payload: dict[str, Any]) -> str:
+    parts: list[str] = []
+    parts.extend(section("决策", payload_value(payload, "Decision")))
+    parts.extend(section("背景", payload_value(payload, "Context")))
+    parts.extend(section("备选方案", payload_value(payload, "Alternatives")))
+    parts.extend(section("取舍", payload_value(payload, "Tradeoffs")))
+    parts.extend(section("影响范围", payload_value(payload, "Consequences")))
+    parts.extend(section("复审触发器", payload_value(payload, "Review Trigger")))
+    parts.extend(relation_hints_section(payload))
+    parts.extend(long_form_section(payload))
+    return "\n".join(parts).rstrip()
+
+
+def render_project_fact_entry(payload: dict[str, Any]) -> str:
+    parts: list[str] = []
+    parts.extend(section("基本信息", payload_table(payload, [("Project", "Project"), ("Area", "Area"), ("Status", "Status"), ("Source", "Source"), ("Last Reviewed", "Last Reviewed At")])))
+    parts.extend(section("事实", payload_value(payload, "Fact", "Title")))
+    parts.extend(section("当前真实状态", payload_value(payload, "Current Truth")))
+    parts.extend(section("已退役路径 / 旧事实", payload_value(payload, "Retired Paths")))
+    parts.extend(section("复审触发器", payload_value(payload, "Review Trigger")))
+    parts.extend(section("AI 检索关键词", payload_value(payload, "Search Keywords")))
+    parts.extend(relation_hints_section(payload))
+    parts.extend(long_form_section(payload))
+    return "\n".join(parts).rstrip()
+
+
+def render_ai_run_entry(payload: dict[str, Any]) -> str:
+    parts: list[str] = []
+    parts.extend(section("基本信息", payload_table(payload, [("Project", "Project"), ("Area", "Area"), ("Agent", "Agent"), ("Task Intent", "Task Intent"), ("Commit / PR", ("Commit SHA", "PR", "Source URL"))])))
+    parts.extend(section("本次做了什么", payload_value(payload, "Actions Taken")))
+    parts.extend(section("查过的证据", payload_value(payload, "Evidence Checked")))
+    parts.extend(section("改过的文件", bullet_block(payload_value(payload, "Files Changed", default=""))))
+    parts.extend(section("验证", payload_table(payload, [("Commands", "Verification Commands"), ("Result", "Verification Result")])))
+    parts.extend(section("写回状态", payload_value(payload, "Writeback Status")))
+    parts.extend(section("后续风险", payload_value(payload, "Follow-up Risk", "Risk", "Regression Risk")))
+    parts.extend(relation_hints_section(payload))
+    parts.extend(long_form_section(payload))
+    return "\n".join(parts).rstrip()
+
+
+def render_release_entry(payload: dict[str, Any]) -> str:
+    parts: list[str] = []
+    parts.extend(section("发布信息", payload_table(payload, [("Project", "Project"), ("Branch", "Branch"), ("Commit SHA", "Commit SHA"), ("PR", "PR"), ("Status", "Status")])))
+    parts.extend(section("发布摘要", payload_value(payload, "Summary", "AI Summary")))
+    parts.extend(section("验证证据", payload_table(payload, [("Commands", "Verification Commands"), ("Result", "Verification Result")])))
+    parts.extend(relation_hints_section(payload))
+    parts.extend(section("回滚方案", payload_value(payload, "Rollback Notes")))
+    parts.extend(section("发布后观察", payload_value(payload, "Post Release Watch", "Watch Notes", "Regression Risk")))
+    parts.extend(long_form_section(payload))
+    return "\n".join(parts).rstrip()
+
+
+WIKI_ENTRY_RENDERERS = {
+    "Bugfixes": render_bugfix_entry,
+    "Pitfalls": render_pitfall_entry,
+    "Playbooks": render_playbook_entry,
+    "AI Runs": render_ai_run_entry,
+    "Releases": render_release_entry,
+    "Decisions": render_decision_entry,
+    "Project Facts": render_project_fact_entry,
+}
+
+
 def wiki_log_page_body(title: str, *, project: str, table: str) -> str:
     return "\n".join(
         [
@@ -140,11 +295,10 @@ def wiki_writeback_body(
     base_record_id: str = "",
     write_time: str = "",
 ) -> str:
-    project = str(payload.get("Project") or current_project_name({})).strip() or DEFAULT_REPO.name
-    template = render_template(read_template("wiki", WIKI_WRITEBACKS[table]["template"], f"# {entry_title}\n"), project=project)
     visible_payload = {key: value for key, value in payload.items() if key not in {"Relation Hints", "Wiki Body", "Wiki Title"}}
     rows = "\n".join(markdown_table_row(key, value) for key, value in visible_payload.items())
-    body = str(payload.get("Wiki Body") or "").strip()
+    renderer = WIKI_ENTRY_RENDERERS.get(table)
+    rendered_body = renderer(payload) if renderer else ""
     parts = [
         f"## {entry_title}",
         "",
@@ -154,13 +308,13 @@ def wiki_writeback_body(
         parts.extend(["", f"Write summary: {base_title}"])
     if base_record_id:
         parts.extend(["", f"Base record: `{base_record_id}`"])
-    parts.extend(["", "### Template", "", demote_markdown_headings(template.strip(), levels=2), "", "### Structured Writeback", "", "| Field | Value |", "|---|---|"])
+    if rendered_body:
+        parts.extend(["", rendered_body])
+    parts.extend(["", "### 原始结构化字段", "", "| Field | Value |", "|---|---|"])
     if rows:
         parts.append(rows)
     else:
         parts.append("|  |  |")
-    if body:
-        parts.extend(["", "### Long-form Notes", "", demote_markdown_headings(body, levels=1)])
     return "\n".join(parts).rstrip() + "\n"
 
 

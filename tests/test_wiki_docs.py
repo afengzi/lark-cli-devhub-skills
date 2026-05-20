@@ -226,6 +226,9 @@ class WikiArtifactLayoutTests(unittest.TestCase):
                     "Title": "Voice command ack mismatch",
                     "Project": "music_agent",
                     "Area": "voice",
+                    "Symptom": "Command ack was routed to the wrong endpoint.",
+                    "Root Cause": "Old flow audio ack assumptions were still present.",
+                    "Fix Summary": "Use the current command stream ack path.",
                     "AI Summary": "Fixed command ack mismatch.",
                     "Search Keywords": "voice command ack",
                 },
@@ -252,6 +255,9 @@ class WikiArtifactLayoutTests(unittest.TestCase):
         self.assertTrue(any("Write time: `2026-05-20 19:58:12`" in body for body in written_docs))
         self.assertTrue(any("Base record: `rec_bug`" in body for body in written_docs))
         self.assertTrue(any("## 2026-05-20 19:58:12 - Bugfix Retro: Voice command ack mismatch (rec_bug)" in body for body in written_docs))
+        self.assertTrue(any("### 症状" in body and "Command ack was routed to the wrong endpoint." in body for body in written_docs))
+        self.assertTrue(any("### 根因" in body and "Old flow audio ack assumptions were still present." in body for body in written_docs))
+        self.assertFalse(any("### Bugfix 复盘模板" in body for body in written_docs))
         artifact_titles = [payload["Title"] for table, payload in records if table == "Artifacts"]
         self.assertIn("20 Bugfix Retros", artifact_titles)
 
@@ -380,7 +386,8 @@ class WikiArtifactLayoutTests(unittest.TestCase):
         self.assertEqual(result["title"], "60 Reports")
         self.assertEqual(result["path"], "Dev Knowledge Hub / 10 Projects / music_agent / 60 Reports")
         self.assertEqual(result["entry_title"], "2026-05-20 20:20:00 - Release: Release 2026-05-20 (rec_release)")
-        self.assertTrue(any("### Release 写回模板" in body for body in written_docs))
+        self.assertTrue(any("### 发布摘要" in body and "Published Wiki append behavior." in body for body in written_docs))
+        self.assertFalse(any("### Release 写回模板" in body for body in written_docs))
         artifact_titles = [payload["Title"] for table, payload in records if table == "Artifacts"]
         self.assertIn("60 Reports", artifact_titles)
 
@@ -434,6 +441,8 @@ class WikiArtifactLayoutTests(unittest.TestCase):
                     "Project": "music_agent",
                     "Area": "Voice",
                     "Scenario": "Voice command stream fails",
+                    "Diagnosis Order": "Check command stream, then ack result, then Volc update callback.",
+                    "Commands": "pytest tests/test_voice_commands.py",
                     "Search Keywords": "voice command playbook",
                 },
                 base_record_id="rec_playbook",
@@ -447,9 +456,26 @@ class WikiArtifactLayoutTests(unittest.TestCase):
 
         self.assertEqual(result["title"], "30 Playbooks")
         self.assertEqual(result["entry_title"], "2026-05-21 01:10:00 - Playbook: Voice command debugging (rec_playbook)")
-        self.assertTrue(any("### Playbook 模板" in body for body in written_docs))
+        self.assertTrue(any("### 适用场景" in body and "Voice command stream fails" in body for body in written_docs))
+        self.assertTrue(any("pytest tests/test_voice_commands.py" in body for body in written_docs))
+        self.assertFalse(any("### Playbook 模板" in body for body in written_docs))
         artifact_titles = [payload["Title"] for table, payload in records if table == "Artifacts"]
         self.assertIn("30 Playbooks", artifact_titles)
+
+    def test_wiki_writeback_body_marks_missing_fields_without_raw_template(self):
+        body = wiki_writeback.wiki_writeback_body(
+            "Decisions",
+            {"Title": "Keep append-only pages", "Project": "music_agent"},
+            entry_title="2026-05-21 01:20:00 - Decision: Keep append-only pages",
+            base_title="Decision: Keep append-only pages",
+            base_record_id="rec_decision",
+            write_time="2026-05-21 01:20:00",
+        )
+
+        self.assertIn("### 决策", body)
+        self.assertIn("未提供", body)
+        self.assertIn("### 原始结构化字段", body)
+        self.assertNotIn("Decision 决策模板", body)
 
     def test_append_doc_content_uses_legacy_markdown_fallback(self):
         calls = []
