@@ -326,6 +326,7 @@ python3 "$DEVHUB_HOME/bin/devhub.py" record-ai-run --payload /tmp/devhub-ai-run.
 ```
 
 `--wiki` first writes the Base row, then creates or updates the matching Wiki page and registers that page in Base `Artifacts`. If Wiki writing fails, the Base row is kept and a wiki outbox item is left for retry.
+The command output includes a `wiki.path` value so humans can find the page in the Feishu Wiki tree.
 
 Write a report draft into Wiki:
 

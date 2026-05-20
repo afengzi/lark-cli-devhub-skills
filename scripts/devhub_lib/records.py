@@ -99,6 +99,7 @@ def record_command(kind: str, table: str, payload_path: Path, cwd: Path, *, writ
                                 "table": "Artifacts",
                                 "url": str(wiki_result.get("url") or ""),
                                 "title": str(wiki_result.get("title") or ""),
+                                "path": str(wiki_result.get("path") or ""),
                                 "base_record_id": str(record_url),
                             },
                         },

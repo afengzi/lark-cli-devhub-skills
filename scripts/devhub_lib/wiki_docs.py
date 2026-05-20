@@ -251,6 +251,8 @@ def write_wiki_artifact(config: dict[str, Any], table: str, payload: dict[str, A
     spec = WIKI_WRITEBACKS[table]
     parent = layout[spec["layout_key"]]["node_token"]
     title = wiki_writeback_title(table, payload)
+    folder_name = spec["area_fallback"]
+    wiki_path = f"Dev Knowledge Hub / 10 Projects / {project} / {folder_name} / {title}"
     body = wiki_writeback_body(table, payload, title=title, base_record_id=base_record_id)
     output, _stdout = ensure_doc(config, title, body, parent_token=parent)
     doc_token = document_token(output)
@@ -276,6 +278,7 @@ def write_wiki_artifact(config: dict[str, Any], table: str, payload: dict[str, A
     relation_records = write_record_relations(config, "Artifacts", artifact_record_id, artifact_payload) if artifact_record_id else []
     return {
         "title": title,
+        "path": wiki_path,
         "url": url,
         "doc_token": doc_token,
         "artifact_record_id": artifact_record_id,
@@ -288,6 +291,7 @@ def write_report_wiki_artifact(config: dict[str, Any], *, kind: str, project: st
     ensure_wiki(config)
     layout = wiki_layout(config, project)
     title = f"Report: {project} {kind} {date.today().isoformat()}"
+    wiki_path = f"Dev Knowledge Hub / 10 Projects / {project} / 60 Reports / {title}"
     output, _stdout = ensure_doc(config, title, body, parent_token=layout["project_reports"]["node_token"])
     doc_token = document_token(output)
     update_doc_content(doc_token, title, body)
@@ -308,7 +312,14 @@ def write_report_wiki_artifact(config: dict[str, Any], *, kind: str, project: st
     artifact_record_id = cell_text(find_first_token(artifact_output, {"_record_id", "record_id", "record_url", "url", "link"}))
     if not artifact_record_id:
         artifact_record_id = find_matching_record_id(config, "Artifacts", artifact_payload, ["Title", "Project"])
-    return {"title": title, "url": url, "doc_token": doc_token, "artifact_record_id": artifact_record_id, "artifact": artifact_payload}
+    return {
+        "title": title,
+        "path": wiki_path,
+        "url": url,
+        "doc_token": doc_token,
+        "artifact_record_id": artifact_record_id,
+        "artifact": artifact_payload,
+    }
 
 
 def document_token(output: dict[str, Any]) -> str:

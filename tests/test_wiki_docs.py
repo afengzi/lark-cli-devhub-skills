@@ -174,6 +174,10 @@ class WikiArtifactLayoutTests(unittest.TestCase):
             wiki_docs.write_record_relations = original_relations
 
         self.assertEqual(result["title"], "Bugfix Retro: Voice command ack mismatch")
+        self.assertEqual(
+            result["path"],
+            "Dev Knowledge Hub / 10 Projects / music_agent / 20 Bugfix Retros / Bugfix Retro: Voice command ack mismatch",
+        )
         self.assertTrue(result["url"].startswith("https://wiki/"))
         self.assertEqual(result["artifact_record_id"], "rec_artifact")
         self.assertEqual(result["artifact_relation_records"], ["rec_relation"])
@@ -227,6 +231,7 @@ class WikiArtifactLayoutTests(unittest.TestCase):
             wiki_docs.upsert_record = original_upsert
 
         self.assertTrue(result["title"].startswith("Report: music_agent weekly "))
+        self.assertTrue(result["path"].startswith("Dev Knowledge Hub / 10 Projects / music_agent / 60 Reports / Report: music_agent weekly "))
         self.assertEqual(result["artifact_record_id"], "rec_report")
         artifact_payloads = [payload for table, payload in records if table == "Artifacts"]
         self.assertEqual(artifact_payloads[0]["Status"], "Draft")

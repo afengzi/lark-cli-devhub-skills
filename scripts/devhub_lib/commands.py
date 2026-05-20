@@ -114,6 +114,7 @@ def command_report_draft(args: Any) -> int:
                     "table": "Artifacts",
                     "url": str(result.get("url") or ""),
                     "title": str(result.get("title") or ""),
+                    "path": str(result.get("path") or ""),
                     "artifact_record_id": str(result.get("artifact_record_id") or ""),
                 },
             },
