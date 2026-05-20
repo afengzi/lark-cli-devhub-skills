@@ -3,6 +3,9 @@ import tempfile
 from pathlib import Path
 
 import scripts.devhub_lib.wiki_docs as wiki_docs
+import scripts.devhub_lib.wiki_common as wiki_common
+import scripts.devhub_lib.wiki_whiteboards as wiki_whiteboards
+import scripts.devhub_lib.wiki_writeback as wiki_writeback
 
 
 class WikiArtifactLayoutTests(unittest.TestCase):
@@ -39,12 +42,16 @@ class WikiArtifactLayoutTests(unittest.TestCase):
             for payload in payloads:
                 records.append((table, payload))
 
-        original_run = wiki_docs.run_lark
-        original_run_with_input = wiki_docs.run_lark_with_input
+        original_common_run = wiki_common.run_lark
+        original_common_run_with_input = wiki_common.run_lark_with_input
+        original_whiteboard_run = wiki_whiteboards.run_lark
+        original_whiteboard_run_with_input = wiki_whiteboards.run_lark_with_input
         original_batch_upsert = wiki_docs.batch_upsert_records
         original_update_input = wiki_docs.whiteboard_update_input
-        wiki_docs.run_lark = fake_run_lark
-        wiki_docs.run_lark_with_input = fake_run_lark_with_input
+        wiki_common.run_lark = fake_run_lark
+        wiki_common.run_lark_with_input = fake_run_lark_with_input
+        wiki_whiteboards.run_lark = fake_run_lark
+        wiki_whiteboards.run_lark_with_input = fake_run_lark_with_input
         wiki_docs.batch_upsert_records = fake_batch_upsert_records
         wiki_docs.whiteboard_update_input = lambda _template, _source: ("{}", "raw")
         try:
@@ -54,8 +61,10 @@ class WikiArtifactLayoutTests(unittest.TestCase):
             }
             wiki_docs.create_artifacts(config)
         finally:
-            wiki_docs.run_lark = original_run
-            wiki_docs.run_lark_with_input = original_run_with_input
+            wiki_common.run_lark = original_common_run
+            wiki_common.run_lark_with_input = original_common_run_with_input
+            wiki_whiteboards.run_lark = original_whiteboard_run
+            wiki_whiteboards.run_lark_with_input = original_whiteboard_run_with_input
             wiki_docs.batch_upsert_records = original_batch_upsert
             wiki_docs.whiteboard_update_input = original_update_input
 
@@ -72,14 +81,14 @@ class WikiArtifactLayoutTests(unittest.TestCase):
             args
             for args in calls
             if args[:2] == ["wiki", "+node-create"]
-            and args[args.index("--title") + 1] in {"Global: Dev Hub 使用说明", "music_agent: 项目主页"}
+            and args[args.index("--title") + 1] in {"Global: Dev Hub 使用说明"}
         ]
         self.assertTrue(all("--parent-node-token" in args for args in content_node_creates))
         self.assertFalse(any(args[args.index("--parent-node-token") + 1] == "root" for args in content_node_creates))
 
         artifact_titles = [payload["Title"] for table, payload in records if table == "Artifacts"]
         self.assertIn("Global: Dev Hub 使用说明", artifact_titles)
-        self.assertIn("music_agent: 项目主页", artifact_titles)
+        self.assertIn("00 Overview", artifact_titles)
         self.assertIn("music_agent: 架构图", artifact_titles)
         self.assertIn("Global: PR 写回流程图", artifact_titles)
         self.assertIn("Global: 任务执行闭环图", artifact_titles)
@@ -90,9 +99,59 @@ class WikiArtifactLayoutTests(unittest.TestCase):
         board_updates = [args for args in calls if args[:2] == ["whiteboard", "+update"] and "--dry-run" not in args]
         self.assertGreaterEqual(len(board_updates), 11)
 
+    def test_project_numbered_page_cleanup_archives_children_except_maps(self):
+        moved = []
+        child_nodes = {
+            "root": [],
+            "global": [],
+            "overview": [
+                {"node_token": "untitled", "title": "Untitled"},
+                {"node_token": "old_home", "title": "music_agent: 项目主页"},
+            ],
+            "bugfix": [{"node_token": "old_bug", "title": "Bugfix Retro: old"}],
+            "playbooks": [{"node_token": "old_playbook", "title": "Playbook: old"}],
+            "decisions": [{"node_token": "old_decision", "title": "Decision: old"}],
+            "maps": [{"node_token": "map", "title": "music_agent: 架构图"}],
+            "reports": [{"node_token": "old_release", "title": "Release: old"}],
+        }
+
+        def fake_list_child_nodes(_config, parent):
+            return child_nodes.get(parent, [])
+
+        def fake_archive_node(_config, node, archive_parent_token):
+            moved.append((node["node_token"], archive_parent_token))
+
+        original_list = wiki_common.list_child_nodes
+        original_archive = wiki_common.archive_node
+        original_ensure = wiki_common.ensure_wiki_node
+        wiki_common.list_child_nodes = fake_list_child_nodes
+        wiki_common.archive_node = fake_archive_node
+        wiki_common.ensure_wiki_node = lambda *_args, **_kwargs: {"node_token": "archive"}
+        try:
+            wiki_common.cleanup_wiki_noise(
+                {"wiki": {"root_node_token": "root"}},
+                {
+                    "archive": {"node_token": "archive_root"},
+                    "global_root": {"node_token": "global"},
+                    "project_overview": {"node_token": "overview"},
+                    "project_bugfixes": {"node_token": "bugfix"},
+                    "project_playbooks": {"node_token": "playbooks"},
+                    "project_decisions": {"node_token": "decisions"},
+                    "project_maps": {"node_token": "maps"},
+                    "project_reports": {"node_token": "reports"},
+                },
+            )
+        finally:
+            wiki_common.list_child_nodes = original_list
+            wiki_common.archive_node = original_archive
+            wiki_common.ensure_wiki_node = original_ensure
+
+        moved_tokens = {token for token, _archive in moved}
+        self.assertEqual(moved_tokens, {"untitled", "old_home", "old_bug", "old_playbook", "old_decision", "old_release"})
+
     def test_current_project_uses_cwd_when_config_repo_path_is_different(self):
-        original_repo = wiki_docs.DEFAULT_REPO
-        wiki_docs.DEFAULT_REPO = Path("/work/lark-cli-devhub-skills")
+        original_repo = wiki_common.DEFAULT_REPO
+        wiki_common.DEFAULT_REPO = Path("/work/lark-cli-devhub-skills")
         try:
             project = wiki_docs.current_project_name(
                 {
@@ -103,7 +162,7 @@ class WikiArtifactLayoutTests(unittest.TestCase):
                 }
             )
         finally:
-            wiki_docs.DEFAULT_REPO = original_repo
+            wiki_common.DEFAULT_REPO = original_repo
 
         self.assertEqual(project, "lark-cli-devhub-skills")
 
@@ -139,18 +198,18 @@ class WikiArtifactLayoutTests(unittest.TestCase):
             records.append((table, payload))
             return {"data": {"record": {"record_id": "rec_artifact"}}}, "{}"
 
-        original_run = wiki_docs.run_lark
-        original_run_with_input = wiki_docs.run_lark_with_input
+        original_run = wiki_common.run_lark
+        original_run_with_input = wiki_common.run_lark_with_input
         original_batch_upsert = wiki_docs.batch_upsert_records
-        original_upsert = wiki_docs.upsert_record
-        original_relations = wiki_docs.write_record_relations
-        original_now_iso = wiki_docs.now_iso
-        wiki_docs.run_lark = fake_run_lark
-        wiki_docs.run_lark_with_input = fake_run_lark_with_input
+        original_upsert = wiki_writeback.upsert_record
+        original_relations = wiki_writeback.write_record_relations
+        original_now_iso = wiki_writeback.now_iso
+        wiki_common.run_lark = fake_run_lark
+        wiki_common.run_lark_with_input = fake_run_lark_with_input
         wiki_docs.batch_upsert_records = fake_batch_upsert_records
-        wiki_docs.upsert_record = fake_upsert_record
-        wiki_docs.write_record_relations = lambda *_args, **_kwargs: ["rec_relation"]
-        wiki_docs.now_iso = lambda: "2026-05-20T19:58:12+08:00"
+        wiki_writeback.upsert_record = fake_upsert_record
+        wiki_writeback.write_record_relations = lambda *_args, **_kwargs: ["rec_relation"]
+        wiki_writeback.now_iso = lambda: "2026-05-20T19:58:12+08:00"
         try:
             config = {
                 "defaults": {"project": "music_agent"},
@@ -169,12 +228,12 @@ class WikiArtifactLayoutTests(unittest.TestCase):
                 base_record_id="rec_bug",
             )
         finally:
-            wiki_docs.run_lark = original_run
-            wiki_docs.run_lark_with_input = original_run_with_input
+            wiki_common.run_lark = original_run
+            wiki_common.run_lark_with_input = original_run_with_input
             wiki_docs.batch_upsert_records = original_batch_upsert
-            wiki_docs.upsert_record = original_upsert
-            wiki_docs.write_record_relations = original_relations
-            wiki_docs.now_iso = original_now_iso
+            wiki_writeback.upsert_record = original_upsert
+            wiki_writeback.write_record_relations = original_relations
+            wiki_writeback.now_iso = original_now_iso
 
         self.assertEqual(result["title"], "20 Bugfix Retros")
         self.assertEqual(result["entry_title"], "2026-05-20 19:58:12 - Bugfix Retro: Voice command ack mismatch (rec_bug)")
@@ -217,14 +276,14 @@ class WikiArtifactLayoutTests(unittest.TestCase):
             records.append((table, payload))
             return {"data": {"record": {"record_id": "rec_report"}}}, "{}"
 
-        original_run = wiki_docs.run_lark
-        original_run_with_input = wiki_docs.run_lark_with_input
-        original_upsert = wiki_docs.upsert_record
-        original_now_iso = wiki_docs.now_iso
-        wiki_docs.run_lark = fake_run_lark
-        wiki_docs.run_lark_with_input = fake_run_lark_with_input
-        wiki_docs.upsert_record = fake_upsert_record
-        wiki_docs.now_iso = lambda: "2026-05-20T20:01:03+08:00"
+        original_run = wiki_common.run_lark
+        original_run_with_input = wiki_common.run_lark_with_input
+        original_upsert = wiki_writeback.upsert_record
+        original_now_iso = wiki_writeback.now_iso
+        wiki_common.run_lark = fake_run_lark
+        wiki_common.run_lark_with_input = fake_run_lark_with_input
+        wiki_writeback.upsert_record = fake_upsert_record
+        wiki_writeback.now_iso = lambda: "2026-05-20T20:01:03+08:00"
         try:
             config = {
                 "defaults": {"project": "music_agent"},
@@ -237,10 +296,10 @@ class WikiArtifactLayoutTests(unittest.TestCase):
                 body="# Weekly Report: music_agent\n\n## Completed Work\n\n- Fixed voice command ack.\n",
             )
         finally:
-            wiki_docs.run_lark = original_run
-            wiki_docs.run_lark_with_input = original_run_with_input
-            wiki_docs.upsert_record = original_upsert
-            wiki_docs.now_iso = original_now_iso
+            wiki_common.run_lark = original_run
+            wiki_common.run_lark_with_input = original_run_with_input
+            wiki_writeback.upsert_record = original_upsert
+            wiki_writeback.now_iso = original_now_iso
 
         self.assertEqual(result["title"], "60 Reports")
         self.assertEqual(result["entry_title"], "2026-05-20 20:01:03 - Weekly Report")
@@ -280,16 +339,16 @@ class WikiArtifactLayoutTests(unittest.TestCase):
             records.append((table, payload))
             return {"data": {"record": {"record_id": "rec_artifact"}}}, "{}"
 
-        original_run = wiki_docs.run_lark
-        original_run_with_input = wiki_docs.run_lark_with_input
-        original_upsert = wiki_docs.upsert_record
-        original_relations = wiki_docs.write_record_relations
-        original_now_iso = wiki_docs.now_iso
-        wiki_docs.run_lark = fake_run_lark
-        wiki_docs.run_lark_with_input = fake_run_lark_with_input
-        wiki_docs.upsert_record = fake_upsert_record
-        wiki_docs.write_record_relations = lambda *_args, **_kwargs: []
-        wiki_docs.now_iso = lambda: "2026-05-20T20:20:00+08:00"
+        original_run = wiki_common.run_lark
+        original_run_with_input = wiki_common.run_lark_with_input
+        original_upsert = wiki_writeback.upsert_record
+        original_relations = wiki_writeback.write_record_relations
+        original_now_iso = wiki_writeback.now_iso
+        wiki_common.run_lark = fake_run_lark
+        wiki_common.run_lark_with_input = fake_run_lark_with_input
+        wiki_writeback.upsert_record = fake_upsert_record
+        wiki_writeback.write_record_relations = lambda *_args, **_kwargs: []
+        wiki_writeback.now_iso = lambda: "2026-05-20T20:20:00+08:00"
         try:
             config = {
                 "defaults": {"project": "music_agent"},
@@ -308,11 +367,11 @@ class WikiArtifactLayoutTests(unittest.TestCase):
                 base_record_id="rec_release",
             )
         finally:
-            wiki_docs.run_lark = original_run
-            wiki_docs.run_lark_with_input = original_run_with_input
-            wiki_docs.upsert_record = original_upsert
-            wiki_docs.write_record_relations = original_relations
-            wiki_docs.now_iso = original_now_iso
+            wiki_common.run_lark = original_run
+            wiki_common.run_lark_with_input = original_run_with_input
+            wiki_writeback.upsert_record = original_upsert
+            wiki_writeback.write_record_relations = original_relations
+            wiki_writeback.now_iso = original_now_iso
 
         self.assertEqual(result["title"], "60 Reports")
         self.assertEqual(result["path"], "Dev Knowledge Hub / 10 Projects / music_agent / 60 Reports")
@@ -330,7 +389,7 @@ class WikiArtifactLayoutTests(unittest.TestCase):
             "lark-cli-devhub-skills: PR 写回流程图",
             "lark-cli-devhub-skills: 任务执行闭环图",
         ]
-        tokens = [wiki_docs.idempotent_token(title) for title in titles]
+        tokens = [wiki_whiteboards.idempotent_token(title) for title in titles]
 
         self.assertEqual(len(tokens), len(set(tokens)))
         self.assertTrue(all(token.startswith("devhub-") for token in tokens))
@@ -342,22 +401,22 @@ class WikiArtifactLayoutTests(unittest.TestCase):
             stderr = ""
 
         calls = []
-        original_home = wiki_docs.DEVHUB_HOME
-        original_run = wiki_docs.subprocess.run
+        original_home = wiki_whiteboards.DEVHUB_HOME
+        original_run = wiki_whiteboards.subprocess.run
 
         def fake_run(args, **_kwargs):
             calls.append(args)
             return Result()
 
         with tempfile.TemporaryDirectory() as temp_dir:
-            wiki_docs.DEVHUB_HOME = Path(temp_dir)
-            wiki_docs.subprocess.run = fake_run
+            wiki_whiteboards.DEVHUB_HOME = Path(temp_dir)
+            wiki_whiteboards.subprocess.run = fake_run
             try:
-                first, first_format = wiki_docs.whiteboard_update_input("map.svg", "<svg></svg>")
-                second, second_format = wiki_docs.whiteboard_update_input("map.svg", "<svg></svg>")
+                first, first_format = wiki_whiteboards.whiteboard_update_input("map.svg", "<svg></svg>")
+                second, second_format = wiki_whiteboards.whiteboard_update_input("map.svg", "<svg></svg>")
             finally:
-                wiki_docs.DEVHUB_HOME = original_home
-                wiki_docs.subprocess.run = original_run
+                wiki_whiteboards.DEVHUB_HOME = original_home
+                wiki_whiteboards.subprocess.run = original_run
 
         self.assertEqual(first, second)
         self.assertEqual(first_format, "raw")
@@ -365,19 +424,19 @@ class WikiArtifactLayoutTests(unittest.TestCase):
         self.assertEqual(len(calls), 1)
 
     def test_existing_whiteboard_is_preserved_unless_overwrite_is_enabled(self):
-        original_env = wiki_docs.os.environ.get("DEVHUB_WHITEBOARD_OVERWRITE")
+        original_env = wiki_whiteboards.os.environ.get("DEVHUB_WHITEBOARD_OVERWRITE")
         try:
-            wiki_docs.os.environ.pop("DEVHUB_WHITEBOARD_OVERWRITE", None)
-            self.assertTrue(wiki_docs.should_preserve_existing_whiteboard(newly_created=False))
-            self.assertFalse(wiki_docs.should_preserve_existing_whiteboard(newly_created=True))
+            wiki_whiteboards.os.environ.pop("DEVHUB_WHITEBOARD_OVERWRITE", None)
+            self.assertTrue(wiki_whiteboards.should_preserve_existing_whiteboard(newly_created=False))
+            self.assertFalse(wiki_whiteboards.should_preserve_existing_whiteboard(newly_created=True))
 
-            wiki_docs.os.environ["DEVHUB_WHITEBOARD_OVERWRITE"] = "1"
-            self.assertFalse(wiki_docs.should_preserve_existing_whiteboard(newly_created=False))
+            wiki_whiteboards.os.environ["DEVHUB_WHITEBOARD_OVERWRITE"] = "1"
+            self.assertFalse(wiki_whiteboards.should_preserve_existing_whiteboard(newly_created=False))
         finally:
             if original_env is None:
-                wiki_docs.os.environ.pop("DEVHUB_WHITEBOARD_OVERWRITE", None)
+                wiki_whiteboards.os.environ.pop("DEVHUB_WHITEBOARD_OVERWRITE", None)
             else:
-                wiki_docs.os.environ["DEVHUB_WHITEBOARD_OVERWRITE"] = original_env
+                wiki_whiteboards.os.environ["DEVHUB_WHITEBOARD_OVERWRITE"] = original_env
 
 
 if __name__ == "__main__":
