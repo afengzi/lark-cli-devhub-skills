@@ -59,6 +59,8 @@ class ParserRecordCommandTests(unittest.TestCase):
         for command in [
             "record-task",
             "record-bugfix",
+            "record-pitfall",
+            "record-playbook",
             "record-ai-run",
             "record-release",
             "record-decision",

@@ -52,6 +52,8 @@ def build_parser() -> argparse.ArgumentParser:
     record_tables = [
         ("record-task", "Tasks"),
         ("record-bugfix", "Bugfixes"),
+        ("record-pitfall", "Pitfalls"),
+        ("record-playbook", "Playbooks"),
         ("record-ai-run", "AI Runs"),
         ("record-release", "Releases"),
         ("record-decision", "Decisions"),

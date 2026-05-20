@@ -89,6 +89,10 @@ class WikiArtifactLayoutTests(unittest.TestCase):
         artifact_titles = [payload["Title"] for table, payload in records if table == "Artifacts"]
         self.assertIn("Global: Dev Hub 使用说明", artifact_titles)
         self.assertIn("00 Overview", artifact_titles)
+        self.assertIn("20 Bugfix Retros", artifact_titles)
+        self.assertIn("30 Playbooks", artifact_titles)
+        self.assertIn("40 Decisions", artifact_titles)
+        self.assertIn("60 Reports", artifact_titles)
         self.assertIn("music_agent: 架构图", artifact_titles)
         self.assertIn("Global: PR 写回流程图", artifact_titles)
         self.assertIn("Global: 任务执行闭环图", artifact_titles)
@@ -379,6 +383,73 @@ class WikiArtifactLayoutTests(unittest.TestCase):
         self.assertTrue(any("### Release 写回模板" in body for body in written_docs))
         artifact_titles = [payload["Title"] for table, payload in records if table == "Artifacts"]
         self.assertIn("60 Reports", artifact_titles)
+
+    def test_playbook_wiki_writeback_appends_to_stable_playbook_page(self):
+        calls = []
+        records = []
+        written_docs = []
+
+        def fake_run_lark(args, check=True):
+            calls.append(args)
+            if args[:2] == ["wiki", "+node-list"]:
+                return {"data": {"items": []}}, "{}"
+            if args[:2] == ["wiki", "+node-create"]:
+                title = args[args.index("--title") + 1]
+                token = "node_" + title.replace(" ", "_").replace("/", "_")
+                return {"node_token": token, "obj_token": "doc_" + token, "url": f"https://wiki/{token}"}, "{}"
+            if args[:2] == ["docs", "+fetch"]:
+                return {"data": {"document": {"content": "<title>old</title>"}}}, "{}"
+            if args[:2] == ["docs", "+update"]:
+                return {"ok": True}, "{}"
+            raise AssertionError(args)
+
+        def fake_run_lark_with_input(_args, stdin, check=True):
+            written_docs.append(stdin)
+            return {"ok": True}, "{}"
+
+        def fake_upsert_record(_config, table, payload, **_kwargs):
+            records.append((table, payload))
+            return {"data": {"record": {"record_id": "rec_artifact"}}}, "{}"
+
+        original_run = wiki_common.run_lark
+        original_run_with_input = wiki_common.run_lark_with_input
+        original_upsert = wiki_writeback.upsert_record
+        original_relations = wiki_writeback.write_record_relations
+        original_now_iso = wiki_writeback.now_iso
+        wiki_common.run_lark = fake_run_lark
+        wiki_common.run_lark_with_input = fake_run_lark_with_input
+        wiki_writeback.upsert_record = fake_upsert_record
+        wiki_writeback.write_record_relations = lambda *_args, **_kwargs: []
+        wiki_writeback.now_iso = lambda: "2026-05-21T01:10:00+08:00"
+        try:
+            config = {
+                "defaults": {"project": "music_agent"},
+                "wiki": {"space_id": "space", "root_node_token": "root", "root_url": "https://wiki/root"},
+            }
+            result = wiki_docs.write_wiki_artifact(
+                config,
+                "Playbooks",
+                {
+                    "Title": "Voice command debugging",
+                    "Project": "music_agent",
+                    "Area": "Voice",
+                    "Scenario": "Voice command stream fails",
+                    "Search Keywords": "voice command playbook",
+                },
+                base_record_id="rec_playbook",
+            )
+        finally:
+            wiki_common.run_lark = original_run
+            wiki_common.run_lark_with_input = original_run_with_input
+            wiki_writeback.upsert_record = original_upsert
+            wiki_writeback.write_record_relations = original_relations
+            wiki_writeback.now_iso = original_now_iso
+
+        self.assertEqual(result["title"], "30 Playbooks")
+        self.assertEqual(result["entry_title"], "2026-05-21 01:10:00 - Playbook: Voice command debugging (rec_playbook)")
+        self.assertTrue(any("### Playbook 模板" in body for body in written_docs))
+        artifact_titles = [payload["Title"] for table, payload in records if table == "Artifacts"]
+        self.assertIn("30 Playbooks", artifact_titles)
 
     def test_append_doc_content_uses_legacy_markdown_fallback(self):
         calls = []

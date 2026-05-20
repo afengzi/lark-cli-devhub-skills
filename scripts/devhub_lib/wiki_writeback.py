@@ -31,6 +31,20 @@ WIKI_WRITEBACKS: dict[str, dict[str, str]] = {
         "artifact_type": "Doc",
         "area_fallback": "20 Bugfix Retros",
     },
+    "Pitfalls": {
+        "title_prefix": "Pitfall",
+        "template": "pitfall.md",
+        "layout_key": "project_bugfixes",
+        "artifact_type": "Doc",
+        "area_fallback": "20 Bugfix Retros",
+    },
+    "Playbooks": {
+        "title_prefix": "Playbook",
+        "template": "playbook.md",
+        "layout_key": "project_playbooks",
+        "artifact_type": "Doc",
+        "area_fallback": "30 Playbooks",
+    },
     "AI Runs": {
         "title_prefix": "AI Run",
         "template": "ai-run.md",

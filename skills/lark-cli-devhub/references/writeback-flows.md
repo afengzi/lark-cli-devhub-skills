@@ -35,6 +35,66 @@ python3 "$DEVHUB_HOME/bin/devhub.py" record-bugfix --payload /tmp/devhub-bugfix.
 python3 "$DEVHUB_HOME/bin/devhub.py" record-bugfix --payload /tmp/devhub-bugfix.json --wiki  # when a Wiki retro is needed
 ```
 
+## Pitfall Payload
+
+Write when a reusable trap should be checked before future fixes:
+
+```json
+{
+  "Title": "Short pitfall title",
+  "Project": "project-name",
+  "Area": "module or product area",
+  "Status": "Active",
+  "Scope": "Where this trap applies.",
+  "Trigger Condition": "Symptom or situation that should trigger this check.",
+  "Wrong Approach": "What agents or humans tend to try incorrectly.",
+  "Correct Approach": "What to check or do instead.",
+  "Check Command": "Fast command or evidence lookup.",
+  "Severity": "Low/Medium/High/Critical",
+  "Next Time Check": "First thing to verify next time.",
+  "Avoid": "Action to avoid repeating.",
+  "Relation Hints": "Bugfixes: bugfix title or rec_xxx; Playbooks: playbook title",
+  "AI Summary": "Dense searchable summary.",
+  "Search Keywords": "symptom module pitfall keywords"
+}
+```
+
+Command:
+
+```bash
+python3 "$DEVHUB_HOME/bin/devhub.py" record-pitfall --payload /tmp/devhub-pitfall.json
+python3 "$DEVHUB_HOME/bin/devhub.py" record-pitfall --payload /tmp/devhub-pitfall.json --wiki
+```
+
+## Playbook Payload
+
+Write when a diagnosis or repair sequence is reusable:
+
+```json
+{
+  "Title": "Playbook title",
+  "Project": "project-name",
+  "Area": "module or product area",
+  "Status": "Active",
+  "Scenario": "When this playbook should be used.",
+  "Diagnosis Order": "Step-by-step order.",
+  "Must Check Evidence": "Logs, DB rows, traces, screenshots, or records to inspect.",
+  "Commands": "Commands to run.",
+  "Success Criteria": "What proves the issue is understood or fixed.",
+  "Forbidden Actions": "What not to do.",
+  "Relation Hints": "Pitfalls: pitfall title; Bugfixes: bugfix title",
+  "AI Summary": "Dense searchable summary.",
+  "Search Keywords": "scenario commands playbook keywords"
+}
+```
+
+Command:
+
+```bash
+python3 "$DEVHUB_HOME/bin/devhub.py" record-playbook --payload /tmp/devhub-playbook.json
+python3 "$DEVHUB_HOME/bin/devhub.py" record-playbook --payload /tmp/devhub-playbook.json --wiki
+```
+
 ## AI Run Payload
 
 Write after bug fixes, releases, large refactors, or investigations:

@@ -26,10 +26,71 @@ from .wiki_whiteboards import (
     whiteboard_update_input,
 )
 from .wiki_writeback import (
+    demote_markdown_headings,
     wiki_writeback_supported,
     write_report_wiki_artifact,
     write_wiki_artifact,
 )
+
+
+def is_title_only_doc(content: str, title: str) -> bool:
+    stripped = content.strip()
+    if not stripped:
+        return True
+    return stripped in {f"<title>{title}</title>", f"# {title}"}
+
+
+def numbered_page_body(
+    title: str,
+    *,
+    project: str,
+    purpose: str,
+    record_types: list[tuple[str, str]],
+    template_names: list[str],
+) -> str:
+    lines = [
+        f"# {title}",
+        "",
+        "> Dev Hub numbered page. Base remains the structured index; this page keeps human-readable context and append-only entries.",
+        "",
+        f"Project: `{project}`",
+        "Write mode: initialize once, then append timestamped sections. Do not create child docs for routine writeback.",
+        "",
+        "## 页面用途",
+        "",
+        purpose,
+        "",
+        "## AI 写入与回看规则",
+        "",
+        "- 写入前先查 Base 里的相关 Tasks、Bugfixes、Pitfalls、Playbooks、Decisions、AI Runs、Releases 和 Record Relations。",
+        "- Base 是结构化事实源；Wiki 负责让人和 AI 快速读懂上下文。",
+        "- 每次写入都追加带时间、标题、Base record id 的二级标题，不覆盖旧段落。",
+        "- 写入成功必须有 receipt；失败必须留 outbox，不伪造成功。",
+        "",
+        "## 增量写入入口",
+        "",
+        "| Record type | Command | Target |",
+        "|---|---|---|",
+    ]
+    for record_type, command in record_types:
+        lines.append(f"| {record_type} | `{command}` | `{title}` |")
+    if template_names:
+        lines.extend(["", "## 参考模板", ""])
+        for template_name in template_names:
+            template = read_template("wiki", template_name, "").strip()
+            if not template:
+                continue
+            lines.extend([demote_markdown_headings(template, levels=2), ""])
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def ensure_numbered_page_content(page: dict[str, str], title: str, body: str) -> None:
+    doc_token = document_token(page)
+    existing_content = fetch_doc_content(doc_token)
+    if page.get("created") or is_title_only_doc(existing_content, title):
+        update_doc_content(doc_token, title, body)
+    else:
+        ensure_doc_title(doc_token, title)
 
 
 def create_artifacts(config: dict[str, Any]) -> None:
@@ -70,25 +131,68 @@ def create_artifacts(config: dict[str, Any]) -> None:
             }
         )
 
-    overview_title = "00 Overview"
-    overview_summary = "项目主页用于聚合项目当前事实、常用入口、架构链接、任务队列和最近发布。"
-    overview_body = render_template(read_template("wiki", "project-home.md", f"# {overview_title}\n\n{overview_summary}\n"), project=project)
-    overview_doc_token = document_token(layout["project_overview"])
-    update_doc_content(overview_doc_token, overview_title, overview_body)
-    ensure_doc_title(overview_doc_token, overview_title)
-    artifact_payloads.append(
-        {
-            "Title": overview_title,
-            "Project": project,
-            "Area": "00 Overview",
-            "Artifact Type": "Doc",
-            "Source URL": layout["project_overview"].get("url", ""),
-            "Summary": overview_summary,
-            "AI Summary": f"{project} 00 Overview for Feishu Dev Hub.",
-            "Search Keywords": f"Dev Hub {project} 00 Overview project home",
-            "Status": "Active",
-        }
-    )
+    numbered_pages = [
+        (
+            "00 Overview",
+            layout["project_overview"],
+            "项目主页用于聚合项目当前事实、常用入口、架构链接、任务队列和最近发布。",
+            [("Project Facts", "record-project-fact --wiki")],
+            ["project-home.md", "project-record.md"],
+        ),
+        (
+            "20 Bugfix Retros",
+            layout["project_bugfixes"],
+            "记录已修复问题、症状证据、根因、修复方案、验证结果，以及需要下次优先检查的 Pitfalls。",
+            [("Bugfixes", "record-bugfix --wiki"), ("Pitfalls", "record-pitfall --wiki")],
+            ["bugfix-retro.md", "pitfall.md"],
+        ),
+        (
+            "30 Playbooks",
+            layout["project_playbooks"],
+            "沉淀可重复使用的排查路径、命令、必看证据、成功标准和禁止动作。",
+            [("Playbooks", "record-playbook --wiki")],
+            ["playbook.md"],
+        ),
+        (
+            "40 Decisions",
+            layout["project_decisions"],
+            "记录架构或产品决策、备选方案、取舍、影响范围和复审触发条件。",
+            [("Decisions", "record-decision --wiki")],
+            ["decision.md"],
+        ),
+        (
+            "60 Reports",
+            layout["project_reports"],
+            "沉淀 AI Run、Release、日报/周报/月报等过程记录，方便复盘和汇报。",
+            [("AI Runs", "record-ai-run --wiki"), ("Releases", "record-release --wiki"), ("Reports", "report-draft --wiki")],
+            ["ai-run.md", "release-writeback.md"],
+        ),
+    ]
+    for title, page, summary, record_types, template_names in numbered_pages:
+        body = render_template(
+            numbered_page_body(
+                title,
+                project=project,
+                purpose=summary,
+                record_types=record_types,
+                template_names=template_names,
+            ),
+            project=project,
+        )
+        ensure_numbered_page_content(page, title, body)
+        artifact_payloads.append(
+            {
+                "Title": title,
+                "Project": project,
+                "Area": title,
+                "Artifact Type": "Doc",
+                "Source URL": page.get("url", ""),
+                "Summary": summary,
+                "AI Summary": f"{project} {title} append-only Wiki page.",
+                "Search Keywords": f"Dev Hub {project} {title} append-only wiki",
+                "Status": "Active",
+            }
+        )
 
     boards = [
         (
