@@ -30,7 +30,7 @@ class RelationshipWriteTests(unittest.TestCase):
 
         def fake_upsert_record(config, table, payload, **kwargs):
             calls.append((table, payload, kwargs))
-            return {"record_id": "rec_edge"}, "{}"
+            return {"data": {"record": {"record_id": "rec_edge"}}}, "{}"
 
         original = relationships.upsert_record
         relationships.upsert_record = fake_upsert_record

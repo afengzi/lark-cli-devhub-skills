@@ -4,6 +4,7 @@ import re
 from typing import Any
 
 from .base import cell_text, upsert_record
+from .io import find_first_token
 
 
 TARGET_TABLE_BY_RELATED_FIELD = {
@@ -167,7 +168,7 @@ def write_record_relations(config: dict[str, Any], source_table: str, source_rec
             payload,
             match_fields=["Source Table", "Source Record ID", "Relation Type", "Target Table", "Target Ref"],
         )
-        record_id = cell_text(output.get("_record_id") or output.get("record_id") or output.get("record_url") or output.get("url"))
+        record_id = cell_text(find_first_token(output, {"_record_id", "record_id", "record_url", "url", "link"}))
         if record_id:
             record_ids.append(record_id)
     return record_ids
