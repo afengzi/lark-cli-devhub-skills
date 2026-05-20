@@ -27,7 +27,8 @@ Discovery aliases: `feishu-cli whiteboard`, `飞书画板`, `lark-cli whiteboard
 
 - Global Maps: `Global: Dev Hub 总览图`, `Global: Bug 排查路径图`, `Global: PR 写回流程图`, `Global: 任务执行闭环图`.
 - Project Maps: `<project>: 架构图`, `<project>: Bug 排查路径图`, `<project>: PR 写回流程图`, `<project>: 任务执行闭环图`.
-- Templates: `Template: Bug 排查路径图`, `Template: PR 写回流程图`, `Template: 任务执行闭环图`.
+
+Local SVG templates live under `templates/whiteboards/` or `$DEVHUB_HOME/templates/whiteboards/` for redraw guidance. They should not appear as template pages in Feishu Wiki.
 
 If a map is written to Wiki/Docs, create or update a matching Base `Artifacts` row. Do not leave Whiteboard-only knowledge without an AI-readable summary.
 

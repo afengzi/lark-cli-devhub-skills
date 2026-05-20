@@ -18,7 +18,6 @@ Provisioning should create scoped pages instead of dumping starter artifacts at 
 ```text
 Dev Knowledge Hub
   00 Global
-    02 Templates
     50 Maps
   10 Projects
     <project>

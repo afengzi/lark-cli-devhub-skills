@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import html
+import re
 from typing import Any
 
 from .base import batch_upsert_records
@@ -15,6 +17,7 @@ from .wiki_common import (
     read_template,
     render_template,
     update_doc_content,
+    update_doc_xml_content,
     wiki_layout,
     wiki_node_url,
 )
@@ -26,11 +29,13 @@ from .wiki_whiteboards import (
     whiteboard_update_input,
 )
 from .wiki_writeback import (
-    demote_markdown_headings,
     wiki_writeback_supported,
     write_report_wiki_artifact,
     write_wiki_artifact,
 )
+
+
+TIMESTAMP_HEADING_RE = re.compile(r"<h2>\d{4}-\d{2}-\d{2} ")
 
 
 def is_title_only_doc(content: str, title: str) -> bool:
@@ -46,7 +51,6 @@ def numbered_page_body(
     project: str,
     purpose: str,
     record_types: list[tuple[str, str]],
-    template_names: list[str],
 ) -> str:
     lines = [
         f"# {title}",
@@ -74,22 +78,109 @@ def numbered_page_body(
     ]
     for record_type, command in record_types:
         lines.append(f"| {record_type} | `{command}` | `{title}` |")
-    if template_names:
-        lines.extend(["", "## 参考模板", ""])
-        for template_name in template_names:
-            template = read_template("wiki", template_name, "").strip()
-            if not template:
-                continue
-            lines.extend([demote_markdown_headings(template, levels=2), ""])
     return "\n".join(lines).rstrip() + "\n"
 
 
-def ensure_numbered_page_content(page: dict[str, str], title: str, body: str) -> None:
+def inline_xml(text: str) -> str:
+    escaped = html.escape(text, quote=False)
+    return re.sub(r"`([^`]+)`", lambda match: f"<code>{match.group(1)}</code>", escaped)
+
+
+def numbered_page_intro_xml(title: str, *, project: str, purpose: str, record_types: list[tuple[str, str]]) -> str:
+    rows = "".join(
+        "<tr>"
+        f'<td vertical-align="top"><p>{inline_xml(record_type)}</p></td>'
+        f'<td vertical-align="top"><p><code>{html.escape(command, quote=False)}</code></p></td>'
+        f'<td vertical-align="top"><p><code>{html.escape(title, quote=False)}</code></p></td>'
+        "</tr>"
+        for record_type, command in record_types
+    )
+    return (
+        f"<title>{html.escape(title, quote=False)}</title>"
+        "<blockquote><p>Dev Hub numbered page. Base remains the structured index; this page keeps human-readable context and append-only entries.</p></blockquote>"
+        f"<p>Project: <code>{html.escape(project, quote=False)}</code><br/>"
+        "Write mode: initialize once, then append timestamped sections. Do not create child docs for routine writeback.</p>"
+        "<h2>页面用途</h2>"
+        f"<p>{inline_xml(purpose)}</p>"
+        "<h2>AI 写入与回看规则</h2>"
+        "<ul>"
+        "<li>写入前先查 Base 里的相关 Tasks、Bugfixes、Pitfalls、Playbooks、Decisions、AI Runs、Releases 和 Record Relations。</li>"
+        "<li>Base 是结构化事实源；Wiki 负责让人和 AI 快速读懂上下文。</li>"
+        "<li>每次写入都追加带时间、标题、Base record id 的二级标题，不覆盖旧段落。</li>"
+        "<li>写入成功必须有 receipt；失败必须留 outbox，不伪造成功。</li>"
+        "</ul>"
+        "<h2>增量写入入口</h2>"
+        "<table><colgroup><col/><col/><col/></colgroup><thead><tr>"
+        '<th vertical-align="top"><p>Record type</p></th>'
+        '<th vertical-align="top"><p>Command</p></th>'
+        '<th vertical-align="top"><p>Target</p></th>'
+        f"</tr></thead><tbody>{rows}</tbody></table>"
+    )
+
+
+def strip_xml_h2_section(content: str, heading: str) -> str:
+    marker = f"<h2>{heading}</h2>"
+    while True:
+        start = content.find(marker)
+        if start < 0:
+            return content
+        next_h2 = content.find("<h2>", start + len(marker))
+        end = next_h2 if next_h2 >= 0 else len(content)
+        content = content[:start] + content[end:]
+
+
+def strip_legacy_entry_template_sections(content: str) -> str:
+    marker = "<h3>Template</h3>"
+    while True:
+        start = content.find(marker)
+        if start < 0:
+            return content
+        search_from = start + len(marker)
+        next_h2 = content.find("<h2>", search_from)
+        candidates = []
+        for stop_marker in ("<h3>原始结构化字段</h3>", "<h3>Fields</h3>"):
+            stop = content.find(stop_marker, search_from)
+            if stop >= 0 and (next_h2 < 0 or stop < next_h2):
+                candidates.append(stop)
+        if candidates:
+            end = min(candidates)
+        else:
+            end = next_h2 if next_h2 >= 0 else len(content)
+        content = content[:start] + content[end:]
+
+
+def replace_legacy_overview_intro(content: str, *, title: str, intro_xml: str) -> str:
+    if title != "00 Overview":
+        return content
+    if "<h2>项目身份</h2>" not in content or "<h2>不要重复踩坑</h2>" not in content:
+        return content
+    match = TIMESTAMP_HEADING_RE.search(content)
+    tail = content[match.start() :] if match else ""
+    return intro_xml + tail
+
+
+def remove_legacy_template_content(content: str, *, title: str, intro_xml: str) -> str:
+    cleaned = strip_xml_h2_section(content, "参考模板")
+    cleaned = strip_legacy_entry_template_sections(cleaned)
+    cleaned = replace_legacy_overview_intro(cleaned, title=title, intro_xml=intro_xml)
+    return cleaned
+
+
+def ensure_numbered_page_content(page: dict[str, str], title: str, body: str, intro_xml: str) -> None:
     doc_token = document_token(page)
     existing_content = fetch_doc_content(doc_token)
     if page.get("created") or is_title_only_doc(existing_content, title):
         update_doc_content(doc_token, title, body)
     else:
+        clean_content = remove_legacy_template_content(
+            existing_content,
+            title=title,
+            intro_xml=intro_xml,
+        )
+        if clean_content != existing_content and clean_content.lstrip().startswith("<title>"):
+            update_doc_xml_content(doc_token, clean_content)
+        elif clean_content != existing_content:
+            update_doc_content(doc_token, title, clean_content)
         ensure_doc_title(doc_token, title)
 
 
@@ -102,13 +193,6 @@ def create_artifacts(config: dict[str, Any]) -> None:
     docs = [
         ("Global: Dev Hub 使用说明", "00 Global", layout["global_root"]["node_token"], "global-devhub-guide.md", "Dev Hub Base 是结构化事实源；Docs 承载长文；Whiteboard/Maps 承载视觉关系。"),
         ("Global: AI 写入规则", "00 Global", layout["global_root"]["node_token"], "ai-write-rules.md", "AI 在修复前检索 Pitfalls / Bugfixes / Playbooks，修复后写 Bugfix、AI Run 和 receipt。"),
-        ("Template: 项目记录模板", "02 Templates", layout["global_templates"]["node_token"], "project-record.md", "记录项目定位、Areas、关键风险、当前重点和 AI 摘要。"),
-        ("Template: Bugfix 复盘模板", "02 Templates", layout["global_templates"]["node_token"], "bugfix-retro.md", "记录症状、证据、根因、修复、验证、风险、下次检查和禁止做法。"),
-        ("Template: Playbook 模板", "02 Templates", layout["global_templates"]["node_token"], "playbook.md", "记录适用场景、排查顺序、必看证据、命令、成功标准和禁止做法。"),
-        ("Template: Decision 决策模板", "02 Templates", layout["global_templates"]["node_token"], "decision.md", "记录架构或产品决策、备选方案、取舍、影响和复审触发器。"),
-        ("Template: Release 写回模板", "02 Templates", layout["global_templates"]["node_token"], "release-writeback.md", "记录 main/PR 发布摘要、验证、关联记录和回滚方案。"),
-        ("Template: AI Run 总结模板", "02 Templates", layout["global_templates"]["node_token"], "ai-run.md", "记录 Agent 本次做了什么、查了什么、改了什么、如何验证和写回。"),
-        ("Template: Bug 排查路径模板", "02 Templates", layout["global_templates"]["node_token"], "bug-investigation-path.md", "记录症状、证据分层、分支判断和知识库收尾。"),
     ]
     for title, folder, parent, template_name, summary in docs:
         body = render_template(read_template("wiki", template_name, f"# {title}\n\n{summary}\n"), project=project)
@@ -137,49 +221,44 @@ def create_artifacts(config: dict[str, Any]) -> None:
             layout["project_overview"],
             "项目主页用于聚合项目当前事实、常用入口、架构链接、任务队列和最近发布。",
             [("Project Facts", "record-project-fact --wiki")],
-            ["project-home.md", "project-record.md"],
         ),
         (
             "20 Bugfix Retros",
             layout["project_bugfixes"],
             "记录已修复问题、症状证据、根因、修复方案、验证结果，以及需要下次优先检查的 Pitfalls。",
             [("Bugfixes", "record-bugfix --wiki"), ("Pitfalls", "record-pitfall --wiki")],
-            ["bugfix-retro.md", "pitfall.md"],
         ),
         (
             "30 Playbooks",
             layout["project_playbooks"],
             "沉淀可重复使用的排查路径、命令、必看证据、成功标准和禁止动作。",
             [("Playbooks", "record-playbook --wiki")],
-            ["playbook.md"],
         ),
         (
             "40 Decisions",
             layout["project_decisions"],
             "记录架构或产品决策、备选方案、取舍、影响范围和复审触发条件。",
             [("Decisions", "record-decision --wiki")],
-            ["decision.md"],
         ),
         (
             "60 Reports",
             layout["project_reports"],
             "沉淀 AI Run、Release、日报/周报/月报等过程记录，方便复盘和汇报。",
             [("AI Runs", "record-ai-run --wiki"), ("Releases", "record-release --wiki"), ("Reports", "report-draft --wiki")],
-            ["ai-run.md", "release-writeback.md"],
         ),
     ]
-    for title, page, summary, record_types, template_names in numbered_pages:
+    for title, page, summary, record_types in numbered_pages:
         body = render_template(
             numbered_page_body(
                 title,
                 project=project,
                 purpose=summary,
                 record_types=record_types,
-                template_names=template_names,
             ),
             project=project,
         )
-        ensure_numbered_page_content(page, title, body)
+        intro_xml = numbered_page_intro_xml(title, project=project, purpose=summary, record_types=record_types)
+        ensure_numbered_page_content(page, title, body, intro_xml)
         artifact_payloads.append(
             {
                 "Title": title,
@@ -258,30 +337,6 @@ def create_artifacts(config: dict[str, Any]) -> None:
             project,
             "task-loop-map.svg",
             "项目级任务闭环白板：该项目执行任务、写回记录和验证 receipt 的标准路径。",
-        ),
-        (
-            "Template: Bug 排查路径图",
-            "02 Templates",
-            layout["global_templates"]["node_token"],
-            "Global",
-            "bug-investigation-map.svg",
-            "Bug 排查白板模板：从症状到证据、根因、修复、验证和复盘沉淀。",
-        ),
-        (
-            "Template: PR 写回流程图",
-            "02 Templates",
-            layout["global_templates"]["node_token"],
-            "Global",
-            "pr-writeback-map.svg",
-            "PR 写回白板模板：PR created、reviewed、merged、CI failed 到对应 Base 表的映射。",
-        ),
-        (
-            "Template: 任务执行闭环图",
-            "02 Templates",
-            layout["global_templates"]["node_token"],
-            "Global",
-            "task-loop-map.svg",
-            "任务执行白板模板：Feishu Task、Base Task、AI Run、Bugfix/Release 和 receipt 的闭环。",
         ),
     ]
     for title, folder, parent, item_project, template_name, summary in boards:

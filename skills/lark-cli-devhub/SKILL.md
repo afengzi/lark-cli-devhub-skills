@@ -70,7 +70,7 @@ After a meaningful fix:
 
 ## Write Preflight
 
-Before writing Bugfix, Pitfall, Playbook, AI Run, Release, Decision, Artifact, or Project Fact records, check the matching Wiki template shape when it exists under `00 Global/02 Templates` or local `$DEVHUB_HOME/templates/wiki/`. Do not invent a thinner schema when the template has required evidence sections.
+Before writing Bugfix, Pitfall, Playbook, AI Run, Release, Decision, Artifact, or Project Fact records, check the matching local Wiki template shape when it exists under `$DEVHUB_HOME/templates/wiki/` or this repo's `templates/wiki/`. Do not invent a thinner schema when the template has required evidence sections. Templates are local AI guidance only; do not write template pages or blank template sections into Feishu Wiki.
 
 This is a skill-level requirement: when this skill is active, read the template or use the local template file before composing the payload. If the template cannot be read, say so in the AI Run or outbox instead of silently writing a thin record.
 

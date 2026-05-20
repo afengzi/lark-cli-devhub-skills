@@ -248,6 +248,29 @@ def update_doc_content(doc_token: str, title: str, body: str) -> None:
         run_lark(legacy_markdown_update_args(doc_token, "overwrite", body))
 
 
+def update_doc_xml_content(doc_token: str, content: str) -> None:
+    if not doc_token:
+        return
+    run_lark(
+        [
+            "docs",
+            "+update",
+            "--api-version",
+            "v2",
+            "--as",
+            "user",
+            "--doc",
+            doc_token,
+            "--command",
+            "overwrite",
+            "--doc-format",
+            "xml",
+            "--content",
+            content,
+        ]
+    )
+
+
 def append_doc_content(doc_token: str, body: str) -> None:
     if not doc_token or not body.strip():
         return
@@ -479,7 +502,9 @@ def cleanup_wiki_noise(config: dict[str, Any], layout: dict[str, dict[str, str]]
             title = str(node.get("title") or node.get("name") or "")
             if title == "Untitled":
                 archive_node(config, node, archive_parent)
-            if parent == layout["global_root"]["node_token"] and title in {"Dev Hub 使用说明", "AI 写入规则"}:
+            if parent == layout["global_root"]["node_token"] and (
+                title in {"Dev Hub 使用说明", "AI 写入规则", "02 Templates"} or title.startswith("Template: ")
+            ):
                 archive_node(config, node, archive_parent)
     project_pages = {
         "00 Overview": layout["project_overview"]["node_token"],
@@ -499,7 +524,6 @@ def cleanup_wiki_noise(config: dict[str, Any], layout: dict[str, dict[str, str]]
 def wiki_layout(config: dict[str, Any], project: str) -> dict[str, dict[str, str]]:
     root = config.get("wiki", {}).get("root_node_token", "")
     global_root = ensure_wiki_node(config, "00 Global", parent_token=root)
-    global_templates = ensure_wiki_node(config, "02 Templates", parent_token=global_root["node_token"])
     global_maps = ensure_wiki_node(config, "50 Maps", parent_token=global_root["node_token"])
     projects_root = ensure_wiki_node(config, "10 Projects", parent_token=root)
     project_root = ensure_wiki_node(config, project, parent_token=projects_root["node_token"])
@@ -512,7 +536,6 @@ def wiki_layout(config: dict[str, Any], project: str) -> dict[str, dict[str, str
     archive = ensure_wiki_node(config, "90 Archive", parent_token=root)
     return {
         "global_root": global_root,
-        "global_templates": global_templates,
         "global_maps": global_maps,
         "projects_root": projects_root,
         "project_root": project_root,

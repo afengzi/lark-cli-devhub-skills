@@ -98,16 +98,19 @@ class WikiArtifactLayoutTests(unittest.TestCase):
         self.assertIn("Global: 任务执行闭环图", artifact_titles)
         self.assertIn("music_agent: PR 写回流程图", artifact_titles)
         self.assertIn("music_agent: 任务执行闭环图", artifact_titles)
-        self.assertIn("Template: PR 写回流程图", artifact_titles)
+        self.assertNotIn("Template: PR 写回流程图", artifact_titles)
 
         board_updates = [args for args in calls if args[:2] == ["whiteboard", "+update"] and "--dry-run" not in args]
-        self.assertGreaterEqual(len(board_updates), 11)
+        self.assertGreaterEqual(len(board_updates), 8)
 
     def test_project_numbered_page_cleanup_archives_children_except_maps(self):
         moved = []
         child_nodes = {
             "root": [],
-            "global": [],
+            "global": [
+                {"node_token": "templates_folder", "title": "02 Templates"},
+                {"node_token": "tpl_direct", "title": "Template: Direct Legacy"},
+            ],
             "overview": [
                 {"node_token": "untitled", "title": "Untitled"},
                 {"node_token": "old_home", "title": "music_agent: 项目主页"},
@@ -151,7 +154,64 @@ class WikiArtifactLayoutTests(unittest.TestCase):
             wiki_common.ensure_wiki_node = original_ensure
 
         moved_tokens = {token for token, _archive in moved}
-        self.assertEqual(moved_tokens, {"untitled", "old_home", "old_bug", "old_playbook", "old_decision", "old_release"})
+        self.assertEqual(
+            moved_tokens,
+            {
+                "untitled",
+                "old_home",
+                "old_bug",
+                "old_playbook",
+                "old_decision",
+                "old_release",
+                "templates_folder",
+                "tpl_direct",
+            },
+        )
+
+    def test_numbered_page_cleanup_removes_legacy_templates(self):
+        content = (
+            "<title>20 Bugfix Retros</title>"
+            "<h2>页面用途</h2><p>purpose</p>"
+            "<h2>参考模板</h2><h3>Bugfix 复盘模板</h3><p>blank template</p>"
+            "<h2>2026-05-21 01:14:08 - Pitfall: old (rec1)</h2>"
+            "<p>Base record: <code>rec1</code></p>"
+            "<h3>Template</h3><h3>Pitfall 模板</h3><p>blank template</p>"
+            "<h3>原始结构化字段</h3><table></table>"
+        )
+
+        cleaned = wiki_docs.remove_legacy_template_content(
+            content,
+            title="20 Bugfix Retros",
+            intro_xml="<title>20 Bugfix Retros</title>",
+        )
+
+        self.assertNotIn("参考模板", cleaned)
+        self.assertNotIn("Bugfix 复盘模板", cleaned)
+        self.assertNotIn("<h3>Template</h3>", cleaned)
+        self.assertNotIn("Pitfall 模板", cleaned)
+        self.assertIn("Pitfall: old", cleaned)
+        self.assertIn("原始结构化字段", cleaned)
+
+    def test_overview_cleanup_replaces_legacy_home_template_prefix(self):
+        content = (
+            "<title>00 Overview</title>"
+            "<h2>项目身份</h2><p>generated blanks</p>"
+            "<h2>不要重复踩坑</h2><table></table>"
+            "<h2>2026-05-21 01:13:57 - Project Fact: old (rec1)</h2>"
+            "<p>Base record: <code>rec1</code></p>"
+            "<h3>Template</h3><h3>项目记录模板</h3><p>blank template</p>"
+        )
+
+        cleaned = wiki_docs.remove_legacy_template_content(
+            content,
+            title="00 Overview",
+            intro_xml="<title>00 Overview</title><h2>页面用途</h2><p>real intro</p>",
+        )
+
+        self.assertIn("<h2>页面用途</h2><p>real intro</p>", cleaned)
+        self.assertNotIn("项目身份", cleaned)
+        self.assertNotIn("项目记录模板", cleaned)
+        self.assertIn("Project Fact: old", cleaned)
 
     def test_current_project_uses_cwd_when_config_repo_path_is_different(self):
         original_repo = wiki_common.DEFAULT_REPO

@@ -21,7 +21,8 @@ The helper provision flow writes the first usable map set:
 
 - Global Maps: `Global: Dev Hub 总览图`, `Global: Bug 排查路径图`, `Global: PR 写回流程图`, `Global: 任务执行闭环图`.
 - Project Maps: `<project>: 架构图`, `<project>: Bug 排查路径图`, `<project>: PR 写回流程图`, `<project>: 任务执行闭环图`.
-- Templates: `Template: Bug 排查路径图`, `Template: PR 写回流程图`, `Template: 任务执行闭环图`.
+
+Local SVG templates live under `templates/whiteboards/` or `$DEVHUB_HOME/templates/whiteboards/` for redraw guidance. They should not appear as template pages in Feishu Wiki.
 
 Treat these as living maps. Architecture or workflow changes should update the board and the matching Base `Artifacts` summary together.
 

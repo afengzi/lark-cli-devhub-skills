@@ -391,7 +391,6 @@ Wiki is project-scoped by default:
 ```text
 Dev Knowledge Hub
   00 Global
-    02 Templates
     50 Maps
   10 Projects
     <project>
@@ -417,7 +416,7 @@ What is automatic:
 - `provision` creates or reuses the Wiki tree, Base tables/fields, views, seed records, and starter Artifacts for Docs/Whiteboards.
 - `record-*` commands write Base records, strip relation hints into `Record Relations`, and create receipts or outbox items.
 - `record-bugfix`, `record-pitfall`, `record-playbook`, `record-ai-run`, `record-release`, `record-decision`, and `record-project-fact` can also append timestamped long-form sections directly to numbered pages when passed `--wiki`; those pages are indexed through Base `Artifacts`.
-- `report-draft --wiki` appends a timestamped daily, weekly, or release report section directly into the project `60 Reports` page, using the matching report template shape before indexing it in Base `Artifacts`.
+- `report-draft --wiki` appends a timestamped daily, weekly, or release report section directly into the project `60 Reports` page, using local Markdown template files for AI guidance before indexing it in Base `Artifacts`.
 - Existing Base fields are not force-converted across unsafe types; safe display-style updates such as text URL style and datetime format are reconciled during provisioning.
 
 What remains a skill workflow:

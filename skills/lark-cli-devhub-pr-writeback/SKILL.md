@@ -19,13 +19,13 @@ Use this workflow for PR and CI event writeback.
 
 Before writing each record, use the matching template shape when available:
 
-- AI Run: `Template: AI Run 总结模板`.
-- Decision: `Template: Decision 决策模板`.
-- Bugfix: `Template: Bugfix 复盘模板`.
-- Release: `Template: Release 写回模板`.
+- AI Run: local `templates/wiki/ai-run.md`.
+- Decision: local `templates/wiki/decision.md`.
+- Bugfix: local `templates/wiki/bugfix-retro.md`.
+- Release: local `templates/wiki/release-writeback.md`.
 - PR workflow changes: update `PR 写回流程图` in the project Maps folder, and the global Maps folder when the change is reusable.
 
-If a template cannot be read, include that gap in the AI Run or outbox. Do not silently produce a minimal record that omits the expected evidence sections.
+If a local template cannot be read, include that gap in the AI Run or outbox. Do not silently produce a minimal record that omits the expected evidence sections. Do not write blank template content into Feishu Wiki.
 
 ## Reliability
 
