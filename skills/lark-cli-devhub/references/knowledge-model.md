@@ -57,9 +57,11 @@ Use `--wiki` with these commands when long-form context is needed:
 - `record-decision --wiki`: creates a page under `10 Projects/<project>/40 Decisions`.
 - `record-project-fact --wiki`: creates a page under `10 Projects/<project>/00 Overview`.
 
-The helper writes the Base row first, then creates or updates the Wiki page, then writes a Base `Artifacts` row for that page. If Wiki writing fails, keep the Base row and leave a wiki outbox item; do not pretend the Wiki write succeeded.
+The helper writes the Base row first, then creates a new timestamped Wiki page, then writes a Base `Artifacts` row for that page. If Wiki writing fails, keep the Base row and leave a wiki outbox item; do not pretend the Wiki write succeeded.
 
-Reports follow the same rule. `report-draft` prints Markdown by default; `report-draft --wiki` writes the daily, weekly, or release draft into `10 Projects/<project>/60 Reports` and indexes it through `Artifacts`.
+Wiki writeback is incremental by default. Repeated writes with the same summary title create separate pages named with local write time and the source record id when available, such as `2026-05-20 19:58:12 - AI Run: Fix stream (recxxxx)`.
+
+Reports follow the same rule. `report-draft` prints Markdown by default; `report-draft --wiki` writes a timestamped daily, weekly, or release draft into `10 Projects/<project>/60 Reports` and indexes it through `Artifacts`.
 
 ## Field Policy
 

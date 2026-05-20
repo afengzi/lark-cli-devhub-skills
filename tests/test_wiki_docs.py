@@ -144,11 +144,13 @@ class WikiArtifactLayoutTests(unittest.TestCase):
         original_batch_upsert = wiki_docs.batch_upsert_records
         original_upsert = wiki_docs.upsert_record
         original_relations = wiki_docs.write_record_relations
+        original_now_iso = wiki_docs.now_iso
         wiki_docs.run_lark = fake_run_lark
         wiki_docs.run_lark_with_input = fake_run_lark_with_input
         wiki_docs.batch_upsert_records = fake_batch_upsert_records
         wiki_docs.upsert_record = fake_upsert_record
         wiki_docs.write_record_relations = lambda *_args, **_kwargs: ["rec_relation"]
+        wiki_docs.now_iso = lambda: "2026-05-20T19:58:12+08:00"
         try:
             config = {
                 "defaults": {"project": "music_agent"},
@@ -172,18 +174,20 @@ class WikiArtifactLayoutTests(unittest.TestCase):
             wiki_docs.batch_upsert_records = original_batch_upsert
             wiki_docs.upsert_record = original_upsert
             wiki_docs.write_record_relations = original_relations
+            wiki_docs.now_iso = original_now_iso
 
-        self.assertEqual(result["title"], "Bugfix Retro: Voice command ack mismatch")
+        self.assertEqual(result["title"], "2026-05-20 19:58:12 - Bugfix Retro: Voice command ack mismatch (rec_bug)")
         self.assertEqual(
             result["path"],
-            "Dev Knowledge Hub / 10 Projects / music_agent / 20 Bugfix Retros / Bugfix Retro: Voice command ack mismatch",
+            "Dev Knowledge Hub / 10 Projects / music_agent / 20 Bugfix Retros / 2026-05-20 19:58:12 - Bugfix Retro: Voice command ack mismatch (rec_bug)",
         )
         self.assertTrue(result["url"].startswith("https://wiki/"))
         self.assertEqual(result["artifact_record_id"], "rec_artifact")
         self.assertEqual(result["artifact_relation_records"], ["rec_relation"])
+        self.assertTrue(any("Write time: `2026-05-20 19:58:12`" in body for body in written_docs))
         self.assertTrue(any("Base record: `rec_bug`" in body for body in written_docs))
         artifact_titles = [payload["Title"] for table, payload in records if table == "Artifacts"]
-        self.assertIn("Bugfix Retro: Voice command ack mismatch", artifact_titles)
+        self.assertIn("2026-05-20 19:58:12 - Bugfix Retro: Voice command ack mismatch (rec_bug)", artifact_titles)
 
     def test_write_report_wiki_artifact_creates_report_doc_and_artifact(self):
         records = []
@@ -211,9 +215,11 @@ class WikiArtifactLayoutTests(unittest.TestCase):
         original_run = wiki_docs.run_lark
         original_run_with_input = wiki_docs.run_lark_with_input
         original_upsert = wiki_docs.upsert_record
+        original_now_iso = wiki_docs.now_iso
         wiki_docs.run_lark = fake_run_lark
         wiki_docs.run_lark_with_input = fake_run_lark_with_input
         wiki_docs.upsert_record = fake_upsert_record
+        wiki_docs.now_iso = lambda: "2026-05-20T20:01:03+08:00"
         try:
             config = {
                 "defaults": {"project": "music_agent"},
@@ -229,9 +235,13 @@ class WikiArtifactLayoutTests(unittest.TestCase):
             wiki_docs.run_lark = original_run
             wiki_docs.run_lark_with_input = original_run_with_input
             wiki_docs.upsert_record = original_upsert
+            wiki_docs.now_iso = original_now_iso
 
-        self.assertTrue(result["title"].startswith("Report: music_agent weekly "))
-        self.assertTrue(result["path"].startswith("Dev Knowledge Hub / 10 Projects / music_agent / 60 Reports / Report: music_agent weekly "))
+        self.assertEqual(result["title"], "2026-05-20 20:01:03 - Report: music_agent weekly")
+        self.assertEqual(
+            result["path"],
+            "Dev Knowledge Hub / 10 Projects / music_agent / 60 Reports / 2026-05-20 20:01:03 - Report: music_agent weekly",
+        )
         self.assertEqual(result["artifact_record_id"], "rec_report")
         artifact_payloads = [payload for table, payload in records if table == "Artifacts"]
         self.assertEqual(artifact_payloads[0]["Status"], "Draft")
