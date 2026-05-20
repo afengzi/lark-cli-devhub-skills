@@ -32,6 +32,7 @@ Command:
 
 ```bash
 python3 "$DEVHUB_HOME/bin/devhub.py" record-bugfix --payload /tmp/devhub-bugfix.json
+python3 "$DEVHUB_HOME/bin/devhub.py" record-bugfix --payload /tmp/devhub-bugfix.json --wiki  # when a Wiki retro is needed
 ```
 
 ## AI Run Payload
@@ -60,6 +61,7 @@ Command:
 
 ```bash
 python3 "$DEVHUB_HOME/bin/devhub.py" record-ai-run --payload /tmp/devhub-ai-run.json
+python3 "$DEVHUB_HOME/bin/devhub.py" record-ai-run --payload /tmp/devhub-ai-run.json --wiki  # for major runs worth reading later
 ```
 
 ## Release Payload
@@ -87,6 +89,7 @@ Command:
 
 ```bash
 python3 "$DEVHUB_HOME/bin/devhub.py" record-release --payload /tmp/devhub-release.json
+python3 "$DEVHUB_HOME/bin/devhub.py" record-release --payload /tmp/devhub-release.json --wiki
 ```
 
 ## Task Payload

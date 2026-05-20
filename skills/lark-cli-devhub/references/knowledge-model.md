@@ -45,6 +45,22 @@ Dev Knowledge Hub
 - `Artifacts`: Docs, Whiteboards, dashboards, links, and summaries.
 - `AI Runs`: what the AI did, what evidence it checked, what changed, and writeback status.
 
+## Wiki Writeback
+
+Base writes are the default because they are compact, searchable, and reliable. Wiki writes are for records humans should read later.
+
+Use `--wiki` with these commands when long-form context is needed:
+
+- `record-bugfix --wiki`: creates a page under `10 Projects/<project>/20 Bugfix Retros`.
+- `record-ai-run --wiki`: creates a page under `10 Projects/<project>/60 Reports`.
+- `record-release --wiki`: creates a page under `10 Projects/<project>/60 Reports`.
+- `record-decision --wiki`: creates a page under `10 Projects/<project>/40 Decisions`.
+- `record-project-fact --wiki`: creates a page under `10 Projects/<project>/00 Overview`.
+
+The helper writes the Base row first, then creates or updates the Wiki page, then writes a Base `Artifacts` row for that page. If Wiki writing fails, keep the Base row and leave a wiki outbox item; do not pretend the Wiki write succeeded.
+
+Reports follow the same rule. `report-draft` prints Markdown by default; `report-draft --wiki` writes the daily, weekly, or release draft into `10 Projects/<project>/60 Reports` and indexes it through `Artifacts`.
+
 ## Field Policy
 
 Fill these fields whenever they exist:

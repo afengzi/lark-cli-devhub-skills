@@ -9,7 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 NAME_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-IGNORED_DIRS = {".git", ".superpowers", "__pycache__"}
+IGNORED_DIRS = {".devhub", ".git", ".superpowers", "__pycache__"}
 FORBIDDEN_PATTERNS = [
     (re.compile(r"/Users/[^/\s]+"), "absolute macOS user path"),
     (re.compile(r"https://[^/\s]*feishu\.cn/(base|wiki|docx|docs|sheets)/[A-Za-z0-9]{10,}"), "concrete Feishu resource URL"),

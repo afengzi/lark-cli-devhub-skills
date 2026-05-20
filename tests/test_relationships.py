@@ -61,6 +61,38 @@ class RelationshipWriteTests(unittest.TestCase):
             ["Source Table", "Source Record ID", "Relation Type", "Target Table", "Target Ref"],
         )
 
+    def test_write_record_relations_falls_back_to_search_when_create_returns_no_id(self):
+        def fake_upsert_record(config, table, payload, **kwargs):
+            return {"ok": True}, "{}"
+
+        def fake_find_matching_record_id(config, table, payload, match_fields):
+            self.assertEqual(table, "Record Relations")
+            self.assertIn("Source Table", match_fields)
+            return "rec_found"
+
+        original_upsert = relationships.upsert_record
+        original_find = relationships.find_matching_record_id
+        relationships.upsert_record = fake_upsert_record
+        relationships.find_matching_record_id = fake_find_matching_record_id
+        try:
+            config = {"base": {"tables": {"Record Relations": {"id": "tbl_edges"}}}}
+            result = relationships.write_record_relations(
+                config,
+                "Artifacts",
+                "rec_artifact",
+                {
+                    "Title": "Wiki page",
+                    "Project": "demo",
+                    "Relation Hints": "AI Runs: rec_run",
+                    "AI Summary": "Wiki page documents AI run.",
+                },
+            )
+        finally:
+            relationships.upsert_record = original_upsert
+            relationships.find_matching_record_id = original_find
+
+        self.assertEqual(result, ["rec_found"])
+
 
 if __name__ == "__main__":
     unittest.main()

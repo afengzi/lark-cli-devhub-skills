@@ -25,3 +25,15 @@ Collect Tasks, Bugfixes, AI Runs, Releases, Decisions, Project Facts, Artifacts,
 ## Publishing Rule
 
 Write Docs/Wiki drafts first. Publishing to IM, Mail, Slides, or stakeholder channels requires explicit approval.
+
+Use the helper when the draft should actually land in Wiki:
+
+```bash
+python3 "$DEVHUB_HOME/bin/devhub.py" report-draft \
+  --kind weekly \
+  --project "$(basename "$PWD")" \
+  --records /tmp/devhub-report-records.json \
+  --wiki
+```
+
+Without `--wiki`, `report-draft` only prints Markdown for review.

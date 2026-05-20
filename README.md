@@ -299,6 +299,12 @@ Write bugfix evidence:
 python3 "$DEVHUB_HOME/bin/devhub.py" record-bugfix --payload /tmp/devhub-bugfix.json
 ```
 
+Write bugfix evidence plus a human-readable Wiki retro page:
+
+```bash
+python3 "$DEVHUB_HOME/bin/devhub.py" record-bugfix --payload /tmp/devhub-bugfix.json --wiki
+```
+
 Write AI run evidence:
 
 ```bash
@@ -309,6 +315,26 @@ Write release evidence:
 
 ```bash
 python3 "$DEVHUB_HOME/bin/devhub.py" record-release --payload /tmp/devhub-release.json
+```
+
+Use `--wiki` for long-form records that should be readable in Wiki/Docs, not only searchable in Base:
+
+```bash
+python3 "$DEVHUB_HOME/bin/devhub.py" record-release --payload /tmp/devhub-release.json --wiki
+python3 "$DEVHUB_HOME/bin/devhub.py" record-decision --payload /tmp/devhub-decision.json --wiki
+python3 "$DEVHUB_HOME/bin/devhub.py" record-ai-run --payload /tmp/devhub-ai-run.json --wiki
+```
+
+`--wiki` first writes the Base row, then creates or updates the matching Wiki page and registers that page in Base `Artifacts`. If Wiki writing fails, the Base row is kept and a wiki outbox item is left for retry.
+
+Write a report draft into Wiki:
+
+```bash
+python3 "$DEVHUB_HOME/bin/devhub.py" report-draft \
+  --kind weekly \
+  --project "$(basename "$PWD")" \
+  --records /tmp/devhub-report-records.json \
+  --wiki
 ```
 
 Write task, decision, artifact, or project fact evidence:
@@ -389,12 +415,14 @@ What is automatic:
 
 - `provision` creates or reuses the Wiki tree, Base tables/fields, views, seed records, and starter Artifacts for Docs/Whiteboards.
 - `record-*` commands write Base records, strip relation hints into `Record Relations`, and create receipts or outbox items.
+- `record-bugfix`, `record-ai-run`, `record-release`, `record-decision`, and `record-project-fact` can also write long-form Wiki pages when passed `--wiki`; those pages are indexed through Base `Artifacts`.
+- `report-draft --wiki` writes a daily, weekly, or release report draft into the project Wiki `60 Reports` folder and indexes it in Base `Artifacts`.
 - Existing Base fields are not force-converted across unsafe types; safe display-style updates such as text URL style and datetime format are reconciled during provisioning.
 
 What remains a skill workflow:
 
 - Before coding, the agent should search/pick/create a native Feishu Task when the work is worth tracking, then mirror it into Base `Tasks`.
-- Wiki/Docs long-form pages are created during provisioning or when the docs/wiki skill is used; a normal Base record write does not create a new Wiki page by itself.
+- A normal Base record write without `--wiki` does not create a new Wiki page by itself. Use `--wiki` for durable bug retros, release notes, decisions, major AI runs, or current project facts that humans should read later.
 - Views update when provisioning or the view helper is run, not on every record write.
 
 For existing Bases created by older versions, remove deprecated `Project Relation` / `Area Relation` and all business-table `Related ...` columns after review:

@@ -26,6 +26,7 @@ export DEVHUB_HOME="${DEVHUB_HOME:-$HOME/.codex/devhub}"
 
 python3 "$DEVHUB_HOME/bin/devhub.py" search --project "$(basename "$PWD")" --query "symptom area keywords"
 python3 "$DEVHUB_HOME/bin/devhub.py" record-bugfix --payload /tmp/devhub-bugfix.json
+python3 "$DEVHUB_HOME/bin/devhub.py" record-bugfix --payload /tmp/devhub-bugfix.json --wiki
 python3 "$DEVHUB_HOME/bin/devhub.py" record-ai-run --payload /tmp/devhub-ai-run.json
 python3 "$DEVHUB_HOME/bin/devhub.py" record-release --payload /tmp/devhub-release.json
 python3 "$DEVHUB_HOME/bin/devhub.py" sync-outbox --cwd "$PWD"
@@ -65,7 +66,7 @@ After a meaningful fix:
 1. Write a Bugfix record.
 2. Write an AI Run record.
 3. Create or update a Pitfall or Playbook when the lesson is reusable.
-4. Keep long narratives in Docs only when they are worth reading later.
+4. Use `--wiki` for durable retrospectives or long narratives worth reading later. This writes the Base row first, then creates a Wiki page and indexes it in Base `Artifacts`.
 
 ## Write Preflight
 
@@ -74,6 +75,8 @@ Before writing Bugfix, AI Run, Release, Decision, Artifact, or Project Fact reco
 This is a skill-level requirement: when this skill is active, read the template or use the local template file before composing the payload. If the template cannot be read, say so in the AI Run or outbox instead of silently writing a thin record.
 
 If the work changes architecture, module boundaries, PR/writeback flow, task flow, or a recurring bug investigation path, update the relevant map under both `00 Global/50 Maps` or `10 Projects/<project>/50 Maps` when appropriate, or leave an outbox/explicit note explaining why the map was not updated.
+
+Normal `record-*` commands write Base only. Use `--wiki` when the user expects a human-readable Wiki page for Bugfixes, AI Runs, Releases, Decisions, or Project Facts.
 
 See [`references/writeback-flows.md`](references/writeback-flows.md).
 

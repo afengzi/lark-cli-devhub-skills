@@ -122,6 +122,16 @@ Starter docs and maps belong under `00 Global` or `10 Projects/<project>`, never
 
 Provisioning writes complete template content into Docs/Wiki rather than leaving placeholder pages. The reusable template set covers project records, bugfix retrospectives, playbooks, decisions, releases, AI runs, and bug investigation paths.
 
+Runtime record writeback is Base-first. `record-*` writes the structured Base row and receipt by default. When a human-readable long-form page is needed, the agent passes `--wiki` to supported commands. The helper then writes the Base row, creates or updates the matching Wiki page, registers that page in Base `Artifacts`, and leaves a wiki outbox if the Wiki write fails.
+
+Supported long-form writebacks:
+
+- Bugfixes -> `10 Projects/<project>/20 Bugfix Retros`
+- AI Runs and Releases -> `10 Projects/<project>/60 Reports`
+- Decisions -> `10 Projects/<project>/40 Decisions`
+- Project Facts -> `10 Projects/<project>/00 Overview`
+- `report-draft --wiki` -> `10 Projects/<project>/60 Reports`
+
 Provisioning creates starter Whiteboard pages in three places:
 
 - `00 Global/50 Maps`: `Global: Dev Hub 总览图`, `Global: Bug 排查路径图`, `Global: PR 写回流程图`, and `Global: 任务执行闭环图`.

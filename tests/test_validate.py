@@ -34,6 +34,19 @@ class ValidateScanTests(unittest.TestCase):
 
         self.assertEqual(errors, [])
 
+    def test_scan_ignores_local_devhub_runtime_state(self):
+        receipt_dir = self.root / ".devhub" / "receipts"
+        receipt_dir.mkdir(parents=True)
+        (receipt_dir / "receipt.json").write_text(
+            "https://example." + "feishu.cn/wiki/STYQwi5xcia6yCkQdjzcsgc2nig\n",
+            encoding="utf-8",
+        )
+
+        with patch.object(self.module, "ROOT", self.root):
+            errors = self.module.scan_forbidden()
+
+        self.assertEqual(errors, [])
+
     def test_scan_still_catches_committed_user_paths(self):
         docs = self.root / "docs"
         docs.mkdir()

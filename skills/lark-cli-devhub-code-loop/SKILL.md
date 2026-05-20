@@ -20,12 +20,14 @@ Use this workflow when work involves a bug, regression, incident, risky refactor
 
 ## After Fixing
 
-1. Write `record-bugfix` for the root cause, fix, verification, and regression risk.
+1. Write `record-bugfix` for the root cause, fix, verification, and regression risk. Add `--wiki` when the fix needs a human-readable retrospective in Wiki.
 2. Write `record-ai-run` for what the agent did and what evidence it checked.
-3. Write `record-project-fact` if the work changes the current truth or retires an old path.
+3. Write `record-project-fact` if the work changes the current truth or retires an old path. Add `--wiki` when the current truth should also update the project Wiki.
 4. Write `record-artifact` for linked docs, diagrams, PRs, commits, or screenshots.
 5. If architecture, module boundaries, task flow, PR flow, or investigation path changed, update the relevant project map and reusable global map when appropriate, or leave an outbox/explicit note.
 6. Mention receipt paths or outbox paths in the final work summary.
+
+Base is the default write target. Wiki writeback is explicit with `--wiki` so small fixes do not create noisy pages.
 
 ## Reliability
 

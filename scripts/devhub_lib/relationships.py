@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from .base import cell_text, upsert_record
+from .base import cell_text, find_matching_record_id, upsert_record
 from .io import find_first_token
 
 
@@ -161,14 +161,17 @@ def write_record_relations(config: dict[str, Any], source_table: str, source_rec
     if "Record Relations" not in config.get("base", {}).get("tables", {}):
         return []
     record_ids: list[str] = []
+    match_fields = ["Source Table", "Source Record ID", "Relation Type", "Target Table", "Target Ref"]
     for payload in build_relation_payloads(source_table, source_record_id, source_payload):
         output, _ = upsert_record(
             config,
             "Record Relations",
             payload,
-            match_fields=["Source Table", "Source Record ID", "Relation Type", "Target Table", "Target Ref"],
+            match_fields=match_fields,
         )
         record_id = cell_text(find_first_token(output, {"_record_id", "record_id", "record_url", "url", "link"}))
+        if not record_id:
+            record_id = find_matching_record_id(config, "Record Relations", payload, match_fields)
         if record_id:
             record_ids.append(record_id)
     return record_ids

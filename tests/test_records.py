@@ -68,11 +68,23 @@ class ParserRecordCommandTests(unittest.TestCase):
             args = parser.parse_args([command, "--payload", "/tmp/payload.json"])
             self.assertTrue(callable(args.func))
 
+    def test_record_commands_accept_optional_wiki_writeback(self):
+        parser = build_parser()
+        args = parser.parse_args(["record-bugfix", "--payload", "/tmp/payload.json", "--wiki"])
+        self.assertTrue(callable(args.func))
+        self.assertTrue(args.wiki)
+
     def test_cleanup_relation_fields_command_exists(self):
         parser = build_parser()
         args = parser.parse_args(["cleanup-relation-fields", "--dry-run"])
         self.assertTrue(callable(args.func))
         self.assertTrue(args.dry_run)
+
+    def test_report_draft_accepts_wiki_writeback(self):
+        parser = build_parser()
+        args = parser.parse_args(["report-draft", "--kind", "weekly", "--project", "music_agent", "--records", "/tmp/records.json", "--wiki"])
+        self.assertTrue(callable(args.func))
+        self.assertTrue(args.wiki)
 
 
 if __name__ == "__main__":

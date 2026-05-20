@@ -40,6 +40,7 @@ def build_parser() -> argparse.ArgumentParser:
     report.add_argument("--kind", choices=["daily", "weekly", "release"], required=True)
     report.add_argument("--project", required=True)
     report.add_argument("--records", required=True)
+    report.add_argument("--wiki", action="store_true", help="write the report draft into project Wiki and index it in Artifacts")
     report.set_defaults(func=command_report_draft)
 
     board = sub.add_parser("whiteboard-draft")
@@ -60,7 +61,8 @@ def build_parser() -> argparse.ArgumentParser:
     for name, table in record_tables:
         item = sub.add_parser(name)
         item.add_argument("--payload", required=True)
-        item.set_defaults(func=lambda ns, n=name, t=table: record_command(n, t, Path(ns.payload), Path.cwd()))
+        item.add_argument("--wiki", action="store_true", help="also write a long-form Wiki doc and Artifacts index when supported")
+        item.set_defaults(func=lambda ns, n=name, t=table: record_command(n, t, Path(ns.payload), Path.cwd(), write_wiki=ns.wiki))
 
     receipt = sub.add_parser("receipt")
     receipt.add_argument("--kind", required=True)

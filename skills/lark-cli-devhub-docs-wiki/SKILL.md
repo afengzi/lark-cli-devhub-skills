@@ -33,6 +33,17 @@ Recommended first-level pages:
 
 ## Creation Pattern
 
+When a structured Base record should also become a durable human-readable Wiki page, prefer the Dev Hub helper so Base, Wiki, Artifact indexing, receipt, and outbox stay together:
+
+```bash
+python3 "$DEVHUB_HOME/bin/devhub.py" record-bugfix --payload /tmp/devhub-bugfix.json --wiki
+python3 "$DEVHUB_HOME/bin/devhub.py" record-release --payload /tmp/devhub-release.json --wiki
+python3 "$DEVHUB_HOME/bin/devhub.py" record-decision --payload /tmp/devhub-decision.json --wiki
+python3 "$DEVHUB_HOME/bin/devhub.py" record-project-fact --payload /tmp/devhub-project-fact.json --wiki
+```
+
+Use direct Docs/Wiki commands for custom pages that are not tied to a Base record:
+
 ```bash
 lark-cli docs +create --api-version v2 --as user \
   --content '<title>Bugfix Retro: short title</title><p>Summary...</p>'

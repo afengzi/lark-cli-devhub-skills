@@ -7,9 +7,10 @@ from pathlib import Path
 from typing import Any
 
 from .base import upsert_record
-from .config import load_config, repo_runtime_dir
+from .config import load_config, repo_runtime_dir, save_config
 from .io import find_first_token, load_json, now_iso, write_json
 from .relationships import write_record_relations
+from .wiki_docs import wiki_writeback_supported, write_wiki_artifact
 
 
 def write_outbox(cwd: Path, kind: str, payload: dict[str, Any], error: str) -> Path:
@@ -37,7 +38,7 @@ def write_receipt(cwd: Path, kind: str, record_url: str, summary: str, extra: di
     receipts.mkdir(parents=True, exist_ok=True)
     extra = extra or {}
     source = extra.get("source") or {"type": "manual", "commit": "", "pr": ""}
-    target = {
+    target = extra.get("target") or {
         "type": "base-record",
         "table": extra.get("table", ""),
         "record_id": record_url,
@@ -58,7 +59,7 @@ def write_receipt(cwd: Path, kind: str, record_url: str, summary: str, extra: di
     return path
 
 
-def record_command(kind: str, table: str, payload_path: Path, cwd: Path) -> int:
+def record_command(kind: str, table: str, payload_path: Path, cwd: Path, *, write_wiki: bool = False) -> int:
     config = load_config()
     payload = load_json(payload_path)
     try:
@@ -79,6 +80,47 @@ def record_command(kind: str, table: str, payload_path: Path, cwd: Path) -> int:
                     str(relation_exc),
                 )
             )
+        wiki_result: dict[str, Any] = {}
+        wiki_outbox = ""
+        if write_wiki:
+            if wiki_writeback_supported(table):
+                try:
+                    wiki_result = write_wiki_artifact(config, table, payload, base_record_id=str(record_url))
+                    save_config(config)
+                    write_receipt(
+                        cwd,
+                        f"{kind}-wiki",
+                        str(wiki_result.get("url") or ""),
+                        str(payload.get("AI Summary") or payload.get("Title") or f"{kind} wiki"),
+                        {
+                            "payload_title": str(wiki_result.get("title") or payload.get("Title") or ""),
+                            "target": {
+                                "type": "wiki-doc",
+                                "table": "Artifacts",
+                                "url": str(wiki_result.get("url") or ""),
+                                "title": str(wiki_result.get("title") or ""),
+                                "base_record_id": str(record_url),
+                            },
+                        },
+                    )
+                except Exception as wiki_exc:
+                    wiki_outbox = str(
+                        write_outbox(
+                            cwd,
+                            f"{kind}-wiki",
+                            {"source_table": table, "source_record_id": str(record_url), "payload": payload},
+                            str(wiki_exc),
+                        )
+                    )
+            else:
+                wiki_outbox = str(
+                    write_outbox(
+                        cwd,
+                        f"{kind}-wiki",
+                        {"source_table": table, "source_record_id": str(record_url), "payload": payload},
+                        f"wiki writeback is not configured for table {table}",
+                    )
+                )
         summary = payload.get("AI Summary") or payload.get("Title") or kind
         receipt = write_receipt(cwd, kind, record_url, summary, {"table": table, "payload_title": payload.get("Title", "")})
         print(
@@ -89,6 +131,8 @@ def record_command(kind: str, table: str, payload_path: Path, cwd: Path) -> int:
                     "receipt": str(receipt),
                     "relation_records": relation_records,
                     "relation_outbox": relation_outbox,
+                    "wiki": wiki_result,
+                    "wiki_outbox": wiki_outbox,
                 },
                 ensure_ascii=False,
                 indent=2,

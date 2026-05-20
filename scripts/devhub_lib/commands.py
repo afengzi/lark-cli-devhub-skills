@@ -9,12 +9,12 @@ from .base import cleanup_deprecated_relation_fields, create_tables_and_fields, 
 from .config import load_config, redact_resource_summary, save_config
 from .io import load_json
 from .lark import run_lark
-from .records import write_outbox
+from .records import write_outbox, write_receipt
 from .reports import draft_report
 from .search import search_devhub
 from .views import ensure_base_views
 from .whiteboard import draft_whiteboard
-from .wiki_docs import create_artifacts, ensure_wiki
+from .wiki_docs import create_artifacts, ensure_wiki, write_report_wiki_artifact
 
 
 def command_preflight(_args: Any) -> int:
@@ -91,7 +91,46 @@ def command_search(args: Any) -> int:
 
 def command_report_draft(args: Any) -> int:
     records = load_json(Path(args.records))
-    print(draft_report(args.kind, args.project, records))
+    report = draft_report(args.kind, args.project, records)
+    if not getattr(args, "wiki", False):
+        print(report)
+        return 0
+    config: dict[str, Any] = {}
+    config_loaded = False
+    try:
+        config = load_config()
+        config_loaded = True
+        result = write_report_wiki_artifact(config, kind=args.kind, project=args.project, body=report)
+        save_config(config)
+        receipt = write_receipt(
+            Path.cwd(),
+            f"report-{args.kind}-wiki",
+            str(result.get("url") or ""),
+            f"{args.kind} report for {args.project}",
+            {
+                "payload_title": str(result.get("title") or ""),
+                "target": {
+                    "type": "wiki-doc",
+                    "table": "Artifacts",
+                    "url": str(result.get("url") or ""),
+                    "title": str(result.get("title") or ""),
+                    "artifact_record_id": str(result.get("artifact_record_id") or ""),
+                },
+            },
+        )
+        print(json.dumps({"ok": True, "wiki": result, "receipt": str(receipt)}, ensure_ascii=False, indent=2))
+        return 0
+    except Exception as exc:
+        if config_loaded:
+            save_config(config)
+        outbox = write_outbox(
+            Path.cwd(),
+            f"report-{args.kind}-wiki",
+            {"kind": args.kind, "project": args.project, "records_path": str(Path(args.records))},
+            str(exc),
+        )
+        print(json.dumps({"ok": False, "outbox": str(outbox), "error": str(exc)}, ensure_ascii=False, indent=2), file=sys.stderr)
+        return 1
     return 0
 
 
