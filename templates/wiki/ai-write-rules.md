@@ -21,13 +21,12 @@
 | Pitfalls | 可复用踩坑提醒 | Trigger Condition、Wrong Approach、Correct Approach、Next Time Check |
 | Playbooks | 可复用流程 | Scenario、Diagnosis Order、Must Check Evidence、Commands |
 
-## 关联字段
+## 关系写入
 
-- 文档里说“单向关联 / 双向关联”。
-- Base 官方底层类型：单向关联是 `18`，双向关联是 `21`。
-- lark-cli shortcut 读写时可能显示 `type: "link"` 和 `bidirectional`，这是 CLI 表达，不是文档里给用户看的概念。
-- 只有知道目标 `record_id` 时才写 `... Relation` 字段。
-- 不知道目标时，用 `Related Tasks`、`Related Bugfixes`、`Search Keywords` 等文本字段承载可检索线索。
+- 默认 Dev Hub Base 不创建 `Related ...` 文本字段，也不创建单向/双向关联字段。
+- 跨记录关系统一写入 `Record Relations`。
+- 写入 payload 可以临时带 `Relation Hints`，格式如 `Tasks: 任务标题; Bugfixes: rec_xxx`；helper 会消费它并删除，不会写进业务表。
+- Base 官方单向关联底层类型是 `18`，双向关联是 `21`；仅在自定义高级 schema 中使用，不是默认轻量模型。
 
 ## 写入后
 

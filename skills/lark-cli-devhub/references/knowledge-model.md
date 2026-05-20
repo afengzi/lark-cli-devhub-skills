@@ -58,7 +58,7 @@ Fill these fields whenever they exist:
 
 Fill content-specific evidence fields when the record type calls for them, such as `Symptom`, `Root Cause`, `Verification Result`, `Decision`, or `Current Truth`.
 
-Keep the default Base lightweight. Do not add many `Related ... Relation(s)` columns to business tables.
+Keep the default Base lightweight. Do not add `Related ...` columns to business tables.
 
 Use `Record Relations` for AI-readable graph edges:
 
@@ -69,6 +69,8 @@ Use `Record Relations` for AI-readable graph edges:
 - `Search Keywords`
 
 Feishu Base relation fields are still available for custom schemas. Describe them as 单向关联 / official `type: 18` or 双向关联 / official `type: 21`, but do not make them part of the default Dev Hub model.
+
+Temporary write payloads may include `Relation Hints`, for example `Tasks: task title; Bugfixes: rec_xxx`. The helper strips that key from the business-table write and writes graph edges into `Record Relations`. Legacy `Related ...` input hints are still accepted for compatibility, but they are not Base fields.
 
 ## Task Layers
 

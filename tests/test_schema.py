@@ -52,6 +52,8 @@ class SchemaTests(unittest.TestCase):
             if table_name not in {"Projects", "Areas", "Record Relations"}:
                 self.assertEqual(fields["Area"]["type"], "text")
             self.assertFalse(any(name and "Relation" in name for name in fields if table_name != "Record Relations"))
+            if table_name != "Record Relations":
+                self.assertFalse(any(name and name.startswith("Related ") for name in fields))
 
         relation_fields = {field_name(field): field for field in tables["Record Relations"]["fields"]}
         self.assertEqual(relation_fields["Relation Type"]["type"], "select")

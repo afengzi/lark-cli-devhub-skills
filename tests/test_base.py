@@ -291,6 +291,7 @@ class BaseProvisionTests(unittest.TestCase):
                             {"name": "Title", "id": "fld_title", "type": "text"},
                             {"name": "Project Relation", "id": "fld_project", "type": "link"},
                             {"name": "Related Task Relation", "id": "fld_task", "type": "link"},
+                            {"name": "Related Areas Link", "id": "fld_area_link", "type": "link"},
                             {"name": "Related Task", "id": "fld_task_text", "type": "text"},
                         ]
                     }
@@ -312,6 +313,7 @@ class BaseProvisionTests(unittest.TestCase):
                                 "Title": "fld_title",
                                 "Project Relation": "fld_project",
                                 "Related Task Relation": "fld_task",
+                                "Related Areas Link": "fld_area_link",
                                 "Related Task": "fld_task_text",
                             },
                         },
@@ -323,12 +325,15 @@ class BaseProvisionTests(unittest.TestCase):
         finally:
             base_module.run_lark = original
 
-        self.assertEqual([item["field"] for item in removed], ["Project Relation", "Related Task Relation"])
+        self.assertEqual(
+            [item["field"] for item in removed],
+            ["Project Relation", "Related Task Relation", "Related Areas Link", "Related Task"],
+        )
         deletes = [args for args in calls if args[:2] == ["base", "+field-delete"]]
-        self.assertEqual(len(deletes), 2)
+        self.assertEqual(len(deletes), 4)
         self.assertTrue(all("--yes" in args for args in deletes))
         self.assertNotIn("Project Relation", config["base"]["tables"]["Bugfixes"]["fields"])
-        self.assertIn("Related Task", config["base"]["tables"]["Bugfixes"]["fields"])
+        self.assertNotIn("Related Task", config["base"]["tables"]["Bugfixes"]["fields"])
 
 
 if __name__ == "__main__":

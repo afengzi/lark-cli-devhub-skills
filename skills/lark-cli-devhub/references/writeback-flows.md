@@ -10,7 +10,7 @@ Write after a meaningful bug fix:
   "Project": "project-name",
   "Area": "module or product area",
   "Status": "Fixed",
-  "Related Task": "Task title or rec_xxx when known",
+  "Relation Hints": "Tasks: task title or rec_xxx when known",
   "Symptom": "What failed from the user's or system's point of view.",
   "Evidence": "Logs, test failures, screenshots, command output, or code facts checked.",
   "Root Cause": "The actual cause, not only the visible symptom.",
@@ -26,7 +26,7 @@ Write after a meaningful bug fix:
 }
 ```
 
-Do not add `Related ... Relation(s)` columns to every table. The helper consumes text hints such as `Related Task`, `Related Bugfixes`, and `Related Records`, writes the main business record, then writes lightweight graph edges into `Record Relations` when that table exists.
+Do not add `Related ...` columns to business tables. The helper consumes temporary payload hints such as `Relation Hints`, strips them from the business-table write, then writes lightweight graph edges into `Record Relations` when that table exists. Legacy `Related ...` input hints still work for compatibility, but documentation and templates should prefer `Relation Hints`.
 
 Command:
 
@@ -77,8 +77,7 @@ Write before pushing `main` or `master`:
   "Verification Commands": "test/build commands",
   "Verification Result": "Result and caveats.",
   "Rollback Notes": "How to revert or what to watch.",
-  "Related Tasks": "Task titles or URLs",
-  "Related Bugfixes": "Bugfix titles or URLs",
+  "Relation Hints": "Tasks: task titles or URLs; Bugfixes: bugfix titles or URLs",
   "AI Summary": "Dense searchable release summary.",
   "Search Keywords": "release main deploy area"
 }
@@ -161,7 +160,7 @@ Write when a Doc, Wiki page, Whiteboard, PR, commit, file, screenshot, dashboard
   "Artifact Type": "Doc",
   "Source URL": "safe link or local path",
   "Summary": "What this artifact contains.",
-  "Related Records": "Bugfix, Decision, Release, AI Run, or Task titles/URLs.",
+  "Relation Hints": "Bugfixes: bugfix title; Decisions: decision title; AI Runs: rec_xxx.",
   "AI Summary": "Dense searchable artifact summary.",
   "Search Keywords": "artifact doc whiteboard report keywords"
 }

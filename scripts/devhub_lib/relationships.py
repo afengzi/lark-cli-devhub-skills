@@ -27,6 +27,32 @@ TARGET_TABLE_BY_RELATED_FIELD = {
     "Related Project Facts": "Project Facts",
 }
 
+GENERIC_RELATION_HINT_FIELDS = {"Relation Hints", "Linked Records", "Related Records"}
+TARGET_TABLE_ALIASES = {
+    "project": "Projects",
+    "projects": "Projects",
+    "area": "Areas",
+    "areas": "Areas",
+    "task": "Tasks",
+    "tasks": "Tasks",
+    "bugfix": "Bugfixes",
+    "bugfixes": "Bugfixes",
+    "pitfall": "Pitfalls",
+    "pitfalls": "Pitfalls",
+    "playbook": "Playbooks",
+    "playbooks": "Playbooks",
+    "decision": "Decisions",
+    "decisions": "Decisions",
+    "release": "Releases",
+    "releases": "Releases",
+    "artifact": "Artifacts",
+    "artifacts": "Artifacts",
+    "ai run": "AI Runs",
+    "ai runs": "AI Runs",
+    "project fact": "Project Facts",
+    "project facts": "Project Facts",
+}
+
 
 def split_relation_refs(value: Any) -> list[str]:
     if value is None:
@@ -52,13 +78,17 @@ def split_relation_refs(value: Any) -> list[str]:
 def infer_target_table(field: str, ref: str) -> tuple[str, str]:
     if field in TARGET_TABLE_BY_RELATED_FIELD:
         return TARGET_TABLE_BY_RELATED_FIELD[field], ref
-    if field == "Related Records" and ":" in ref:
+    if field in GENERIC_RELATION_HINT_FIELDS and ":" in ref:
         table, target = ref.split(":", 1)
-        table = table.strip()
+        table = TARGET_TABLE_ALIASES.get(table.strip().lower(), "")
         target = target.strip()
-        if table in set(TARGET_TABLE_BY_RELATED_FIELD.values()) | {"Projects", "Areas"}:
+        if table:
             return table, target
     return "", ref
+
+
+def is_relation_hint_field(field: str) -> bool:
+    return field in GENERIC_RELATION_HINT_FIELDS or field.startswith("Related ")
 
 
 def relation_type_for(source_table: str, target_table: str) -> str:
@@ -84,7 +114,7 @@ def build_relation_payloads(source_table: str, source_record_id: str, source_pay
     evidence = cell_text(source_payload.get("Evidence") or source_payload.get("AI Summary")).strip()
     payloads: list[dict[str, Any]] = []
     for field, value in source_payload.items():
-        if not field.startswith("Related "):
+        if not is_relation_hint_field(field):
             continue
         for raw_ref in split_relation_refs(value):
             target_table, target_ref = infer_target_table(field, raw_ref)

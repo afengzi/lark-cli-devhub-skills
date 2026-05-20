@@ -4,7 +4,7 @@
 
 [release summaries]
 
-## Related Bugfixes
+## Linked Bugfixes
 
 [bugfix summaries]
 

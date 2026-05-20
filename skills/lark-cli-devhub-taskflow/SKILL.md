@@ -42,7 +42,7 @@ When a task results in a fix:
 - Write a `Bugfix` record when code changed to fix a bug.
 - Write an `AI Run` record when an AI agent did meaningful investigation or implementation.
 - Store the Feishu task URL and GUID in Base `Tasks` when a native task exists.
-- Put cross-record links in `Record Relations` through text hints such as `Related Task`, `Related Bugfix`, or `Related Records`. Keep task tables lightweight.
+- Put cross-record links in `Record Relations` through temporary payload hints such as `Relation Hints: Tasks: task title; Bugfixes: rec_xxx`. The hints are not business-table fields.
 
 ## Work Loop
 

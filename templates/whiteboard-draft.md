@@ -8,9 +8,9 @@
 
 - Current system
 - Changed component
-- Related Project Facts
-- Related Decisions
-- Related Artifacts
+- Project Facts to Link
+- Decisions to Link
+- Artifacts to Link
 
 ## Links To Add After Approval
 

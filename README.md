@@ -377,12 +377,12 @@ Dev Knowledge Hub
 
 Base is intentionally lightweight:
 
-- Business tables keep searchable text fields and evidence fields. They do not get many `Related ... Relation(s)` columns by default.
-- `Record Relations` is the AI-readable graph edge table. Agents can write edges from payload hints such as `Related Task`, `Related Bugfixes`, or `Related Records` without making every business table wider.
-- Views from `base-views.json` keep human browsing comfortable by showing the right fields for task boards, bug triage, current facts, artifacts, and knowledge edges.
+- Business tables keep searchable text fields and evidence fields. They do not keep `Related ...` columns by default, whether text or link/relation fields.
+- `Record Relations` is the AI-readable graph edge table. Agents may use temporary payload hints such as `Relation Hints: Tasks: Fix login`; the helper strips those hints from the business table write and stores the edge in `Record Relations`.
+- Views from `base-views.json` keep human browsing comfortable: tasks and triage use kanban, reusable knowledge and artifacts use gallery, dated work uses calendar/gantt, and exact edge inspection keeps a grid fallback.
 - Feishu Base relation fields are still supported for advanced custom schemas: 单向关联 uses official `type: 18`, and 双向关联 uses official `type: 21`. They are not part of the default lightweight schema.
 
-For existing Bases created by older versions, remove deprecated relation columns after review:
+For existing Bases created by older versions, remove deprecated `Project Relation` / `Area Relation` and all business-table `Related ...` columns after review:
 
 ```bash
 python3 "$DEVHUB_HOME/bin/devhub.py" cleanup-relation-fields --dry-run
@@ -398,14 +398,14 @@ Tasks also have two layers:
 |---|---|
 | `Projects` | Repository identity, current focus, default branch, Wiki URL. |
 | `Areas` | Product or code areas, paths, risk, and ownership. |
-| `Tasks` | Searchable task index: current work, priority, blockers, next action, native task URL/GUID, and related records. |
+| `Tasks` | Searchable task index: current work, priority, blockers, next action, native task URL/GUID, and graph edges. |
 | `Bugfixes` | Symptom, evidence, root cause, fix summary, changed files, verification, regression risk. |
 | `Pitfalls` | Reusable traps and "check this first" notes. |
 | `Playbooks` | Diagnosis order, commands, success criteria, and forbidden actions. |
 | `Decisions` | Architecture/product decisions, alternatives, consequences, review triggers. |
 | `Project Facts` | Current implementation truths, retired paths, invariants, source, and review triggers. |
 | `Record Relations` | Lightweight AI graph edges between records. |
-| `Releases` | Branch, commit SHA, verification, rollback notes, related tasks and bugfixes. |
+| `Releases` | Branch, commit SHA, verification, rollback notes, and release graph edges. |
 | `Artifacts` | Linked Docs, Whiteboards, dashboards, files, and summaries. |
 | `AI Runs` | Agent task intent, actions taken, evidence checked, files changed, verification result. |
 

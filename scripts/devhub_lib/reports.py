@@ -66,7 +66,7 @@ def draft_report(kind: str, project: str, records: dict[str, list[dict[str, Any]
                 "## Included Releases",
                 _bullets(_titles(records.get("Releases", []), "Summary")),
                 "",
-                "## Related Bugfixes",
+                "## Linked Bugfixes",
                 _bullets(_titles(records.get("Bugfixes", []))),
                 "",
                 "## Verification",

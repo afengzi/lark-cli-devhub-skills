@@ -44,9 +44,7 @@ def field_id(field: dict[str, Any]) -> str:
 
 
 def is_deprecated_relation_field(name: str) -> bool:
-    return name in {"Project Relation", "Area Relation"} or name.startswith("Related ") and (
-        name.endswith(" Relation") or name.endswith(" Relations")
-    )
+    return name in {"Project Relation", "Area Relation", "Project Link", "Area Link"} or name.startswith("Related ")
 
 
 def field_type_matches_schema(existing: str | None, field: dict[str, Any], relation_mode: str | None = None) -> bool:

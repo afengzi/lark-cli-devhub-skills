@@ -12,7 +12,7 @@ class RelationshipWriteTests(unittest.TestCase):
                 "Title": "Fix login",
                 "Project": "demo",
                 "Area": "auth",
-                "Related Task": "rec_task",
+                "Relation Hints": "Tasks: rec_task",
                 "AI Summary": "Fixed auth redirect.",
             },
         )

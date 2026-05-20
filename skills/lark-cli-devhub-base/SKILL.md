@@ -49,8 +49,9 @@ python3 "$DEVHUB_HOME/bin/devhub.py" provision \
 - Put long prose in Docs only when useful; keep Base summaries dense and searchable.
 - Keep business tables lightweight. Prefer `Project`, `Area`, `AI Summary`, `Search Keywords`, `Source URL`, and domain evidence fields over many cross-table relation fields.
 - Use `Record Relations` as the canonical AI-readable graph edge table. It stores source table/record, relation type, target table/ref, evidence, and search keywords.
-- Do not add `Related ... Relation(s)` fields to every table by default. Use Base views to make records readable for humans instead of adding more columns.
-- If a legacy Base already has `Project Relation`, `Area Relation`, or `Related ... Relation(s)` fields, remove them with `python3 "$DEVHUB_HOME/bin/devhub.py" cleanup-relation-fields` after reviewing `--dry-run`.
+- Do not add `Related ...` fields to business tables by default, whether text or link/relation fields. Use Base views to make records readable for humans instead of adding more columns.
+- Prefer task/triage kanban, knowledge/artifact gallery, calendar/gantt for dated work, and grid only for exact indexes or relationship edge inspection.
+- If a legacy Base already has `Project Relation`, `Area Relation`, or any business-table `Related ...` fields, remove them with `python3 "$DEVHUB_HOME/bin/devhub.py" cleanup-relation-fields` after reviewing `--dry-run`.
 - Feishu Base relation fields are still supported for advanced custom schemas: 单向关联 is `type: 18`, 双向关联 is `type: 21`. They are not part of the default lightweight schema.
 - Do not store secrets or raw credentials.
 - If a write fails, leave an outbox item. Do not create fake receipts.
