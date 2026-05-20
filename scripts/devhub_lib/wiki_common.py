@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import html
 import json
 import re
 from datetime import date
@@ -203,6 +202,25 @@ def should_retry_legacy_docs_update(error: RuntimeError) -> bool:
     )
 
 
+def legacy_markdown_update_args(doc_token: str, command: str, content: str) -> list[str]:
+    return [
+        "docs",
+        "+update",
+        "--api-version",
+        "v2",
+        "--as",
+        "user",
+        "--doc",
+        doc_token,
+        "--command",
+        command,
+        "--doc-format",
+        "markdown",
+        "--content",
+        content,
+    ]
+
+
 def update_doc_content(doc_token: str, title: str, body: str) -> None:
     if not doc_token:
         return
@@ -227,22 +245,7 @@ def update_doc_content(doc_token: str, title: str, body: str) -> None:
     except RuntimeError as exc:
         if not should_retry_legacy_docs_update(exc):
             raise
-        run_lark(
-            [
-                "docs",
-                "+update",
-                "--api-version",
-                "v2",
-                "--as",
-                "user",
-                "--doc",
-                doc_token,
-                "--command",
-                "overwrite",
-                "--content",
-                f"<title>{html.escape(title)}</title><p>{html.escape(body)}</p>",
-            ]
-        )
+        run_lark(legacy_markdown_update_args(doc_token, "overwrite", body))
 
 
 def append_doc_content(doc_token: str, body: str) -> None:
@@ -267,22 +270,7 @@ def append_doc_content(doc_token: str, body: str) -> None:
     except RuntimeError as exc:
         if not should_retry_legacy_docs_update(exc):
             raise
-        run_lark(
-            [
-                "docs",
-                "+update",
-                "--api-version",
-                "v2",
-                "--as",
-                "user",
-                "--doc",
-                doc_token,
-                "--command",
-                "append",
-                "--content",
-                body,
-            ]
-        )
+        run_lark(legacy_markdown_update_args(doc_token, "append", body))
 
 
 def ensure_doc_title(doc_token: str, title: str) -> None:

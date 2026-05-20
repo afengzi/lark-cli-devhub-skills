@@ -11,7 +11,7 @@ from typing import Any
 from .io import find_first, find_first_token, parse_json_output
 from .lark import run_lark, run_lark_with_input
 from .paths import DEVHUB_HOME
-from .wiki_common import fetch_doc_content, iter_dicts
+from .wiki_common import fetch_doc_content, iter_dicts, legacy_markdown_update_args, should_retry_legacy_docs_update
 
 
 def find_whiteboard_token(output: dict[str, Any]) -> str:
@@ -30,22 +30,28 @@ def find_whiteboard_token_in_content(content: str) -> str:
 
 
 def append_whiteboard(doc_token: str) -> str:
-    output, _ = run_lark(
-        [
-            "docs",
-            "+update",
-            "--api-version",
-            "v2",
-            "--as",
-            "user",
-            "--doc",
-            doc_token,
-            "--mode",
-            "append",
-            "--markdown",
-            '<whiteboard type="blank"></whiteboard>',
-        ]
-    )
+    blank_whiteboard = '<whiteboard type="blank"></whiteboard>'
+    try:
+        output, _ = run_lark(
+            [
+                "docs",
+                "+update",
+                "--api-version",
+                "v2",
+                "--as",
+                "user",
+                "--doc",
+                doc_token,
+                "--mode",
+                "append",
+                "--markdown",
+                blank_whiteboard,
+            ]
+        )
+    except RuntimeError as exc:
+        if not should_retry_legacy_docs_update(exc):
+            raise
+        output, _ = run_lark(legacy_markdown_update_args(doc_token, "append", blank_whiteboard))
     token = find_whiteboard_token(output)
     if token:
         return token

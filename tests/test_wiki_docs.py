@@ -380,6 +380,30 @@ class WikiArtifactLayoutTests(unittest.TestCase):
         artifact_titles = [payload["Title"] for table, payload in records if table == "Artifacts"]
         self.assertIn("60 Reports", artifact_titles)
 
+    def test_append_doc_content_uses_legacy_markdown_fallback(self):
+        calls = []
+
+        def fake_run_lark_with_input(_args, _stdin):
+            raise RuntimeError("--command is required")
+
+        def fake_run_lark(args, **_kwargs):
+            calls.append(args)
+            return {"ok": True}, "{}"
+
+        original_run = wiki_common.run_lark
+        original_run_with_input = wiki_common.run_lark_with_input
+        wiki_common.run_lark = fake_run_lark
+        wiki_common.run_lark_with_input = fake_run_lark_with_input
+        try:
+            wiki_common.append_doc_content("doc_123", "## Entry\n\nBody")
+        finally:
+            wiki_common.run_lark = original_run
+            wiki_common.run_lark_with_input = original_run_with_input
+
+        self.assertEqual(calls[0][calls[0].index("--command") + 1], "append")
+        self.assertEqual(calls[0][calls[0].index("--doc-format") + 1], "markdown")
+        self.assertEqual(calls[0][calls[0].index("--content") + 1], "## Entry\n\nBody")
+
     def test_whiteboard_idempotent_tokens_do_not_collide_for_chinese_titles(self):
         titles = [
             "Global: Bug 排查路径图",
