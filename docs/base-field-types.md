@@ -43,3 +43,14 @@ URL, email, phone, and barcode fields are modeled as `text` fields with `style.t
 - Attachments can be added as separate `Evidence Files` fields, but file upload must use `lark-cli base +record-upload-attachment`, not normal record upsert.
 - `Owner` can become a `user` field only when the workflow has reliable Feishu `open_id` resolution. Until then, text is safer.
 - Commit-specific clickable links should use `Source URL` or a future `Commit URL` URL-styled text field; keep `Commit SHA` plain text.
+
+## Native Relation Fields
+
+The default Dev Hub schema uses the `Record Relations` table for graph edges instead of adding many relation columns to business tables. Native Feishu Base relation fields are still valid for custom schemas.
+
+- Official single-direction relation type: `18`.
+- Official bidirectional relation type: `21`.
+- lark-cli shortcut field payload: `{"type":"link","name":"Related Tasks Link","link_table":"tbl_target","bidirectional":false}`.
+- Writable cell value: `[{"id":"rec_target"}]`.
+
+Do not convert an existing text `Related ...` field into a relation field. Create a new `... Link` field, write record ids into it, and keep the text field only as a readable summary during migration.

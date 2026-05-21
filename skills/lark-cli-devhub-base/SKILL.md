@@ -53,7 +53,7 @@ python3 "$DEVHUB_HOME/bin/devhub.py" provision \
 - Do not add `Related ...` fields to business tables by default, whether text or link/relation fields. Use Base views to make records readable for humans instead of adding more columns.
 - Prefer task/triage kanban, knowledge/artifact gallery, calendar/gantt for dated work, and grid only for exact indexes or relationship edge inspection.
 - If a legacy Base already has `Project Relation`, `Area Relation`, or any business-table `Related ...` fields, remove them with `python3 "$DEVHUB_HOME/bin/devhub.py" cleanup-relation-fields` after reviewing `--dry-run`.
-- Feishu Base relation fields are still supported for advanced custom schemas: 单向关联 is `type: 18`, 双向关联 is `type: 21`. They are not part of the default lightweight schema.
+- Feishu Base relation fields are still supported for advanced custom schemas, but they are not part of the default lightweight schema. Before creating or writing them, read [`references/relation-fields.md`](references/relation-fields.md).
 - Do not store secrets or raw credentials.
 - If a write fails, leave an outbox item. Do not create fake receipts.
 

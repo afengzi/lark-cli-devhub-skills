@@ -26,7 +26,7 @@
 - 默认 Dev Hub Base 不创建 `Related ...` 文本字段，也不创建单向/双向关联字段。
 - 跨记录关系统一写入 `Record Relations`。
 - 写入 payload 可以临时带 `Relation Hints`，格式如 `Tasks: 任务标题; Bugfixes: rec_xxx`；helper 会消费它并删除，不会写进业务表。
-- Base 官方单向关联底层类型是 `18`，双向关联是 `21`；仅在自定义高级 schema 中使用，不是默认轻量模型。
+- Base 官方单向关联底层类型是 `18`，双向关联是 `21`；仅在自定义高级 schema 中使用，不是默认轻量模型。需要真实关联字段时，新建 `link` 字段并写入 `[{"id":"rec_xxx"}]`，不要把旧文本字段原地改成关联字段。
 
 ## URL 字段
 

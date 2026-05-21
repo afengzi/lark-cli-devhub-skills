@@ -28,7 +28,7 @@ Discovery aliases: `feishu-cli whiteboard`, `飞书画板`, `lark-cli whiteboard
 - Global Maps: `Global: Dev Hub 总览图`, `Global: Bug 排查路径图`, `Global: PR 写回流程图`, `Global: 任务执行闭环图`.
 - Project Maps: `<project>: 架构图`, `<project>: Bug 排查路径图`, `<project>: PR 写回流程图`, `<project>: 任务执行闭环图`.
 
-Local SVG templates live under `templates/whiteboards/` or `$DEVHUB_HOME/templates/whiteboards/` for redraw guidance. They should not appear as template pages in Feishu Wiki.
+Local SVG templates live under `templates/whiteboards/` or `$DEVHUB_HOME/templates/whiteboards/` for reusable redraw guidance. Project-specific redraw sources should live in the project repo, preferably `docs/devhub/whiteboards/<project>-<map>.svg`, so the map source is reviewable with the code change. They should not appear as template pages in Feishu Wiki.
 
 If a map is written to Wiki/Docs, create or update a matching Base `Artifacts` row. Do not leave Whiteboard-only knowledge without an AI-readable summary.
 
@@ -57,6 +57,8 @@ This lets future agents discover the map without needing to visually inspect it 
 - SVG conversion output is cached by template content under `$DEVHUB_HOME/cache/whiteboards/`.
 - Keep line count low. Prefer grouping and adjacency over all-to-all edges.
 - Validate locally before writing to Feishu when possible.
+- Update the current page under `10 Projects/<project>/50 Maps` for project maps. Do not update pages under `90 Archive`, deleted docs, or duplicate legacy Artifact links; mark those records archived or repoint the active Artifact instead.
+- Do not use `/tmp` as the only source of truth for a durable map. Temporary conversion files are fine, but the SVG source must be in the project repo or Dev Hub template tree before writing to Feishu.
 
 ## CLI Pattern
 

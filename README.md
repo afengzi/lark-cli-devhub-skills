@@ -409,7 +409,7 @@ Base is intentionally lightweight:
 - URL-like fields such as `Source URL`, `Repo URL`, `Wiki URL`, and `Feishu Task URL` are Feishu Base text fields with URL style, so humans can click them while agents still write simple strings.
 - `Record Relations` is the AI-readable graph edge table. Agents may use temporary payload hints such as `Relation Hints: Tasks: Fix login`; the helper strips those hints from the business table write and stores the edge in `Record Relations`.
 - Views from `base-views.json` keep human browsing comfortable: tasks and triage use kanban, reusable knowledge and artifacts use gallery, dated work uses calendar/gantt, and exact edge inspection keeps a grid fallback.
-- Feishu Base relation fields are still supported for advanced custom schemas: 单向关联 uses official `type: 18`, and 双向关联 uses official `type: 21`. They are not part of the default lightweight schema.
+- Feishu Base relation fields are still supported for advanced custom schemas: 单向关联 uses official `type: 18`, 双向关联 uses official `type: 21`, and lark-cli shortcut payloads use `type: "link"` with `link_table`. They are not part of the default lightweight schema; do not convert existing text `Related ...` fields in place.
 
 What is automatic:
 
